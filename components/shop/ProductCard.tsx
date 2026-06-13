@@ -45,14 +45,14 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
     ? product.images![0]
     : PLACEHOLDER_IMG[product.category ?? ''];
 
-  const stockBadge  = STOCK_BADGE[product.stockStatus ?? ''];
+  const stockBadge   = STOCK_BADGE[product.stockStatus ?? ''];
   const isOutOfStock = product.stockStatus === 'OutOfStock';
 
   return (
     <div className="group card-product">
       {/* Image */}
       <div
-        className={`relative aspect-[3/4] overflow-hidden rounded-t-xl ${
+        className={`relative aspect-[3/4] overflow-hidden rounded-t-2xl ${
           hasProductImage ? 'bg-white' : placeholderBg
         }`}
       >
@@ -62,14 +62,14 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
             alt={product.nameFr ?? ''}
             fill
             className={`transition-transform duration-500 group-hover:scale-105 ${
-              hasProductImage ? 'object-contain p-6' : 'object-cover'
+              hasProductImage ? 'object-contain p-8' : 'object-cover'
             }`}
             unoptimized={imgSrc.startsWith('https://raw.githubusercontent.com')}
           />
         )}
 
         {/* Badges top-left */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
           {product.isBestSeller && (
             <span className="badge-bestseller">Best-seller</span>
           )}
@@ -106,9 +106,9 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
           <div className="absolute bottom-0 inset-x-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
             <button
               onClick={() => addItem(product as Product)}
-              className="w-full bg-zen-bark text-white text-sm font-sans font-medium py-3.5 flex items-center justify-center gap-2 hover:bg-zen-bark/90 transition-colors"
+              className="w-full bg-zen-bark text-white text-sm font-sans font-medium py-4 flex items-center justify-center gap-2 hover:bg-zen-bark/90 transition-colors"
             >
-              <ShoppingBag size={14} />
+              <ShoppingBag size={15} />
               Ajouter au panier
             </button>
           </div>
@@ -116,31 +116,31 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
       </div>
 
       {/* Info */}
-      <div className="p-4 lg:p-5">
-        <p className="text-[10px] font-sans tracking-widest uppercase text-zen-muted mb-1.5">
-          {product.category?.replace('-', ' & ')}
+      <div className="p-5 lg:p-6">
+        <p className="text-[10px] font-sans tracking-widest uppercase text-zen-muted mb-2">
+          {product.category?.replace('-', ' & ')}
         </p>
         <Link href={`/${locale}/produits/${product.slug}`}>
-          <h3 className="font-serif text-zen-bark text-base leading-snug hover:text-zen-terracotta transition-colors line-clamp-2">
+          <h3 className="font-serif text-zen-bark text-lg leading-snug hover:text-zen-terracotta transition-colors line-clamp-2 mb-3">
             {product.nameFr}
           </h3>
         </Link>
 
-        <div className="flex items-center gap-1 mt-2">
+        <div className="flex items-center gap-1 mb-4">
           {[1,2,3,4,5].map(i => (
-            <Star key={i} size={11} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'text-zen-sand fill-zen-sand'} />
+            <Star key={i} size={12} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'text-zen-sand fill-zen-sand'} />
           ))}
           <span className="text-[10px] text-zen-muted ml-1">4.8 (124)</span>
         </div>
 
-        <div className="flex items-baseline gap-2 mt-3">
-          <span className={`font-sans font-semibold text-base ${
+        <div className="flex items-baseline gap-2">
+          <span className={`font-sans font-bold text-xl ${
             isOutOfStock ? 'text-zen-muted' : 'text-zen-bark'
           }`}>
-            {product.retailPriceEur} €
+            {product.retailPriceEur} €
           </span>
           {product.compareAtPriceEur && (
-            <span className="text-xs text-zen-muted line-through">{product.compareAtPriceEur} €</span>
+            <span className="text-sm text-zen-muted line-through">{product.compareAtPriceEur} €</span>
           )}
         </div>
       </div>
