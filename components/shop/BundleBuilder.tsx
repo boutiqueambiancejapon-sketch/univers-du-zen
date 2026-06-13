@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { RefreshCw, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
-import { ALL_PRODUCTS } from '@/lib/all-products';
-import type { DemoProduct } from '@/lib/all-products';
+import type { DemoProduct } from '@/lib/demo-products';
 
 const DISCOUNT    = 0.15;
 const BUNDLE_SIZE = 3;
@@ -18,12 +17,16 @@ function isValid(p: DemoProduct): p is ValidProduct {
 }
 
 const CATEGORY_NAMES: Record<string, string> = {
-  'aromatherapie':    'Aromathérapie',
-  'bougies':          'Bougies',
-  'encens':           'Encens',
-  'pierres-cristaux': 'Cristaux',
-  'thes-artisanaux':  'Thés & Bien-être',
-  'maison-deco':      'Maison',
+  'aromatherapie':              'Aromathérapie',
+  'bougies-photophores':        'Bougies',
+  'encens-rituels':             'Encens',
+  'cristaux-lithotherapie':     'Cristaux',
+  'the-tisanes':                'Thés & Bien-être',
+  'deco-maison-zen':            'Maison',
+  'huiles-fragrance':           'Huiles',
+  'bien-etre-corps':            'Bien-être',
+  'instruments-sonotherapie':   'Sonothérapie',
+  'bijoux-cristaux':            'Bijoux',
 };
 
 function bundleTitle(items: Array<{ product: ValidProduct }>): string {
@@ -37,8 +40,9 @@ function bundleTitle(items: Array<{ product: ValidProduct }>): string {
   return `Coffret ${label}`;
 }
 
-function generate(): Array<Array<{ product: ValidProduct; selected: boolean }>> {
-  const pool     = ALL_PRODUCTS.filter(isValid);
+function generateBundles(
+  pool: ValidProduct[],
+): Array<Array<{ product: ValidProduct; selected: boolean }>> {
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return Array.from({ length: NUM_BUNDLES }, (_, i) => {
     const slice = shuffled.slice(i * BUNDLE_SIZE, (i + 1) * BUNDLE_SIZE);
@@ -48,26 +52,33 @@ function generate(): Array<Array<{ product: ValidProduct; selected: boolean }>> 
   }).filter(b => b.length === BUNDLE_SIZE);
 }
 
-export default function BundleBuilder() {
+interface BundleBuilderProps {
+  /** Published products passed down from the Server Component parent. */
+  products?: DemoProduct[];
+}
+
+export default function BundleBuilder({ products = [] }: BundleBuilderProps) {
   const { addItem, openCart } = useCartStore();
+  const pool = useMemo(() => products.filter(isValid), [products]);
+
   const [bundles, setBundles] = useState<
     Array<Array<{ product: ValidProduct; selected: boolean }>>
   >([]);
 
   // Client-only — avoid hydration mismatch with Math.random()
-  useEffect(() => { setBundles(generate()); }, []);
+  useEffect(() => { setBundles(generateBundles(pool)); }, [pool]);
 
   const reshuffle = useCallback((bi: number) => {
     setBundles(prev => {
-      const takenIds = prev.flatMap((b, i) => i !== bi ? b.map(x => x.product.id) : []);
-      const pool     = ALL_PRODUCTS.filter(isValid).filter(p => !takenIds.includes(p.id));
-      const picks    = [...pool].sort(() => Math.random() - 0.5).slice(0, BUNDLE_SIZE);
+      const takenIds  = prev.flatMap((b, i) => i !== bi ? b.map(x => x.product.id) : []);
+      const available = pool.filter(p => !takenIds.includes(p.id));
+      const picks     = [...available].sort(() => Math.random() - 0.5).slice(0, BUNDLE_SIZE);
       if (picks.length < BUNDLE_SIZE) return prev;
-      const next  = [...prev];
-      next[bi]    = picks.map(p => ({ product: p, selected: true }));
+      const next = [...prev];
+      next[bi]   = picks.map(p => ({ product: p, selected: true }));
       return next;
     });
-  }, []);
+  }, [pool]);
 
   const toggle = useCallback((bi: number, pi: number) => {
     setBundles(prev =>
@@ -92,6 +103,7 @@ export default function BundleBuilder() {
     openCart();
   }, [addItem, openCart]);
 
+  // Pool too small to build any bundle → section stays hidden
   if (!bundles.length) return null;
 
   return (
