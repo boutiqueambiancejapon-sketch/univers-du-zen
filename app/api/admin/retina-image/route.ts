@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'boutiqueambiancejapon@gmail.com';
-const BASE  = process.env.RETINA_API_BASE ?? 'https://app.aiku.io/app/re-api';
 const TOKEN = process.env.RETINA_API_TOKEN ?? '';
+
+const ALLOWED = ['app.aiku.io', 'media.aiku.io', 'ancient-wisdom.co.uk', 'ancient-wisdom.com'];
 
 export async function GET(request: Request) {
   const supabase = createClient();
@@ -16,17 +17,21 @@ export async function GET(request: Request) {
   const url = searchParams.get('url');
   if (!url) return new NextResponse('Missing url', { status: 400 });
 
-  // Only allow Retina/Aiku domains
-  const allowed = ['app.aiku.io', 'ancient-wisdom.co.uk', 'ancient-wisdom.com'];
-  const hostname = new URL(url).hostname;
-  if (!allowed.some(d => hostname.endsWith(d))) {
+  let hostname: string;
+  try { hostname = new URL(url).hostname; }
+  catch { return new NextResponse('Invalid url', { status: 400 }); }
+
+  if (!ALLOWED.some(d => hostname === d || hostname.endsWith('.' + d))) {
     return new NextResponse('Domain not allowed', { status: 403 });
   }
 
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
-  });
+  // media.aiku.io URLs are signed CDN links — try without auth first, fall back with token
+  const headers: Record<string, string> = {};
+  if (TOKEN && !hostname.includes('media.aiku.io')) {
+    headers['Authorization'] = `Bearer ${TOKEN}`;
+  }
 
+  const res = await fetch(url, { headers });
   if (!res.ok) return new NextResponse('Image not found', { status: 404 });
 
   const blob = await res.arrayBuffer();
