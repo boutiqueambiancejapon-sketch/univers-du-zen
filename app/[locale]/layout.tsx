@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { Fraunces, DM_Sans } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getTranslations } from 'next-intl/server';
+import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import '../globals.css';
 
 const fraunces = Fraunces({
@@ -18,21 +20,14 @@ const dmSans = DM_Sans({
   display: 'swap',
 });
 
-export async function generateMetadata({
-  params: { locale },
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
-  const t = await getTranslations({ locale, namespace: 'nav' });
-  return {
-    title: {
-      default: 'Univers du Zen',
-      template: '%s | Univers du Zen',
-    },
-    description: 'Votre boutique de bien-être : aromathérapie, bougies, encens, pierres & déco. Livraison France, Belgique, Luxembourg.',
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://universduzen.com'),
-  };
-}
+export const metadata: Metadata = {
+  title: {
+    default: 'Univers du Zen',
+    template: '%s | Univers du Zen',
+  },
+  description: 'Votre boutique de bien-être : aromathérapie, bougies, encens, pierres & déco. Livraison France, Belgique, Luxembourg.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://universduzen.com'),
+};
 
 export function generateStaticParams() {
   return routing.locales.map(locale => ({ locale }));
@@ -53,7 +48,9 @@ export default async function LocaleLayout({
     <html lang={locale} className={`${fraunces.variable} ${dmSans.variable}`}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <Header />
+          <main>{children}</main>
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>
