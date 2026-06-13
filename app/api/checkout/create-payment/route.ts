@@ -13,17 +13,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      items,
-      shippingAddress,
-      email,
-      countryCode,
-      locale,
-      paymentMethod,
-      subtotalEur,
-      shippingEur,
-      totalEur,
-      vatRate,
-      vatAmountEur,
+      items, shippingAddress, email, countryCode, locale,
+      paymentMethod, subtotalEur, shippingEur, totalEur, vatRate, vatAmountEur,
     } = body;
 
     const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -35,7 +26,7 @@ export async function POST(req: NextRequest) {
       .from('orders')
       .insert({
         reference,
-        customer_email:   email,
+        email,                        // column name is "email"
         items,
         shipping_address: shippingAddress,
         country_code:     countryCode,
@@ -45,6 +36,8 @@ export async function POST(req: NextRequest) {
         shipping_eur:     shippingEur,
         total_eur:        totalEur,
         status:           'pending_payment',
+        locale,
+        payment_method:   paymentMethod,
       })
       .select()
       .single();
@@ -52,21 +45,15 @@ export async function POST(req: NextRequest) {
     if (dbErr) throw new Error(`DB: ${dbErr.message}`);
 
     // 2. Create Mollie payment
-    const mollieLocale = locale.replace('-', '_'); // fr-BE → fr_BE
+    const mollieLocale = locale.replace('-', '_');
     const payment = await (mollie as any).payments.create({
-      amount: {
-        currency: 'EUR',
-        value:    totalEur.toFixed(2),
-      },
+      amount: { currency: 'EUR', value: totalEur.toFixed(2) },
       description:  `Commande Univers du Zen — ${reference}`,
       redirectUrl:  `${siteUrl}/${locale}/commande/confirmation?orderId=${order.id}`,
       webhookUrl:   `${siteUrl}/api/checkout/webhook`,
       method:       paymentMethod,
       locale:       mollieLocale,
-      metadata: {
-        orderId:   order.id,
-        reference,
-      },
+      metadata:     { orderId: order.id, reference },
     });
 
     // 3. Save Mollie payment ID
@@ -75,12 +62,10 @@ export async function POST(req: NextRequest) {
       .update({ mollie_payment_id: payment.id })
       .eq('id', order.id);
 
-    // 4. Return checkout URL (Mollie hosted page)
     const checkoutUrl =
       payment._links?.checkout?.href ??
       payment.getCheckoutUrl?.() ??
-      payment.checkoutUrl ??
-      null;
+      payment.checkoutUrl ?? null;
 
     if (!checkoutUrl) throw new Error('Mollie ne retourne pas d\'URL de checkout.');
 
@@ -89,7 +74,7 @@ export async function POST(req: NextRequest) {
     console.error('[create-payment]', err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
