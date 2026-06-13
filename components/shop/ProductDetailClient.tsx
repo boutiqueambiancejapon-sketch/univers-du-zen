@@ -14,6 +14,9 @@ import ProductCard from './ProductCard';
 import BundleBuilder from './BundleBuilder';
 import type { DemoProduct } from '@/lib/demo-products';
 
+/** Minimum pool size to show the BundleBuilder (3 bundles × 3 products). */
+const BUNDLE_MIN_POOL = 9;
+
 const CATEGORY_LABELS: Record<string, string> = {
   'huiles-fragrance':           'Huiles de Fragrance',
   'aromatherapie':              'Aromathérapie',
@@ -500,7 +503,7 @@ export default function ProductDetailClient({ product, related, allProducts = []
       </section>
 
       {/* ===== BUNDLE BUILDER ===== */}
-      {allProducts.length >= BUNDLE_SIZE * 3 && (
+      {allProducts.length >= BUNDLE_MIN_POOL && (
         <section className="mt-16 pt-12 border-t border-zen-sand">
           <div className="flex items-baseline justify-between mb-3">
             <h2 className="font-serif text-3xl lg:text-4xl text-zen-bark">Composez votre coffret</h2>
