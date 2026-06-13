@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mollie } from '@/lib/mollie';
 import { createAdminClient } from '@/lib/supabase/server';
+import { placeOrder } from '@/lib/retina';
 
 // Mollie envoie le payment ID en POST form-data
 export async function POST(req: NextRequest) {
@@ -9,10 +10,9 @@ export async function POST(req: NextRequest) {
     const paymentId = body.get('id') as string | null;
     if (!paymentId) return NextResponse.json({ error: 'No payment ID' }, { status: 400 });
 
-    // Fetch payment status from Mollie
     const payment = await (mollie as any).payments.get(paymentId);
     const orderId = payment.metadata?.orderId as string | undefined;
-    if (!orderId) return NextResponse.json({ ok: true }); // unknown order, ignore
+    if (!orderId) return NextResponse.json({ ok: true });
 
     const STATUS_MAP: Record<string, string> = {
       paid:       'paid',
@@ -25,15 +25,66 @@ export async function POST(req: NextRequest) {
     const newStatus = STATUS_MAP[payment.status] ?? 'pending_payment';
 
     const supabase = createAdminClient();
+
+    // Mise à jour statut
     await supabase
       .from('orders')
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq('id', orderId);
 
+    // Si paiement confirmé → passer commande fournisseur automatiquement
+    if (newStatus === 'paid') {
+      const { data: order } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .single();
+
+      // Éviter double-commande si déjà passée
+      if (order && !order.supplier_order_id) {
+        try {
+          const addr = order.shipping_address ?? {};
+          const retinaOrder = await placeOrder(
+            (order.items ?? []).map((i: any) => ({
+              product_id: i.productId,
+              quantity:   i.quantity,
+            })),
+            {
+              first_name: addr.firstName ?? '',
+              last_name:  addr.lastName  ?? '',
+              email:      order.email    ?? '',
+              phone:      addr.phone,
+              address1:   addr.line1     ?? '',
+              address2:   addr.line2,
+              city:       addr.city      ?? '',
+              zip:        addr.postalCode ?? '',
+              country:    addr.countryCode ?? 'BE',
+            },
+            order.reference,
+          );
+
+          await supabase
+            .from('orders')
+            .update({
+              supplier_order_id: retinaOrder.id,
+              status: 'processing',
+            })
+            .eq('id', orderId);
+
+        } catch (retinaErr) {
+          // Logguer sans bloquer — l'ordre sera repassé manuellement si besoin
+          console.error('[webhook] Retina order failed:', retinaErr);
+          await supabase
+            .from('orders')
+            .update({ status: 'paid_retina_error' })
+            .eq('id', orderId);
+        }
+      }
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[mollie-webhook]', err);
-    // Always return 200 to Mollie to prevent retries on non-critical errors
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }); // toujours 200 pour Mollie
   }
 }
