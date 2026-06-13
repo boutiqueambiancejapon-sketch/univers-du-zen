@@ -53,7 +53,7 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
       {/* Image */}
       <div
         className={`relative aspect-[3/4] overflow-hidden rounded-t-xl ${
-          hasProductImage ? 'bg-[#F5F0EA]' : placeholderBg
+          hasProductImage ? 'bg-white' : placeholderBg
         }`}
       >
         {imgSrc && (
