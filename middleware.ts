@@ -4,21 +4,20 @@ import { routing, type Locale } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-// Mapping pays ISO → locale par défaut
 const COUNTRY_LOCALE_MAP: Record<string, Locale> = {
   BE: 'fr-BE',
   FR: 'fr-FR',
   LU: 'fr-BE',
   NL: 'nl-NL',
-  // Tous les autres → fr-BE par défaut
 };
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Bypass pour les assets et API
+  // Bypass assets, API routes and admin
   if (
     pathname.startsWith('/api') ||
+    pathname.startsWith('/admin') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon')
   ) {
@@ -39,5 +38,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|favicon.ico|images|.*\\..*).*)'],
+  matcher: ['/((?!_next|api|admin|favicon.ico|images|.*\..*).*)'],
 };
