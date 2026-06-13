@@ -1,0 +1,8 @@
+{
+  "github": {
+    "enabled": true,
+    "autoAlias": true,
+    "silent": false
+  },
+  "ignoreCommand": "git diff HEAD~1 --name-only | grep -qE '\\.(tsx?|jsx?|css|json)$' || exit 0"
+}
