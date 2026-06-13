@@ -62,13 +62,77 @@
   .card-product {
     @apply bg-white rounded-lg overflow-hidden cursor-pointer;
   }
+
+  /* Scroll reveal — triggered by scroll position */
+  .sr {
+    animation: revealUp linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 26%;
+  }
+
+  /* Lift on hover — product cards */
+  .lift {
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+  }
+  .lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(55, 44, 32, 0.14);
+  }
 }
 
+/* ── Keyframes ── */
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
 
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(0.65); opacity: 0.4; }
+}
+
+@keyframes shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .countdown-pulse {
   animation: pulse-soft 1s ease-in-out infinite;
+}
+
+.pulse-dot {
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .sr { animation: none; }
+  .lift:hover { transform: none; }
 }
