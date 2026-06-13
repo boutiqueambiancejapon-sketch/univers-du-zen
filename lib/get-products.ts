@@ -1,7 +1,6 @@
 /**
  * Source de vérité produits publiés.
- * Lit products/catalog.json + products/{slug}/data.json depuis le filesystem.
- * Utilisable uniquement côté serveur (Server Components, getStaticProps équivalent).
+ * Utilisable uniquement côté serveur (Server Components).
  */
 
 import fs from 'fs';
@@ -15,7 +14,6 @@ export interface PublishedProduct {
   short_description?: string;
   description?: string;
   meta_description?: string;
-  /** Toujours normalisé en string[] à la lecture. */
   tags?: string[];
   images: string[];
   retail_price_eur?: number;
@@ -27,10 +25,15 @@ export interface PublishedProduct {
   is_vegan?: boolean;
   is_cruelty_free?: boolean;
   pushed_at?: string;
-  // Champs legacy attendus par ProductCard / ProductDetailClient
+  // Champs camelCase attendus par ProductCard / ProductDetailClient
   nameFr?: string;
   descriptionFr?: string;
   shortDescriptionFr?: string;
+  longDescriptionFr?: string;
+  usageFr?: string;
+  benefitsFr?: string[];
+  faqFr?: { question: string; answer: string }[];
+  characteristics?: { label: string; value: string }[];
   retailPriceEur?: number;
   compareAtPriceEur?: number;
   stockStatus?: 'Normal' | 'Low' | 'VeryLow' | 'OutOfStock';
@@ -38,14 +41,14 @@ export interface PublishedProduct {
   isBestSeller?: boolean;
   isVegan?: boolean;
   isCrueltyFree?: boolean;
+  isOrganic?: boolean;
 }
 
 const PRODUCTS_DIR = path.join(process.cwd(), 'products');
 const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
 
-/* ── Helpers ──────────────────────────────────────────────────────────────── */
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
 
-/** Accepte "€3.70", "3.70", 3.70, undefined → number | undefined */
 function parsePrice(raw: unknown): number | undefined {
   if (typeof raw === 'number') return raw > 0 ? raw : undefined;
   if (typeof raw === 'string') {
@@ -55,7 +58,6 @@ function parsePrice(raw: unknown): number | undefined {
   return undefined;
 }
 
-/** Accepte "tag1,tag2", ["tag1","tag2"], undefined → string[] */
 function parseTags(raw: unknown): string[] {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw.map(String).filter(Boolean);
@@ -63,7 +65,6 @@ function parseTags(raw: unknown): string[] {
   return [];
 }
 
-/** Normalise les URLs des images (GitHub raw si chemin relatif). */
 function parseImages(raw: unknown[], slug: string): string[] {
   return (raw ?? []).map((img: unknown) => {
     const s = String(img);
@@ -71,14 +72,12 @@ function parseImages(raw: unknown[], slug: string): string[] {
   });
 }
 
-/** Mappe un objet JSON brut vers PublishedProduct. */
 function mapProduct(raw: Record<string, unknown>, slug: string): PublishedProduct {
   const images = parseImages((raw.images as unknown[]) ?? [], slug);
 
-  // Prix : essaie retail_price_eur (nombre), puis price (string "€x.xx")
   const retailPriceEur =
     parsePrice(raw.retail_price_eur) ??
-    parsePrice(raw.retailPriceEur)  ??
+    parsePrice(raw.retailPriceEur)   ??
     parsePrice(raw.price);
 
   const compareAtPriceEur =
@@ -91,25 +90,53 @@ function mapProduct(raw: Record<string, unknown>, slug: string): PublishedProduc
     (raw.stockStatus  as PublishedProduct['stockStatus']) ??
     'Normal';
 
+  const nameFr = String(raw.name ?? raw.nameFr ?? slug);
+
   return {
-    ...raw as Partial<PublishedProduct>,
+    // Champs primitifs — explicitement typés pour satisfaire TS
+    id:    String(raw.id ?? slug),
     slug,
+    name:  nameFr,
     images,
-    tags:              parseTags(raw.tags),
-    nameFr:            (raw.name ?? raw.nameFr) as string,
-    descriptionFr:     (raw.description ?? raw.descriptionFr) as string | undefined,
-    shortDescriptionFr:(raw.short_description ?? raw.shortDescriptionFr) as string | undefined,
+    tags:  parseTags(raw.tags),
+
+    // Texte produit
+    nameFr,
+    shortDescriptionFr: (raw.short_description ?? raw.shortDescriptionFr ?? undefined) as string | undefined,
+    descriptionFr:      (raw.description ?? raw.descriptionFr ?? undefined) as string | undefined,
+    longDescriptionFr:  (raw.long_description ?? raw.longDescriptionFr ?? undefined) as string | undefined,
+    usageFr:            (raw.usage ?? raw.usageFr ?? undefined) as string | undefined,
+    meta_description:   (raw.meta_description ?? undefined) as string | undefined,
+    original_name:      (raw.original_name ?? undefined) as string | undefined,
+
+    // Tableaux enrichis
+    benefitsFr:     Array.isArray(raw.benefitsFr) ? raw.benefitsFr as string[] : undefined,
+    faqFr:          Array.isArray(raw.faqFr)      ? raw.faqFr      as PublishedProduct['faqFr'] : undefined,
+    characteristics:Array.isArray(raw.characteristics) ? raw.characteristics as PublishedProduct['characteristics'] : undefined,
+
+    // Prix
     retailPriceEur,
     compareAtPriceEur,
-    retail_price_eur:  retailPriceEur,
+    retail_price_eur:     retailPriceEur,
     compare_at_price_eur: compareAtPriceEur,
+
+    // Stock
     stockStatus,
-    stock_status:      stockStatus,
-    stockQty:          (raw.stock_qty ?? raw.stockQty ?? 0) as number,
-    isBestSeller:      Boolean(raw.is_best_seller ?? raw.isBestSeller ?? false),
-    isVegan:           Boolean(raw.is_vegan      ?? raw.isVegan      ?? true),
-    isCrueltyFree:     Boolean(raw.is_cruelty_free ?? raw.isCrueltyFree ?? true),
-    category:          (raw.category ?? 'huiles-fragrance') as string,
+    stock_status: stockStatus,
+    stockQty:     (raw.stock_qty ?? raw.stockQty ?? 0) as number,
+    stock_qty:    (raw.stock_qty ?? raw.stockQty ?? 0) as number,
+
+    // Flags
+    isBestSeller:  Boolean(raw.is_best_seller  ?? raw.isBestSeller  ?? false),
+    isVegan:       Boolean(raw.is_vegan        ?? raw.isVegan        ?? true),
+    isCrueltyFree: Boolean(raw.is_cruelty_free ?? raw.isCrueltyFree ?? true),
+    isOrganic:     Boolean(raw.is_organic      ?? raw.isOrganic      ?? false),
+
+    // Catégorie
+    category: String(raw.category ?? raw.dept ?? 'huiles-fragrance'),
+
+    // Dates
+    pushed_at: (raw.pushed_at ?? undefined) as string | undefined,
   };
 }
 
