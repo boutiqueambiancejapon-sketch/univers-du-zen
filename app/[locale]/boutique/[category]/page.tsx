@@ -1,9 +1,12 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import Link from 'next/link';
 import { getLocale } from 'next-intl/server';
 import ShopGrid from '@/components/shop/ShopGrid';
-import { ALL_PRODUCTS, CATEGORIES } from '@/lib/all-products';
+import { getPublishedProducts } from '@/lib/get-products';
+import { CATEGORIES } from '@/lib/demo-products';
+import { getCollection } from '@/lib/collections';
 import { CATEGORY_SEO } from '@/lib/category-seo';
 
 export async function generateMetadata({
@@ -11,11 +14,13 @@ export async function generateMetadata({
 }: {
   params: { category: string };
 }): Promise<Metadata> {
-  const seo = CATEGORY_SEO[params.category];
-  const cat = CATEGORIES.find(c => c.slug === params.category);
-  if (!cat) return {};
-  const title = `${seo?.title ?? cat.label} | Univers du Zen`;
-  const description = seo?.shortDesc ?? `Découvrez notre sélection ${cat.label.toLowerCase()} — produits éthiques livrés en Belgique.`;
+  const seo        = CATEGORY_SEO[params.category];
+  const collection = getCollection(params.category);
+  const cat        = CATEGORIES.find(c => c.slug === params.category);
+  if (!cat && !collection) return {};
+  const label       = collection?.label ?? cat?.label ?? params.category;
+  const title       = `${seo?.title ?? label} | Univers du Zen`;
+  const description = seo?.shortDesc ?? collection?.description ?? `Découvrez notre sélection ${label.toLowerCase()} — produits éthiques livrés en Belgique.`;
   return {
     title,
     description,
@@ -35,9 +40,10 @@ export default async function CategoryPage({
   const cat = CATEGORIES.find(c => c.slug === params.category);
   if (!cat) notFound();
 
-  const locale = await getLocale();
-  const products = ALL_PRODUCTS.filter(p => p.category === params.category);
-  const seo = CATEGORY_SEO[params.category];
+  const locale     = await getLocale();
+  const collection = getCollection(params.category);
+  const products   = getPublishedProducts().filter(p => p.category === params.category);
+  const seo        = CATEGORY_SEO[params.category];
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -53,23 +59,47 @@ export default async function CategoryPage({
     <>
       <Script id="breadcrumb-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
+      {/* Hero header */}
       <div className="bg-zen-beige border-b border-zen-sand">
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <nav className="text-xs font-sans text-zen-muted mb-4 flex gap-1.5">
-            <a href={`/${locale}`} className="hover:text-zen-bark">Accueil</a>
+          <nav className="text-xs font-sans text-zen-muted mb-4 flex gap-1.5 flex-wrap">
+            <Link href={`/${locale}`} className="hover:text-zen-bark">Accueil</Link>
             <span>/</span>
-            <a href={`/${locale}/boutique`} className="hover:text-zen-bark">Boutique</a>
+            <Link href={`/${locale}/boutique`} className="hover:text-zen-bark">Boutique</Link>
             <span>/</span>
             <span className="text-zen-bark">{cat.label}</span>
           </nav>
           <h1 className="font-serif text-3xl md:text-4xl text-zen-bark mb-3">
             {seo?.title ?? cat.label}
           </h1>
-          {seo?.shortDesc && (
-            <p className="text-zen-muted max-w-2xl text-sm leading-relaxed">{seo.shortDesc}</p>
-          )}
+          <p className="text-zen-muted max-w-2xl text-sm leading-relaxed">
+            {seo?.shortDesc ?? collection?.description ?? ''}
+          </p>
         </div>
       </div>
+
+      {/* Sub-collection pill nav */}
+      {collection && collection.subs.length > 0 && (
+        <div className="border-b border-zen-sand bg-white">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto">
+            <Link
+              href={`/${locale}/boutique/${params.category}`}
+              className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-sans font-medium bg-zen-bark text-white"
+            >
+              Tout voir
+            </Link>
+            {collection.subs.map(sub => (
+              <Link
+                key={sub.slug}
+                href={`/${locale}/boutique/${params.category}/${sub.slug}`}
+                className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-sans text-zen-bark border border-zen-sand hover:border-zen-bark hover:bg-zen-beige transition-colors whitespace-nowrap"
+              >
+                {sub.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <ShopGrid
         products={products as any}
@@ -77,6 +107,7 @@ export default async function CategoryPage({
         activeCategory={params.category}
       />
 
+      {/* Editorial SEO block */}
       {seo && (
         <div className="bg-zen-beige border-t border-zen-sand mt-8">
           <div className="max-w-4xl mx-auto px-4 py-14">
