@@ -15,13 +15,12 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 const COUNTRY_NAMES: Record<string, string> = { BE: 'Belgique', FR: 'France', NL: 'Pays-Bas' };
 
 export default async function AdminPage() {
-  // Surface errors instead of blank page
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-xl p-6">
         <h1 className="text-lg font-semibold text-red-700 mb-2">Variable manquante</h1>
         <p className="text-sm text-red-600">
-          <code className="bg-red-100 px-1.5 py-0.5 rounded">SUPABASE_SERVICE_ROLE_KEY</code> n'est pas définie dans les variables d'environnement Vercel.
+          <code className="bg-red-100 px-1.5 py-0.5 rounded">SUPABASE_SERVICE_ROLE_KEY</code> n&apos;est pas définie dans les variables d&apos;environnement Vercel.
         </p>
         <p className="text-sm text-red-500 mt-2">Vercel → Settings → Environment Variables → ajouter la clé → Redeploy.</p>
       </div>
@@ -53,7 +52,6 @@ export default async function AdminPage() {
     );
   }
 
-  // Revenue
   const revenue = orders
     .filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status))
     .reduce((s, o) => s + (o.total_eur ?? 0), 0);
@@ -69,22 +67,28 @@ export default async function AdminPage() {
     return d.getMonth() === lastMonthDate.getMonth() && d.getFullYear() === lastMonthDate.getFullYear();
   });
 
-  const revenueThisMonth = thisMonth.filter(o => ['paid','processing','shipped','delivered'].includes(o.status)).reduce((s, o) => s + (o.total_eur ?? 0), 0);
-  const revenueLastMonth = lastMonth.filter(o => ['paid','processing','shipped','delivered'].includes(o.status)).reduce((s, o) => s + (o.total_eur ?? 0), 0);
-  const monthGrowth = revenueLastMonth > 0 ? ((revenueThisMonth - revenueLastMonth) / revenueLastMonth * 100).toFixed(0) : '—';
+  const revenueThisMonth = thisMonth
+    .filter(o => ['paid','processing','shipped','delivered'].includes(o.status))
+    .reduce((s, o) => s + (o.total_eur ?? 0), 0);
+  const revenueLastMonth = lastMonth
+    .filter(o => ['paid','processing','shipped','delivered'].includes(o.status))
+    .reduce((s, o) => s + (o.total_eur ?? 0), 0);
+  const monthGrowth = revenueLastMonth > 0
+    ? ((revenueThisMonth - revenueLastMonth) / revenueLastMonth * 100).toFixed(0)
+    : '—';
 
-  const byStatus = orders.reduce((acc, o) => {
+  const byStatus = orders.reduce<Record<string, number>>((acc, o) => {
     acc[o.status] = (acc[o.status] ?? 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
 
   const vatByCountry = orders
     .filter(o => ['paid','processing','shipped','delivered'].includes(o.status))
-    .reduce((acc, o) => {
-      const c = o.country_code ?? 'BE';
+    .reduce<Record<string, number>>((acc, o) => {
+      const c: string = o.country_code ?? 'BE';
       acc[c] = (acc[c] ?? 0) + (o.vat_amount_eur ?? 0);
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
   const pendingPush = orders.filter(o => o.status === 'paid' && !o.supplier_order_id).length;
 
@@ -103,7 +107,11 @@ export default async function AdminPage() {
           <Link href="/admin/commandes"
             className="flex items-center gap-2 text-sm font-medium text-white bg-gray-900 rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
             <Package size={14} /> Pipeline fournisseur
-            {pendingPush > 0 && <span className="ml-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{pendingPush}</span>}
+            {pendingPush > 0 && (
+              <span className="ml-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                {pendingPush}
+              </span>
+            )}
           </Link>
         </div>
       </div>
@@ -111,10 +119,10 @@ export default async function AdminPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'CA total',       value: `${revenue.toFixed(2).replace('.', ',')} €`,          sub: 'commandes validées',                                                                                  icon: TrendingUp, color: 'text-emerald-600' },
-          { label: 'Ce mois-ci',     value: `${revenueThisMonth.toFixed(2).replace('.', ',')} €`, sub: monthGrowth !== '—' ? `${Number(monthGrowth) >= 0 ? '+' : ''}${monthGrowth}% vs mois préc.` : 'premier mois', icon: TrendingUp, color: 'text-blue-600' },
-          { label: 'Commandes',      value: orders.length.toString(),                              sub: `${byStatus['paid'] ?? 0} payées, ${byStatus['pending'] ?? 0} en attente`,                             icon: Package,    color: 'text-violet-600' },
-          { label: 'À transmettre',  value: pendingPush.toString(),                                sub: 'commandes payées non envoyées',                                                                         icon: AlertCircle, color: pendingPush > 0 ? 'text-red-500' : 'text-gray-400' },
+          { label: 'CA total',      value: `${revenue.toFixed(2).replace('.', ',')} €`,          sub: 'commandes validées',                                                                                           icon: TrendingUp,  color: 'text-emerald-600' },
+          { label: 'Ce mois-ci',    value: `${revenueThisMonth.toFixed(2).replace('.', ',')} €`, sub: monthGrowth !== '—' ? `${Number(monthGrowth) >= 0 ? '+' : ''}${monthGrowth}% vs mois préc.` : 'premier mois', icon: TrendingUp,  color: 'text-blue-600' },
+          { label: 'Commandes',     value: orders.length.toString(),                              sub: `${byStatus['paid'] ?? 0} payées, ${byStatus['pending'] ?? 0} en attente`,                                    icon: Package,     color: 'text-violet-600' },
+          { label: 'À transmettre', value: pendingPush.toString(),                                sub: 'commandes payées non envoyées',                                                                                icon: AlertCircle, color: pendingPush > 0 ? 'text-red-500' : 'text-gray-400' },
         ].map(({ label, value, sub, icon: Icon, color }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-3">
@@ -148,13 +156,17 @@ export default async function AdminPage() {
             <Link href="/admin/tva" className="text-xs text-blue-600 hover:underline">Détail →</Link>
           </div>
           <div className="space-y-3">
-            {Object.entries(vatByCountry).sort((a, b) => b[1] - a[1]).map(([country, vat]) => (
-              <div key={country} className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">{COUNTRY_NAMES[country] ?? country}</span>
-                <span className="text-sm font-semibold text-gray-900">{vat.toFixed(2).replace('.', ',')} €</span>
-              </div>
-            ))}
-            {Object.keys(vatByCountry).length === 0 && <p className="text-sm text-gray-400">Aucune commande validée</p>}
+            {Object.entries(vatByCountry)
+              .sort((a, b) => b[1] - a[1])
+              .map(([country, vat]) => (
+                <div key={country} className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">{COUNTRY_NAMES[country] ?? country}</span>
+                  <span className="text-sm font-semibold text-gray-900">{vat.toFixed(2).replace('.', ',')} €</span>
+                </div>
+              ))}
+            {Object.keys(vatByCountry).length === 0 && (
+              <p className="text-sm text-gray-400">Aucune commande validée</p>
+            )}
             <div className="flex items-center justify-between pt-2 border-t border-gray-100">
               <span className="text-sm font-semibold text-gray-700">Total</span>
               <span className="text-sm font-bold text-gray-900">
@@ -168,7 +180,7 @@ export default async function AdminPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h2 className="text-sm font-semibold text-gray-700 mb-4">Activité récente</h2>
           {orders.length === 0 ? (
-            <p className="text-sm text-gray-400">Aucune commande pour l'instant.</p>
+            <p className="text-sm text-gray-400">Aucune commande pour l&apos;instant.</p>
           ) : (
             <div className="space-y-3">
               {orders.slice(0, 5).map(o => {
@@ -180,8 +192,12 @@ export default async function AdminPage() {
                       <p className="text-xs font-semibold text-gray-700 truncate">{o.email}</p>
                       <p className="text-[10px] text-gray-400">{date} · #{o.id.slice(0, 6).toUpperCase()}</p>
                     </div>
-                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${cfg.color}`}>{cfg.label}</span>
-                    <span className="text-xs font-semibold text-gray-700 flex-shrink-0">{Number(o.total_eur ?? 0).toFixed(0)} €</span>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${cfg.color}`}>
+                      {cfg.label}
+                    </span>
+                    <span className="text-xs font-semibold text-gray-700 flex-shrink-0">
+                      {Number(o.total_eur ?? 0).toFixed(0)} €
+                    </span>
                   </div>
                 );
               })}
