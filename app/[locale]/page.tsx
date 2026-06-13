@@ -4,9 +4,10 @@ import CategoriesGrid from '@/components/home/CategoriesGrid';
 import BestSellers from '@/components/home/BestSellers';
 import EthicsSection from '@/components/home/EthicsSection';
 import FeaturedSection from '@/components/home/FeaturedSection';
+import StatsBar from '@/components/home/StatsBar';
+import ReviewsSection from '@/components/home/ReviewsSection';
 import { DEMO_PRODUCTS } from '@/lib/demo-products';
 
-// Produits pour les sections featured
 const BOUGIES_SELECTION = DEMO_PRODUCTS.filter(p =>
   ['bougies', 'encens'].includes(p.category ?? '')
 );
@@ -22,7 +23,6 @@ export default function HomePage() {
       <EthicsBar />
       <CategoriesGrid />
 
-      {/* Featured #1 — Bougies & Encens */}
       <FeaturedSection
         sectionLabel="La collection à l&apos;honneur"
         title="Ambiancer la maison"
@@ -34,9 +34,10 @@ export default function HomePage() {
         discount={15}
       />
 
+      <StatsBar />
+
       <BestSellers />
 
-      {/* Featured #2 — Aromathérapie */}
       <FeaturedSection
         sectionLabel="Les incontournables"
         title="Aromathérapie Essentielle"
@@ -46,6 +47,8 @@ export default function HomePage() {
         cardBg="#3B2A1F"
         pieceCount={12}
       />
+
+      <ReviewsSection />
 
       <EthicsSection />
     </>
