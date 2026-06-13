@@ -14,7 +14,7 @@ const COUNTRY_LOCALE_MAP: Record<string, Locale> = {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Bypass assets, API routes and admin
+  // Bypass assets, API routes and admin (direct access)
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/admin') ||
@@ -22,6 +22,13 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/favicon')
   ) {
     return NextResponse.next();
+  }
+
+  // Redirect /{locale}/admin → /admin
+  if (/^\/[a-z]{2}(-[A-Z]{2})?\/admin/.test(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?\/admin/, '/admin');
+    return NextResponse.redirect(url);
   }
 
   // Géolocalisation Vercel — redirection à la racine uniquement
@@ -38,5 +45,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|admin|favicon.ico|images|.*\..*).*)'],
+  matcher: ['/((?!_next|api|admin|favicon.ico|images|.*\\..*).*)'],
 };
