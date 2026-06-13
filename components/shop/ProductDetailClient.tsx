@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl';
 import {
   ShoppingBag, Heart, Star, Leaf, Shield, Truck,
   RotateCcw, Check, ChevronDown, ChevronUp, Eye,
-  Plus, Minus, ChevronRight,
+  Plus, Minus, ChevronRight, Package,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
 import ProductCard from './ProductCard';
@@ -22,6 +22,12 @@ const CATEGORY_LABELS: Record<string, string> = {
   'maison-deco': 'Maison & Déco',
   'thes-artisanaux': 'Thés Artisanaux',
 };
+
+const VOLUME_TIERS = [
+  { qty: 2, discount: 0.10, label: '2 exemplaires', badge: '-10%', color: 'bg-zen-terracotta/10 text-zen-terracotta' },
+  { qty: 3, discount: 0.15, label: '3 exemplaires', badge: '-15%', color: 'bg-zen-terracotta/20 text-zen-terracotta' },
+  { qty: 5, discount: 0.20, label: '5 exemplaires', badge: '-20%', color: 'bg-zen-terracotta text-white' },
+];
 
 const DEMO_REVIEWS = [
   {
@@ -44,18 +50,15 @@ function getDeliveryDate(): string {
   const now = new Date();
   const cutoff = new Date(now);
   cutoff.setHours(14, 0, 0, 0);
-
   const start = new Date(now);
   if (now >= cutoff) start.setDate(start.getDate() + 1);
   while (start.getDay() === 0 || start.getDay() === 6) start.setDate(start.getDate() + 1);
-
   const delivery = new Date(start);
   let added = 0;
   while (added < 3) {
     delivery.setDate(delivery.getDate() + 1);
     if (delivery.getDay() !== 0 && delivery.getDay() !== 6) added++;
   }
-
   return delivery.toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
@@ -70,6 +73,7 @@ export default function ProductDetailClient({ product, related }: Props) {
   const locale = useLocale();
   const addItem = useCartStore(s => s.addItem);
   const [qty, setQty] = useState(1);
+  const [volumeTierIdx, setVolumeTierIdx] = useState<number | null>(null);
   const [added, setAdded] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>('description');
@@ -79,15 +83,19 @@ export default function ProductDetailClient({ product, related }: Props) {
   const ctaRef = useRef<HTMLButtonElement>(null);
 
   const images = product.images?.length ? product.images : ['/images/udz-hero-homepage.jpeg'];
+  const basePrice = product.retailPriceEur ?? 0;
   const discount = product.compareAtPriceEur
-    ? Math.round((1 - product.retailPriceEur! / product.compareAtPriceEur) * 100)
+    ? Math.round((1 - basePrice / product.compareAtPriceEur) * 100)
     : null;
   const isOutOfStock = product.stockStatus === 'OutOfStock';
   const isLow = product.stockStatus === 'Low' || product.stockStatus === 'VeryLow';
 
-  useEffect(() => {
-    setDeliveryDate(getDeliveryDate());
-  }, []);
+  const activeTier = volumeTierIdx !== null ? VOLUME_TIERS[volumeTierIdx] : null;
+  const effectiveQty = activeTier ? activeTier.qty : qty;
+  const effectiveUnitPrice = activeTier ? basePrice * (1 - activeTier.discount) : basePrice;
+  const effectiveTotal = effectiveUnitPrice * effectiveQty;
+
+  useEffect(() => { setDeliveryDate(getDeliveryDate()); }, []);
 
   useEffect(() => {
     const el = ctaRef.current;
@@ -101,7 +109,14 @@ export default function ProductDetailClient({ product, related }: Props) {
   }, []);
 
   function handleAddToCart() {
-    for (let i = 0; i < qty; i++) addItem(product as any);
+    const productToAdd = activeTier
+      ? {
+          ...product,
+          retailPriceEur: Math.round(effectiveUnitPrice * 100) / 100,
+          nameFr: `${product.nameFr} — Lot ×${activeTier.qty} (${activeTier.badge})`,
+        }
+      : product;
+    addItem(productToAdd as any, effectiveQty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
@@ -136,20 +151,10 @@ export default function ProductDetailClient({ product, related }: Props) {
         {/* ===== GALLERY ===== */}
         <div className="space-y-3 md:sticky md:top-24 self-start">
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-zen-sand">
-            <Image
-              src={images[activeImg]}
-              alt={product.nameFr ?? ''}
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src={images[activeImg]} alt={product.nameFr ?? ''} fill className="object-cover" priority />
             <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-              {product.isBestSeller && (
-                <span className="badge-bestseller text-[11px]">Best-seller</span>
-              )}
-              {discount && (
-                <span className="badge-discount text-[11px]">-{discount}%</span>
-              )}
+              {product.isBestSeller && <span className="badge-bestseller text-[11px]">Best-seller</span>}
+              {discount && <span className="badge-discount text-[11px]">-{discount}%</span>}
             </div>
             <span className="absolute bottom-3 right-3 bg-black/40 text-white text-[10px] font-sans px-2 py-1 rounded-full">
               {activeImg + 1}/{images.length}
@@ -158,13 +163,8 @@ export default function ProductDetailClient({ product, related }: Props) {
           {images.length > 1 && (
             <div className="grid grid-cols-5 gap-2">
               {images.map((src, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImg(i)}
-                  className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
-                    activeImg === i ? 'border-zen-bark' : 'border-transparent hover:border-zen-sand'
-                  }`}
-                >
+                <button key={i} onClick={() => setActiveImg(i)}
+                  className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors ${activeImg === i ? 'border-zen-bark' : 'border-transparent hover:border-zen-sand'}`}>
                   <Image src={src} alt="" fill className="object-cover" />
                 </button>
               ))}
@@ -180,32 +180,20 @@ export default function ProductDetailClient({ product, related }: Props) {
             </p>
           )}
 
-          <h1 className="font-serif text-3xl md:text-4xl text-zen-bark leading-tight mb-3">
-            {product.nameFr}
-          </h1>
+          <h1 className="font-serif text-3xl md:text-4xl text-zen-bark leading-tight mb-3">{product.nameFr}</h1>
 
-          <button
-            className="flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity"
-            onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
-          >
+          <button className="flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity"
+            onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}>
             <div className="flex">
-              {[1, 2, 3, 4, 5].map(i => (
-                <Star key={i} size={14} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />
-              ))}
+              {[1,2,3,4,5].map(i => <Star key={i} size={14} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}
             </div>
             <span className="text-sm text-zen-muted underline underline-offset-2">4,8 sur 5 (124 avis)</span>
           </button>
 
           <div className="flex items-baseline gap-3 mb-4">
-            <span className="font-serif text-4xl text-zen-bark">{product.retailPriceEur} €</span>
-            {product.compareAtPriceEur && (
-              <span className="text-xl text-zen-muted line-through">{product.compareAtPriceEur} €</span>
-            )}
-            {discount && (
-              <span className="text-sm font-sans font-semibold text-zen-terracotta bg-zen-terracotta/10 px-2 py-0.5 rounded">
-                Économisez {discount}%
-              </span>
-            )}
+            <span className="font-serif text-4xl text-zen-bark">{basePrice} €</span>
+            {product.compareAtPriceEur && <span className="text-xl text-zen-muted line-through">{product.compareAtPriceEur} €</span>}
+            {discount && <span className="text-sm font-sans font-semibold text-zen-terracotta bg-zen-terracotta/10 px-2 py-0.5 rounded">Économisez {discount}%</span>}
           </div>
 
           {product.shortDescriptionFr && (
@@ -216,8 +204,7 @@ export default function ProductDetailClient({ product, related }: Props) {
             <ul className="space-y-2 mb-5">
               {product.benefitsFr.map((b, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-zen-bark">
-                  <Check size={15} className="text-zen-sage flex-shrink-0 mt-0.5" />
-                  {b}
+                  <Check size={15} className="text-zen-sage flex-shrink-0 mt-0.5" />{b}
                 </li>
               ))}
             </ul>
@@ -241,25 +228,70 @@ export default function ProductDetailClient({ product, related }: Props) {
             )}
           </div>
 
+          {/* ===== VOLUME PRICING ===== */}
+          {!isOutOfStock && (
+            <div className="border border-zen-sand rounded-2xl overflow-hidden mb-5">
+              <div className="flex items-center gap-2.5 px-5 py-3.5 bg-zen-beige border-b border-zen-sand">
+                <Package size={16} className="text-zen-bark flex-shrink-0" />
+                <p className="text-sm font-sans font-semibold text-zen-bark">Achetez en lot, économisez</p>
+              </div>
+              <div className="divide-y divide-zen-sand">
+                {VOLUME_TIERS.map((tier, i) => {
+                  const unitPrice = basePrice * (1 - tier.discount);
+                  const totalPrice = unitPrice * tier.qty;
+                  const isSelected = volumeTierIdx === i;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setVolumeTierIdx(isSelected ? null : i)}
+                      className={`w-full text-left px-5 py-4 flex items-center gap-4 transition-colors ${
+                        isSelected ? 'bg-zen-bark/5' : 'hover:bg-zen-beige/60'
+                      }`}
+                    >
+                      {/* Radio */}
+                      <div className={`w-4.5 h-4.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+                        isSelected ? 'border-zen-bark' : 'border-gray-300'
+                      }`}>
+                        {isSelected && <div className="w-2 h-2 rounded-full bg-zen-bark" />}
+                      </div>
+
+                      {/* Labels */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-sm font-sans font-semibold text-zen-bark">{tier.label}</span>
+                          <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${tier.color}`}>{tier.badge}</span>
+                        </div>
+                        <p className="text-xs text-zen-muted font-sans">
+                          {unitPrice.toFixed(2).replace('.', ',')} € / unité
+                        </p>
+                      </div>
+
+                      {/* Total */}
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-serif font-bold text-zen-bark text-base">{totalPrice.toFixed(2).replace('.', ',')} €</p>
+                        <p className="text-[10px] text-zen-muted font-sans">
+                          économie {(basePrice * tier.discount * tier.qty).toFixed(2).replace('.', ',')} €
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Delivery estimate */}
           {!isOutOfStock && deliveryDate && (
             <div className="border border-zen-sand rounded-xl p-4 mb-5 flex items-center gap-4 bg-white hover:border-zen-bark/30 transition-colors cursor-default">
               <div className="w-10 h-10 rounded-lg bg-zen-beige flex items-center justify-center flex-shrink-0">
                 <Truck size={20} className="text-zen-bark" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-sans font-semibold text-zen-bark">
-                  Livré chez vous dès le {deliveryDate}
-                </p>
-                <p className={`text-sm font-sans flex items-center gap-1.5 mt-0.5 ${
-                  isLow ? 'text-amber-600' : 'text-green-600'
-                }`}>
-                  <span className={`w-2 h-2 rounded-full inline-block flex-shrink-0 ${
-                    isLow ? 'bg-amber-500' : 'bg-green-500'
-                  }`} />
-                  {isLow
-                    ? `Stock limité — plus que ${product.stockQty} en stock`
-                    : 'En stock — expédié sous 24h'
-                  }
+                <p className="text-sm font-sans font-semibold text-zen-bark">Livré chez vous dès le {deliveryDate}</p>
+                <p className={`text-sm font-sans flex items-center gap-1.5 mt-0.5 ${isLow ? 'text-amber-600' : 'text-green-600'}`}>
+                  <span className={`w-2 h-2 rounded-full inline-block flex-shrink-0 ${isLow ? 'bg-amber-500' : 'bg-green-500'}`} />
+                  {isLow ? `Stock limité — plus que ${product.stockQty} en stock` : 'En stock — expédié sous 24h'}
                 </p>
               </div>
               <ChevronRight size={16} className="text-zen-muted flex-shrink-0" />
@@ -283,42 +315,40 @@ export default function ProductDetailClient({ product, related }: Props) {
             42 personnes regardent ce produit en ce moment
           </p>
 
+          {/* Qty + CTA */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center border border-zen-sand rounded-xl overflow-hidden flex-shrink-0">
-              <button
-                onClick={() => setQty(q => Math.max(1, q - 1))}
-                className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors"
-                aria-label="Diminuer"
-              >
-                <Minus size={14} />
-              </button>
-              <span className="w-10 text-center font-sans text-zen-bark font-semibold text-sm">{qty}</span>
-              <button
-                onClick={() => setQty(q => Math.min(99, q + 1))}
-                className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors"
-                aria-label="Augmenter"
-              >
-                <Plus size={14} />
-              </button>
-            </div>
+            {/* Qty selector — hidden when a volume tier is active */}
+            {!activeTier ? (
+              <div className="flex items-center border border-zen-sand rounded-xl overflow-hidden flex-shrink-0">
+                <button onClick={() => setQty(q => Math.max(1, q - 1))}
+                  className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors" aria-label="Diminuer">
+                  <Minus size={14} />
+                </button>
+                <span className="w-10 text-center font-sans text-zen-bark font-semibold text-sm">{qty}</span>
+                <button onClick={() => setQty(q => Math.min(99, q + 1))}
+                  className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors" aria-label="Augmenter">
+                  <Plus size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center w-[88px] h-12 rounded-xl bg-zen-bark text-white font-sans font-semibold text-sm flex-shrink-0">
+                ×{activeTier.qty}
+              </div>
+            )}
 
             <button
               ref={ctaRef}
               onClick={handleAddToCart}
               disabled={isOutOfStock}
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-sans font-semibold text-sm transition-all ${
-                added
-                  ? 'bg-green-600 text-white'
-                  : isOutOfStock
-                  ? 'bg-zen-sand text-zen-muted cursor-not-allowed'
-                  : 'bg-zen-bark text-white hover:bg-zen-terracotta active:scale-[0.98]'
+                added ? 'bg-green-600 text-white'
+                : isOutOfStock ? 'bg-zen-sand text-zen-muted cursor-not-allowed'
+                : 'bg-zen-bark text-white hover:bg-zen-terracotta active:scale-[0.98]'
               }`}
             >
               {added ? (
                 <><Check size={16} /> Ajouté au panier ! 🎉</>
-              ) : isOutOfStock ? (
-                'Rupture de stock'
-              ) : (
+              ) : isOutOfStock ? 'Rupture de stock' : (
                 <><ShoppingBag size={16} /> Ajouter au panier</>
               )}
             </button>
@@ -332,11 +362,19 @@ export default function ProductDetailClient({ product, related }: Props) {
           </div>
 
           <p className="text-xs text-zen-muted text-center mb-6">
-            Total : <strong className="text-zen-bark">
-              {((product.retailPriceEur ?? 0) * qty).toFixed(2).replace('.', ',')} €
-            </strong> TVA incluse
+            Total :{' '}
+            <strong className="text-zen-bark">
+              {effectiveTotal.toFixed(2).replace('.', ',')} €
+            </strong>{' '}
+            TVA incluse
+            {activeTier && (
+              <span className="ml-2 text-zen-terracotta font-semibold">
+                (économie {(basePrice * activeTier.discount * activeTier.qty).toFixed(2).replace('.', ',')} €)
+              </span>
+            )}
           </p>
 
+          {/* Trust strip */}
           <div className="border-t border-zen-sand pt-5 grid grid-cols-3 gap-3">
             {[
               { icon: Truck, label: 'Livraison offerte', sub: 'dès 59 €' },
@@ -357,29 +395,20 @@ export default function ProductDetailClient({ product, related }: Props) {
       <div className="mt-16">
         <div className="flex gap-0 border-b border-zen-sand overflow-x-auto">
           {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setActiveTab(t.key)}
+            <button key={t.key} onClick={() => setActiveTab(t.key)}
               className={`flex-shrink-0 px-5 py-3 text-sm font-sans font-medium border-b-2 transition-colors ${
-                activeTab === t.key
-                  ? 'border-zen-bark text-zen-bark'
-                  : 'border-transparent text-zen-muted hover:text-zen-bark'
-              }`}
-            >
+                activeTab === t.key ? 'border-zen-bark text-zen-bark' : 'border-transparent text-zen-muted hover:text-zen-bark'
+              }`}>
               {t.label}
             </button>
           ))}
         </div>
-
         <div className="py-8 max-w-3xl">
           {activeTab === 'description' && (
             <div className="space-y-4 text-zen-muted leading-relaxed text-sm">
-              {(product.longDescriptionFr ?? product.descriptionFr ?? '').split('\n\n').map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
+              {(product.longDescriptionFr ?? product.descriptionFr ?? '').split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
             </div>
           )}
-
           {activeTab === 'caracteristiques' && (
             <table className="w-full text-sm">
               <tbody className="divide-y divide-zen-sand">
@@ -392,28 +421,18 @@ export default function ProductDetailClient({ product, related }: Props) {
               </tbody>
             </table>
           )}
-
-          {activeTab === 'usage' && (
-            <p className="text-sm text-zen-muted leading-relaxed">{product.usageFr}</p>
-          )}
-
+          {activeTab === 'usage' && <p className="text-sm text-zen-muted leading-relaxed">{product.usageFr}</p>}
           {activeTab === 'faq' && (
             <div className="space-y-2">
               {product.faqFr?.map((item, i) => (
                 <div key={i} className="border border-zen-sand rounded-xl overflow-hidden">
-                  <button
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full flex items-center justify-between p-4 text-left text-sm font-sans font-medium text-zen-bark hover:bg-zen-beige transition-colors"
-                  >
+                  <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="w-full flex items-center justify-between p-4 text-left text-sm font-sans font-medium text-zen-bark hover:bg-zen-beige transition-colors">
                     {item.question}
-                    {openFaq === i
-                      ? <ChevronUp size={16} className="flex-shrink-0 text-zen-muted" />
-                      : <ChevronDown size={16} className="flex-shrink-0 text-zen-muted" />}
+                    {openFaq === i ? <ChevronUp size={16} className="flex-shrink-0 text-zen-muted" /> : <ChevronDown size={16} className="flex-shrink-0 text-zen-muted" />}
                   </button>
                   {openFaq === i && (
-                    <div className="px-4 pb-4 text-sm text-zen-muted leading-relaxed border-t border-zen-sand pt-3">
-                      {item.answer}
-                    </div>
+                    <div className="px-4 pb-4 text-sm text-zen-muted leading-relaxed border-t border-zen-sand pt-3">{item.answer}</div>
                   )}
                 </div>
               ))}
@@ -429,31 +448,24 @@ export default function ProductDetailClient({ product, related }: Props) {
             <h2 className="font-serif text-2xl text-zen-bark mb-1">Avis clients</h2>
             <div className="flex items-center gap-2">
               <div className="flex">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} size={16} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />
-                ))}
+                {[1,2,3,4,5].map(i => <Star key={i} size={16} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}
               </div>
               <span className="font-serif text-2xl text-zen-bark">4,8</span>
               <span className="text-sm text-zen-muted">124 avis vérifiés</span>
             </div>
           </div>
         </div>
-
         <div className="grid md:grid-cols-2 gap-4 mb-6">
           {DEMO_REVIEWS.map((r, i) => (
             <div key={i} className="bg-zen-beige rounded-xl p-5">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-full bg-zen-bark text-white flex items-center justify-center text-xs font-sans font-semibold">
-                  {r.initials}
-                </div>
+                <div className="w-9 h-9 rounded-full bg-zen-bark text-white flex items-center justify-center text-xs font-sans font-semibold">{r.initials}</div>
                 <div>
                   <p className="text-sm font-sans font-semibold text-zen-bark">{r.name}</p>
                   <p className="text-[11px] text-zen-muted">{r.date}</p>
                 </div>
                 <div className="ml-auto flex">
-                  {[1,2,3,4,5].map(s => (
-                    <Star key={s} size={11} className={s <= r.rating ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />
-                  ))}
+                  {[1,2,3,4,5].map(s => <Star key={s} size={11} className={s <= r.rating ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}
                 </div>
               </div>
               <p className="text-sm text-zen-muted leading-relaxed">{r.text}</p>
@@ -469,8 +481,7 @@ export default function ProductDetailClient({ product, related }: Props) {
           <span className="text-sm font-sans text-zen-terracotta font-medium">-15% par coffret</span>
         </div>
         <p className="text-sm font-sans text-zen-muted mb-10 max-w-xl">
-          Associez ce produit à d'autres favoris. Décochez ce que vous ne voulez pas,
-          cliquez sur ↻ pour de nouvelles suggestions.
+          Associez ce produit à d'autres favoris. Décochez ce que vous ne voulez pas, cliquez sur ↻ pour de nouvelles suggestions.
         </p>
         <BundleBuilder />
       </section>
@@ -480,29 +491,20 @@ export default function ProductDetailClient({ product, related }: Props) {
         <section className="mt-16 pt-12 border-t border-zen-sand">
           <h2 className="font-serif text-3xl text-zen-bark mb-8">Vous aimerez aussi</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
-            {related.map(p => (
-              <ProductCard key={p.id} product={p as any} />
-            ))}
+            {related.map(p => <ProductCard key={p.id} product={p as any} />)}
           </div>
         </section>
       )}
 
       {/* ===== STICKY MOBILE CTA ===== */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-50 md:hidden transition-transform duration-300 ${
-          showStickyBar ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
+      <div className={`fixed bottom-0 left-0 right-0 z-50 md:hidden transition-transform duration-300 ${showStickyBar ? 'translate-y-0' : 'translate-y-full'}`}>
         <div className="bg-white border-t border-zen-sand px-4 py-3 flex items-center gap-3 shadow-xl">
           <div className="flex-1">
             <p className="text-xs text-zen-muted font-sans line-clamp-1">{product.nameFr}</p>
-            <p className="font-serif text-zen-bark font-semibold">{product.retailPriceEur} €</p>
+            <p className="font-serif text-zen-bark font-semibold">{effectiveUnitPrice.toFixed(2).replace('.', ',')} €</p>
           </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={isOutOfStock}
-            className="flex items-center gap-2 bg-zen-bark text-white text-sm font-sans font-semibold px-5 py-3 rounded-xl hover:bg-zen-terracotta transition-colors disabled:opacity-50"
-          >
+          <button onClick={handleAddToCart} disabled={isOutOfStock}
+            className="flex items-center gap-2 bg-zen-bark text-white text-sm font-sans font-semibold px-5 py-3 rounded-xl hover:bg-zen-terracotta transition-colors disabled:opacity-50">
             {added ? <Check size={15} /> : <ShoppingBag size={15} />}
             {added ? 'Ajouté !' : 'Ajouter'}
           </button>
