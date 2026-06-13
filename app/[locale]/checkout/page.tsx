@@ -20,10 +20,10 @@ const COUNTRIES = [
 ];
 
 const METHOD_LABELS: Record<string, { label: string; icon: string }> = {
-  bancontact: { label: 'Bancontact', icon: '🇧🇪' },
-  creditcard:  { label: 'Carte bancaire', icon: '💳' },
-  paypal:      { label: 'PayPal', icon: '🅿️' },
-  ideal:       { label: 'iDEAL', icon: '🇳🇱' },
+  bancontact: { label: 'Bancontact',    icon: '🇧🇪' },
+  creditcard: { label: 'Carte bancaire', icon: '💳' },
+  paypal:     { label: 'PayPal',        icon: '🅿️' },
+  ideal:      { label: 'iDEAL',         icon: '🇳🇱' },
 };
 
 function localeToCountry(locale: string): string {
@@ -34,8 +34,8 @@ function localeToCountry(locale: string): string {
 }
 
 export default function CheckoutPage() {
-  const locale   = useLocale();
-  const router   = useRouter();
+  const locale = useLocale();
+  const router = useRouter();
   const { items, total, clearCart } = useCartStore();
 
   const [loading, setLoading] = useState(false);
@@ -48,18 +48,16 @@ export default function CheckoutPage() {
     countryCode: localeToCountry(locale),
   });
 
-  const methods   = PAYMENT_METHODS_BY_LOCALE[locale] ?? ['creditcard'];
-  const subtotal  = total();
-  const shipping  = computeShipping(form.countryCode, subtotal);
+  const methods    = PAYMENT_METHODS_BY_LOCALE[locale] ?? ['creditcard'];
+  const subtotal   = total();
+  const shipping   = computeShipping(form.countryCode, subtotal);
   const orderTotal = subtotal + shipping;
-  const vat       = computeVat(orderTotal, form.countryCode);
+  const vat        = computeVat(orderTotal, form.countryCode);
 
-  // Auto-select first payment method
   useEffect(() => {
     if (!method && methods.length > 0) setMethod(methods[0]);
   }, [locale]); // eslint-disable-line
 
-  // Redirect if cart is empty
   useEffect(() => {
     if (items.length === 0) router.replace(`/${locale}/boutique`);
   }, [items.length]); // eslint-disable-line
@@ -83,7 +81,7 @@ export default function CheckoutPage() {
             nameFr:       i.product.nameFr,
             quantity:     i.quantity,
             unitPriceEur: i.product.retailPriceEur,
-            totalEur:     i.product.retailPriceEur * i.quantity,
+            totalEur:     (i.product.retailPriceEur ?? 0) * i.quantity,
           })),
           shippingAddress: {
             firstName:   form.firstName,
@@ -95,8 +93,8 @@ export default function CheckoutPage() {
             countryCode: form.countryCode,
             phone:       form.phone || undefined,
           },
-          email:        form.email,
-          countryCode:  form.countryCode,
+          email:         form.email,
+          countryCode:   form.countryCode,
           locale,
           paymentMethod: method,
           subtotalEur:   subtotal,
@@ -116,35 +114,37 @@ export default function CheckoutPage() {
     }
   };
 
-  const inputClass = 'w-full border border-zen-sand rounded-lg px-3 py-2.5 text-sm font-sans text-zen-bark placeholder-zen-sand focus:outline-none focus:border-zen-bark bg-white transition-colors';
-  const labelClass = 'block text-xs font-sans text-zen-muted mb-1';
+  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-sans text-zen-bark placeholder-gray-300 focus:outline-none focus:border-zen-bark bg-white transition-colors';
+  const labelClass = 'block text-xs font-sans font-medium text-zen-muted mb-1.5 uppercase tracking-wide';
 
   return (
-    <div className="min-h-screen bg-zen-cream">
-      <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="min-h-screen bg-[#FAF8F5]">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12">
 
-        {/* Breadcrumb */}
-        <Link href={`/${locale}/panier`} className="flex items-center gap-1.5 text-sm text-zen-muted hover:text-zen-bark font-sans mb-6 transition-colors">
+        <Link
+          href={`/${locale}/panier`}
+          className="flex items-center gap-2 text-sm text-zen-muted hover:text-zen-bark font-sans mb-8 transition-colors"
+        >
           <ArrowLeft size={14} /> Retour au panier
         </Link>
 
-        <h1 className="font-serif text-3xl text-zen-bark mb-8">Finaliser la commande</h1>
+        <h1 className="font-serif text-4xl text-zen-bark mb-10">Finaliser la commande</h1>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14">
 
             {/* Left: form */}
             <div className="lg:col-span-2 space-y-6">
 
               {/* Contact */}
-              <div className="bg-white rounded-xl p-6 border border-zen-sand">
-                <h2 className="font-serif text-zen-bark mb-4">Informations de contact</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2">
+              <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                <h2 className="font-serif text-xl text-zen-bark mb-6">Informations de contact</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="sm:col-span-2">
                     <label className={labelClass}>Email *</label>
                     <input type="email" required value={form.email} onChange={set('email')} className={inputClass} placeholder="votre@email.com" />
                   </div>
-                  <div className="col-span-2 sm:col-span-1">
+                  <div>
                     <label className={labelClass}>Téléphone</label>
                     <input type="tel" value={form.phone} onChange={set('phone')} className={inputClass} placeholder="+32 4xx xx xx xx" />
                   </div>
@@ -152,9 +152,9 @@ export default function CheckoutPage() {
               </div>
 
               {/* Address */}
-              <div className="bg-white rounded-xl p-6 border border-zen-sand">
-                <h2 className="font-serif text-zen-bark mb-4">Adresse de livraison</h2>
-                <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                <h2 className="font-serif text-xl text-zen-bark mb-6">Adresse de livraison</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className={labelClass}>Prénom *</label>
                     <input required value={form.firstName} onChange={set('firstName')} className={inputClass} />
@@ -163,13 +163,13 @@ export default function CheckoutPage() {
                     <label className={labelClass}>Nom *</label>
                     <input required value={form.lastName} onChange={set('lastName')} className={inputClass} />
                   </div>
-                  <div className="col-span-2">
+                  <div className="sm:col-span-2">
                     <label className={labelClass}>Adresse *</label>
                     <input required value={form.line1} onChange={set('line1')} className={inputClass} placeholder="Rue et numéro" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="sm:col-span-2">
                     <label className={labelClass}>Complément</label>
-                    <input value={form.line2} onChange={set('line2')} className={inputClass} placeholder="Appartement, boîte..." />
+                    <input value={form.line2} onChange={set('line2')} className={inputClass} placeholder="Appartement, boîte…" />
                   </div>
                   <div>
                     <label className={labelClass}>Code postal *</label>
@@ -179,38 +179,34 @@ export default function CheckoutPage() {
                     <label className={labelClass}>Ville *</label>
                     <input required value={form.city} onChange={set('city')} className={inputClass} />
                   </div>
-                  <div className="col-span-2">
+                  <div className="sm:col-span-2">
                     <label className={labelClass}>Pays *</label>
                     <div className="relative">
-                      <select
-                        value={form.countryCode}
-                        onChange={set('countryCode')}
-                        className={`${inputClass} appearance-none pr-8`}
-                      >
+                      <select value={form.countryCode} onChange={set('countryCode')} className={`${inputClass} appearance-none pr-10`}>
                         {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
                       </select>
-                      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-zen-muted pointer-events-none" />
+                      <ChevronDown size={15} className="absolute right-4 top-1/2 -translate-y-1/2 text-zen-muted pointer-events-none" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Payment method */}
-              <div className="bg-white rounded-xl p-6 border border-zen-sand">
-                <h2 className="font-serif text-zen-bark mb-4">Mode de paiement</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {/* Payment */}
+              <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                <h2 className="font-serif text-xl text-zen-bark mb-6">Mode de paiement</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {methods.map(m => (
                     <button
                       key={m}
                       type="button"
                       onClick={() => setMethod(m)}
-                      className={`border rounded-xl p-3.5 text-sm font-sans text-left transition-all flex items-center gap-2 ${
+                      className={`border rounded-xl p-4 text-sm font-sans text-left transition-all flex items-center gap-3 ${
                         method === m
                           ? 'border-zen-bark bg-zen-bark/5 text-zen-bark font-medium'
-                          : 'border-zen-sand text-zen-muted hover:border-zen-bark/50'
+                          : 'border-gray-200 text-zen-muted hover:border-zen-bark/40'
                       }`}
                     >
-                      <span className="text-base">{METHOD_LABELS[m]?.icon}</span>
+                      <span className="text-xl">{METHOD_LABELS[m]?.icon}</span>
                       <span>{METHOD_LABELS[m]?.label ?? m}</span>
                     </button>
                   ))}
@@ -218,25 +214,25 @@ export default function CheckoutPage() {
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm font-sans text-red-600">
+                <div className="bg-red-50 border border-red-200 rounded-2xl p-5 text-sm font-sans text-red-600">
                   {error}
                 </div>
               )}
             </div>
 
-            {/* Right: summary */}
+            {/* Right: order summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl p-6 border border-zen-sand sticky top-24 space-y-4">
-                <h2 className="font-serif text-lg text-zen-bark">Votre commande</h2>
+              <div className="bg-white rounded-2xl p-8 border border-gray-100 sticky top-24 space-y-6">
+                <h2 className="font-serif text-xl text-zen-bark">Votre commande</h2>
 
-                <div className="space-y-3 max-h-52 overflow-y-auto pr-1">
+                <div className="space-y-4 max-h-64 overflow-y-auto">
                   {items.map(({ product, quantity }) => (
-                    <div key={product.id} className="flex gap-3 items-center">
-                      <div className="w-12 h-12 rounded-lg bg-white border border-zen-sand flex-shrink-0 relative overflow-hidden">
+                    <div key={product.id} className="flex gap-4 items-center">
+                      <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex-shrink-0 relative overflow-hidden">
                         {product.images?.[0] && (
                           <Image
                             src={product.images[0]}
-                            alt={product.nameFr}
+                            alt={product.nameFr ?? ''}
                             fill
                             className="object-contain p-1"
                             unoptimized={product.images[0].startsWith('https://raw.githubusercontent.com')}
@@ -244,28 +240,25 @@ export default function CheckoutPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-sans text-zen-bark line-clamp-2 leading-snug">{product.nameFr}</p>
-                        <p className="text-xs text-zen-muted">× {quantity}</p>
+                        <p className="text-sm font-sans text-zen-bark leading-snug line-clamp-2">{product.nameFr}</p>
+                        <p className="text-xs text-zen-muted mt-0.5">× {quantity}</p>
                       </div>
-                      <p className="text-xs font-sans font-semibold text-zen-bark flex-shrink-0">
-                        {(product.retailPriceEur * quantity).toFixed(2).replace('.', ',')} €
+                      <p className="text-sm font-sans font-semibold text-zen-bark flex-shrink-0">
+                        {((product.retailPriceEur ?? 0) * quantity).toFixed(2).replace('.', ',')} €
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t border-zen-sand pt-3 space-y-2 text-sm font-sans">
+                <div className="border-t border-gray-100 pt-4 space-y-3 text-sm font-sans">
                   <div className="flex justify-between text-zen-muted">
                     <span>Sous-total</span>
                     <span>{subtotal.toFixed(2).replace('.', ',')} €</span>
                   </div>
                   <div className="flex justify-between text-zen-muted">
                     <span>Livraison</span>
-                    <span>
-                      {shipping === 0
-                        ? <span className="text-green-600 font-medium">Offerte</span>
-                        : `${shipping.toFixed(2).replace('.', ',')} €`
-                      }
+                    <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
+                      {shipping === 0 ? 'Offerte' : `${shipping.toFixed(2).replace('.', ',')} €`}
                     </span>
                   </div>
                   <div className="flex justify-between text-zen-muted text-xs">
@@ -274,28 +267,30 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="border-t border-zen-sand pt-3 flex justify-between font-sans font-bold text-zen-bark">
-                  <span>Total TTC</span>
-                  <span>{orderTotal.toFixed(2).replace('.', ',')} €</span>
+                <div className="border-t border-gray-100 pt-4 flex justify-between items-baseline">
+                  <span className="font-sans font-medium text-zen-bark">Total TTC</span>
+                  <span className="font-serif font-bold text-zen-bark text-2xl">
+                    {orderTotal.toFixed(2).replace('.', ',')} €
+                  </span>
                 </div>
 
                 {shipping > 0 && (
-                  <div className="flex items-center gap-1.5 text-xs text-zen-muted font-sans">
-                    <Truck size={12} />
-                    <span>Livraison offerte dès 59 €</span>
+                  <div className="flex items-center gap-2 text-xs text-zen-muted font-sans bg-gray-50 rounded-xl p-3">
+                    <Truck size={13} />
+                    <span>Livraison offerte dès 59 € d’achat</span>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading || items.length === 0}
-                  className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full bg-zen-terracotta text-white font-sans font-medium py-4 rounded-xl hover:bg-zen-terracotta/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Lock size={14} />
-                  {loading ? 'Redirection vers le paiement…' : 'Payer en sécurité'}
+                  <Lock size={15} />
+                  {loading ? 'Redirection…' : 'Payer en sécurité'}
                 </button>
 
-                <p className="text-[10px] text-zen-muted font-sans text-center leading-relaxed">
+                <p className="text-xs text-zen-muted font-sans text-center">
                   Paiement sécurisé · SSL 256 bits · Données protégées
                 </p>
               </div>

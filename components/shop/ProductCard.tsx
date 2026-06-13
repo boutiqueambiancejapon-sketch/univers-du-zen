@@ -8,44 +8,44 @@ import { useCartStore } from '@/lib/store/cart';
 import type { Product } from '@/lib/types';
 
 const PLACEHOLDER_BG: Record<string, string> = {
-  aromatherapie: 'bg-[#7A9E7E]',
-  bougies: 'bg-[#C4A882]',
-  encens: 'bg-[#9B8B7A]',
+  aromatherapie:      'bg-[#7A9E7E]',
+  bougies:            'bg-[#C4A882]',
+  encens:             'bg-[#9B8B7A]',
   'pierres-cristaux': 'bg-[#B8C4C8]',
-  'maison-deco': 'bg-[#D4C5B2]',
-  'thes-artisanaux': 'bg-[#A8956E]',
+  'maison-deco':      'bg-[#D4C5B2]',
+  'thes-artisanaux':  'bg-[#A8956E]',
 };
 
 const PLACEHOLDER_IMG: Record<string, string> = {
-  aromatherapie: '/images/udz-cat-aromatherapie.jpeg',
-  bougies: '/images/udz-cat-bougies.jpeg',
-  encens: '/images/udz-cat-encens.jpeg',
+  aromatherapie:      '/images/udz-cat-aromatherapie.jpeg',
+  bougies:            '/images/udz-cat-bougies.jpeg',
+  encens:             '/images/udz-cat-encens.jpeg',
   'pierres-cristaux': '/images/udz-cat-cristaux.jpeg',
-  'maison-deco': '/images/udz-cat-maison.jpeg',
-  'thes-artisanaux': '/images/udz-cat-thes.jpeg',
+  'maison-deco':      '/images/udz-cat-maison.jpeg',
+  'thes-artisanaux':  '/images/udz-cat-thes.jpeg',
 };
 
 const STOCK_BADGE: Record<string, { label: string; color: string }> = {
-  Low: { label: 'Dernières pièces', color: 'bg-amber-100 text-amber-700' },
-  VeryLow: { label: 'Presque épuisé', color: 'bg-red-100 text-red-600' },
-  OutOfStock: { label: 'Rupture', color: 'bg-gray-200 text-gray-500' },
+  Low:        { label: 'Dernières pièces', color: 'bg-amber-100 text-amber-700' },
+  VeryLow:    { label: 'Presque épuisé',  color: 'bg-red-100 text-red-600' },
+  OutOfStock: { label: 'Rupture',               color: 'bg-gray-200 text-gray-500' },
 };
 
 export default function ProductCard({ product }: { product: Partial<Product> }) {
-  const locale = useLocale();
+  const locale  = useLocale();
   const addItem = useCartStore(s => s.addItem);
 
   const discount = product.compareAtPriceEur
     ? Math.round((1 - product.retailPriceEur! / product.compareAtPriceEur) * 100)
     : null;
 
-  const placeholderBg = PLACEHOLDER_BG[product.category ?? ''] ?? 'bg-zen-sand';
+  const placeholderBg   = PLACEHOLDER_BG[product.category ?? ''] ?? 'bg-zen-sand';
   const hasProductImage = !!product.images?.[0];
-  const imgSrc = hasProductImage
+  const imgSrc          = hasProductImage
     ? product.images![0]
     : PLACEHOLDER_IMG[product.category ?? ''];
 
-  const stockBadge = STOCK_BADGE[product.stockStatus ?? ''];
+  const stockBadge  = STOCK_BADGE[product.stockStatus ?? ''];
   const isOutOfStock = product.stockStatus === 'OutOfStock';
 
   return (
@@ -83,7 +83,7 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
           )}
         </div>
 
-        {/* Eco badges top-right */}
+        {/* Eco badges */}
         <div className="absolute top-3 right-10 flex gap-1 z-10">
           {product.isVegan && (
             <span className="w-5 h-5 rounded-full bg-green-50 text-green-700 text-[9px] flex items-center justify-center font-bold" title="Vegan">V</span>
@@ -106,7 +106,7 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
           <div className="absolute bottom-0 inset-x-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
             <button
               onClick={() => addItem(product as Product)}
-              className="w-full bg-zen-bark text-white text-sm font-sans font-medium py-3 flex items-center justify-center gap-2 hover:bg-zen-bark/90 transition-colors"
+              className="w-full bg-zen-bark text-white text-sm font-sans font-medium py-3.5 flex items-center justify-center gap-2 hover:bg-zen-bark/90 transition-colors"
             >
               <ShoppingBag size={14} />
               Ajouter au panier
@@ -116,25 +116,27 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
       </div>
 
       {/* Info */}
-      <div className="p-3">
-        <p className="text-[10px] font-sans tracking-widest uppercase text-zen-muted mb-1">
+      <div className="p-4 lg:p-5">
+        <p className="text-[10px] font-sans tracking-widest uppercase text-zen-muted mb-1.5">
           {product.category?.replace('-', ' & ')}
         </p>
         <Link href={`/${locale}/produits/${product.slug}`}>
-          <h3 className="font-serif text-zen-bark text-sm leading-snug hover:text-zen-terracotta transition-colors line-clamp-2">
+          <h3 className="font-serif text-zen-bark text-base leading-snug hover:text-zen-terracotta transition-colors line-clamp-2">
             {product.nameFr}
           </h3>
         </Link>
 
-        <div className="flex items-center gap-1 mt-1">
+        <div className="flex items-center gap-1 mt-2">
           {[1,2,3,4,5].map(i => (
-            <Star key={i} size={10} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'text-zen-sand fill-zen-sand'} />
+            <Star key={i} size={11} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'text-zen-sand fill-zen-sand'} />
           ))}
           <span className="text-[10px] text-zen-muted ml-1">4.8 (124)</span>
         </div>
 
-        <div className="flex items-baseline gap-2 mt-2">
-          <span className={`font-sans font-semibold ${isOutOfStock ? 'text-zen-muted' : 'text-zen-bark'}`}>
+        <div className="flex items-baseline gap-2 mt-3">
+          <span className={`font-sans font-semibold text-base ${
+            isOutOfStock ? 'text-zen-muted' : 'text-zen-bark'
+          }`}>
             {product.retailPriceEur} €
           </span>
           {product.compareAtPriceEur && (
