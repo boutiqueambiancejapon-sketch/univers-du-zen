@@ -5,10 +5,9 @@ import { Search, CheckCircle2, Clock, ChevronLeft, ChevronRight, Upload } from '
 import Link from 'next/link';
 
 interface Product {
-  sku: string; name: string; dept: string; family_code: string; family: string;
-  price: number; rrp: number; stock: number; in_stock: boolean; image: string;
+  sku: string; name: string; department: string; family_code: string; family: string;
+  wholesale_price: number; rrp: number; stock_qty: number; in_stock: boolean; image_url: string;
 }
-interface Published { retinaId: number; slug: string; name: string }
 
 const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
 
@@ -27,7 +26,14 @@ const DEPT_EMOJI: Record<string, string> = {
 function ProductImg({ src, emoji }: { src: string; emoji: string }) {
   const [err, setErr] = useState(false);
   if (!src || err) return <div className="w-full h-full flex items-center justify-center text-3xl">{emoji}</div>;
-  return <img src={`/api/admin/retina-image?url=${encodeURIComponent(src)}`} alt="" className="w-full h-full object-contain p-2" onError={() => setErr(true)} />;
+  return (
+    <img
+      src={`/api/admin/retina-image?url=${encodeURIComponent(src)}`}
+      alt=""
+      className="w-full h-full object-contain p-2"
+      onError={() => setErr(true)}
+    />
+  );
 }
 
 export default function CataloguePage() {
@@ -66,12 +72,16 @@ export default function CataloguePage() {
     setError('');
     const params = new URLSearchParams({
       page: String(page), per: String(PER),
-      ...(dept ? { dept } : {}),
+      ...(dept   ? { dept }   : {}),
       ...(search ? { search } : {}),
       ...(inStockOnly ? { in_stock: 'true' } : {}),
     });
     fetch(`/api/admin/supplier-catalog?${params}`)
-      .then(r => r.json())
+      .then(async r => {
+        const text = await r.text();
+        try { return JSON.parse(text); }
+        catch { return { error: `Réponse invalide (${r.status}): ${text.slice(0, 150)}` }; }
+      })
       .then(d => {
         if (d.error) { setError(d.error); return; }
         setProducts(d.data ?? []);
@@ -82,8 +92,6 @@ export default function CataloguePage() {
   }, [page, dept, search, inStockOnly]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
-
-  // Reset page on filter change
   useEffect(() => { setPage(1); }, [dept, search, inStockOnly]);
 
   async function requestPublication(p: Product) {
@@ -91,7 +99,7 @@ export default function CataloguePage() {
     await fetch('/api/admin/request-publication', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: p.sku, name: p.name, category: p.dept, price: p.price }),
+      body: JSON.stringify({ id: p.sku, name: p.name, category: p.department, price: p.wholesale_price }),
     }).catch(() => {});
     setRequested(s => new Set(s).add(p.sku));
     setRequesting(s => { const n = new Set(s); n.delete(p.sku); return n; });
@@ -99,6 +107,7 @@ export default function CataloguePage() {
 
   const totalPages = Math.ceil(total / PER);
   const isEmpty = !loading && products.length === 0 && !error;
+  const needsImport = error.includes('manquante') || error.includes('does not exist');
 
   return (
     <div>
@@ -107,7 +116,7 @@ export default function CataloguePage() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Catalogue fournisseur</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {total.toLocaleString()} produits · {published.size} publiés
+            {total > 0 ? `${total.toLocaleString()} produits · ${published.size} publiés` : 'Chargement…'}
           </p>
         </div>
         <Link href="/admin/import"
@@ -141,13 +150,19 @@ export default function CataloguePage() {
       {/* Error */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-          {error === 'relation "public.supplier_catalog" does not exist'
-            ? <>Table Supabase manquante — <Link href="/admin/import" className="underline font-medium">importer le CSV d'abord →</Link></>
-            : error}
+          {needsImport ? (
+            <>
+              Table Supabase manquante —{' '}
+              <Link href="/admin/import" className="underline font-medium">importer le CSV d'abord →</Link>
+              <p className="mt-2 text-xs text-red-500">
+                Crée d'abord la table dans Supabase (SQL ci-dessous), puis importe le CSV.
+              </p>
+            </>
+          ) : error}
         </div>
       )}
 
-      {/* Empty — needs import */}
+      {/* Empty */}
       {isEmpty && (
         <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
           <p className="text-4xl mb-4">📂</p>
@@ -172,15 +187,17 @@ export default function CataloguePage() {
               const isPub  = published.has(p.sku);
               const isReq  = requested.has(p.sku);
               const isReqg = requesting.has(p.sku);
-              const emoji  = DEPT_EMOJI[p.dept] ?? '📦';
-              const margin = p.rrp > 0 ? ((p.rrp - p.price) / p.rrp * 100).toFixed(0) : '—';
+              const emoji  = DEPT_EMOJI[p.department] ?? '📦';
+              const margin = p.rrp > 0
+                ? ((p.rrp - p.wholesale_price) / p.rrp * 100).toFixed(0)
+                : '—';
 
               return (
                 <div key={p.sku} className={`bg-white rounded-xl border overflow-hidden flex flex-col hover:shadow-sm transition-shadow ${
                   isPub ? 'border-emerald-200' : 'border-gray-200'
                 }`}>
                   <div className="h-28 bg-gray-50 relative flex items-center justify-center">
-                    <ProductImg src={p.image} emoji={emoji} />
+                    <ProductImg src={p.image_url} emoji={emoji} />
                     {isPub && (
                       <span className="absolute top-1.5 left-1.5 flex items-center gap-0.5 text-[9px] font-bold bg-emerald-500 text-white px-1.5 py-0.5 rounded-full">
                         <CheckCircle2 size={8} /> Publié
@@ -192,20 +209,20 @@ export default function CataloguePage() {
                       </span>
                     )}
                     <span className={`absolute top-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                      p.stock > 20 ? 'bg-green-100 text-green-700'
-                      : p.stock > 5 ? 'bg-amber-100 text-amber-700'
-                      : p.stock > 0 ? 'bg-orange-100 text-orange-700'
+                      (p.stock_qty ?? 0) > 20 ? 'bg-green-100 text-green-700'
+                      : (p.stock_qty ?? 0) > 5  ? 'bg-amber-100 text-amber-700'
+                      : (p.stock_qty ?? 0) > 0  ? 'bg-orange-100 text-orange-700'
                       : 'bg-red-100 text-red-600'
-                    }`}>{p.stock > 0 ? p.stock : '✕'}</span>
+                    }`}>{(p.stock_qty ?? 0) > 0 ? p.stock_qty : '✕'}</span>
                   </div>
 
                   <div className="p-2.5 flex flex-col flex-1">
-                    <p className="text-[9px] text-gray-400 mb-0.5">{emoji} {p.dept}</p>
+                    <p className="text-[9px] text-gray-400 mb-0.5">{emoji} {p.department}</p>
                     <p className="text-[11px] font-semibold text-gray-900 leading-snug mb-1.5 flex-1 line-clamp-2">{p.name}</p>
                     <div className="flex justify-between text-[9px] text-gray-500 mb-2">
-                      <span>{p.price.toFixed(2)}€</span>
+                      <span>{p.wholesale_price?.toFixed(2)}€</span>
                       <span className="text-emerald-600 font-semibold">{margin}%</span>
-                      <span className="text-gray-400">{p.sku}</span>
+                      <span className="text-gray-400 truncate max-w-12">{p.sku}</span>
                     </div>
                     {isPub ? (
                       <div className="text-center text-[10px] font-semibold py-1.5 rounded-lg bg-emerald-50 text-emerald-700">En ligne ✓</div>
