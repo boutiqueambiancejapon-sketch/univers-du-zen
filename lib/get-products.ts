@@ -15,7 +15,8 @@ export interface PublishedProduct {
   short_description?: string;
   description?: string;
   meta_description?: string;
-  tags?: string;
+  /** Parsed as string[] — stored as a comma-separated string in JSON but normalized on read. */
+  tags?: string[];
   images: string[];
   retail_price_eur?: number;
   compare_at_price_eur?: number;
@@ -40,6 +41,14 @@ export interface PublishedProduct {
 
 const PRODUCTS_DIR = path.join(process.cwd(), 'products');
 
+/** Normalise tags: accepte une chaîne CSV ou un tableau déjà parsé. */
+function parseTags(raw: unknown): string[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.map(String).filter(Boolean);
+  if (typeof raw === 'string') return raw.split(',').map(t => t.trim()).filter(Boolean);
+  return [];
+}
+
 export function getPublishedProducts(): PublishedProduct[] {
   try {
     const catalogPath = path.join(PRODUCTS_DIR, 'catalog.json');
@@ -54,27 +63,25 @@ export function getPublishedProducts(): PublishedProduct[] {
           if (!fs.existsSync(dataPath)) return null;
           const raw = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
 
-          // Normalize images : les images sont dans products/{slug}/image-1.jpg etc.
-          // en prod on les sert depuis GitHub raw
           const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
           const images = (raw.images ?? []).map((img: string) =>
             img.startsWith('http') ? img : `${REPO_RAW}/products/${slug}/${img}`
           );
 
-          // Mapping vers les champs attendus par ProductCard
           return {
             ...raw,
             images,
-            nameFr:           raw.name,
-            descriptionFr:    raw.description,
-            retailPriceEur:   raw.retail_price_eur,
-            compareAtPriceEur:raw.compare_at_price_eur,
-            stockStatus:      raw.stock_status ?? 'Normal',
-            stockQty:         raw.stock_qty ?? 0,
-            isBestSeller:     raw.is_best_seller ?? false,
-            isVegan:          raw.is_vegan ?? true,
-            isCrueltyFree:    raw.is_cruelty_free ?? true,
-            category:         raw.category ?? 'huiles-fragrance',
+            tags:              parseTags(raw.tags),
+            nameFr:            raw.name,
+            descriptionFr:     raw.description,
+            retailPriceEur:    raw.retail_price_eur,
+            compareAtPriceEur: raw.compare_at_price_eur,
+            stockStatus:       raw.stock_status ?? 'Normal',
+            stockQty:          raw.stock_qty ?? 0,
+            isBestSeller:      raw.is_best_seller ?? false,
+            isVegan:           raw.is_vegan ?? true,
+            isCrueltyFree:     raw.is_cruelty_free ?? true,
+            category:          raw.category ?? 'huiles-fragrance',
           } as PublishedProduct;
         } catch {
           return null;
@@ -98,16 +105,17 @@ export function getProductBySlug(slug: string): PublishedProduct | null {
     return {
       ...raw,
       images,
-      nameFr:           raw.name,
-      descriptionFr:    raw.description,
-      retailPriceEur:   raw.retail_price_eur,
-      compareAtPriceEur:raw.compare_at_price_eur,
-      stockStatus:      raw.stock_status ?? 'Normal',
-      stockQty:         raw.stock_qty ?? 0,
-      isBestSeller:     raw.is_best_seller ?? false,
-      isVegan:          raw.is_vegan ?? true,
-      isCrueltyFree:    raw.is_cruelty_free ?? true,
-      category:         raw.category ?? 'huiles-fragrance',
+      tags:              parseTags(raw.tags),
+      nameFr:            raw.name,
+      descriptionFr:     raw.description,
+      retailPriceEur:    raw.retail_price_eur,
+      compareAtPriceEur: raw.compare_at_price_eur,
+      stockStatus:       raw.stock_status ?? 'Normal',
+      stockQty:          raw.stock_qty ?? 0,
+      isBestSeller:      raw.is_best_seller ?? false,
+      isVegan:           raw.is_vegan ?? true,
+      isCrueltyFree:     raw.is_cruelty_free ?? true,
+      category:          raw.category ?? 'huiles-fragrance',
     };
   } catch {
     return null;
