@@ -55,14 +55,16 @@ export default function PanierPage() {
       <div className="max-w-6xl mx-auto px-4 py-10">
         <h1 className="font-serif text-4xl text-zen-bark mb-8">Votre panier</h1>
 
+        {/* ===== TOP: Items + Summary ===== */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-          {/* ---- LEFT: items ---- */}
+          {/* Items list */}
           <div className="lg:col-span-2 space-y-3">
             <div className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-100 overflow-hidden">
               {items.map(({ product, quantity }) => (
-                <div key={product.id} className="flex gap-4 p-5">
-                  <div className="w-[88px] h-[88px] rounded-xl flex-shrink-0 bg-gray-50 relative overflow-hidden">
+                <div key={product.id} className="flex gap-5 p-6">
+                  {/* Image */}
+                  <div className="w-24 h-24 rounded-xl flex-shrink-0 bg-gray-50 relative overflow-hidden">
                     {product.images?.[0] ? (
                       <Image
                         src={product.images[0]}
@@ -76,45 +78,46 @@ export default function PanierPage() {
                     )}
                   </div>
 
+                  {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-sans font-medium text-zen-bark text-[15px] leading-snug">
+                        <p className="font-sans font-medium text-zen-bark text-base leading-snug">
                           {product.nameFr}
                         </p>
                         {product.category && (
-                          <p className="text-xs text-zen-muted font-sans mt-0.5 capitalize">
+                          <p className="text-xs text-zen-muted font-sans mt-1 capitalize">
                             {product.category.replace(/-/g, ' ')}
                           </p>
                         )}
                       </div>
                       <button
                         onClick={() => removeItem(product.id!)}
-                        className="flex-shrink-0 text-gray-300 hover:text-gray-500 transition-colors mt-0.5"
+                        className="flex-shrink-0 text-gray-300 hover:text-gray-500 transition-colors"
                         aria-label="Retirer"
                       >
                         <X size={16} />
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
                         <button
                           onClick={() => updateQuantity(product.id!, quantity - 1)}
-                          className="w-9 h-9 flex items-center justify-center text-zen-bark hover:bg-gray-50 transition-colors"
+                          className="w-10 h-10 flex items-center justify-center text-zen-bark hover:bg-gray-50 transition-colors"
                         >
                           <Minus size={13} />
                         </button>
-                        <span className="w-8 text-center text-sm font-sans text-zen-bark">{quantity}</span>
+                        <span className="w-10 text-center text-sm font-sans text-zen-bark">{quantity}</span>
                         <button
                           onClick={() => updateQuantity(product.id!, quantity + 1)}
-                          className="w-9 h-9 flex items-center justify-center text-zen-bark hover:bg-gray-50 transition-colors"
+                          className="w-10 h-10 flex items-center justify-center text-zen-bark hover:bg-gray-50 transition-colors"
                         >
                           <Plus size={13} />
                         </button>
                       </div>
-                      <p className="font-sans font-semibold text-zen-bark text-xl">
-                        {((product.retailPriceEur ?? 0) * quantity).toFixed(0)} €
+                      <p className="font-serif font-bold text-zen-bark text-xl">
+                        {((product.retailPriceEur ?? 0) * quantity).toFixed(2).replace('.', ',')} €
                       </p>
                     </div>
                   </div>
@@ -124,32 +127,21 @@ export default function PanierPage() {
 
             <Link
               href={`/${locale}/boutique`}
-              className="inline-flex items-center gap-1.5 text-sm font-sans text-zen-muted hover:text-zen-bark transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-sans text-zen-muted hover:text-zen-bark transition-colors pt-1"
             >
               ← Continuer mes achats
             </Link>
-
-            {/* ---- BUNDLE BUILDER ---- */}
-            <div className="mt-10 pt-2">
-              <div className="flex items-baseline justify-between mb-5">
-                <h2 className="font-serif text-2xl text-zen-bark">Composez votre coffret</h2>
-                <span className="text-sm font-sans text-zen-terracotta font-medium">-15% par coffret</span>
-              </div>
-              <p className="text-sm font-sans text-zen-muted mb-5 -mt-2">
-                Sélectionnez les produits que vous voulez, décochez les autres. Cliquez sur ↻ pour régénérer.
-              </p>
-              <BundleBuilder />
-            </div>
           </div>
 
-          {/* ---- RIGHT: summary ---- */}
+          {/* Summary sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24 space-y-5">
-              <h2 className="font-serif text-lg text-zen-bark">Récapitulatif</h2>
+              <h2 className="font-serif text-xl text-zen-bark">Récapitulatif</h2>
 
+              {/* Shipping progress */}
               <div>
                 {remaining > 0 ? (
-                  <p className="text-xs font-sans text-zen-muted mb-1.5">
+                  <p className="text-xs font-sans text-zen-muted mb-2">
                     Plus que{' '}
                     <strong className="text-zen-bark">
                       {remaining.toFixed(2).replace('.', ',')} €
@@ -157,11 +149,11 @@ export default function PanierPage() {
                     pour la livraison offerte
                   </p>
                 ) : (
-                  <p className="text-xs font-sans text-green-600 font-medium mb-1.5">
+                  <p className="text-xs font-sans text-green-600 font-medium mb-2">
                     ✓ Livraison offerte débloquée !
                   </p>
                 )}
-                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       remaining === 0 ? 'bg-green-500' : 'bg-zen-terracotta'
@@ -171,7 +163,8 @@ export default function PanierPage() {
                 </div>
               </div>
 
-              <div className="space-y-2.5 text-sm font-sans">
+              {/* Lines */}
+              <div className="space-y-3 text-sm font-sans">
                 <div className="flex justify-between text-zen-muted">
                   <span>Sous-total</span>
                   <span>{subtotal.toFixed(2).replace('.', ',')} €</span>
@@ -179,9 +172,7 @@ export default function PanierPage() {
                 <div className="flex justify-between text-zen-muted">
                   <span>Livraison</span>
                   <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
-                    {shipping === 0
-                      ? 'Offerte'
-                      : `${shipping.toFixed(2).replace('.', ',')} €`}
+                    {shipping === 0 ? 'Offerte' : `${shipping.toFixed(2).replace('.', ',')} €`}
                   </span>
                 </div>
                 <div className="flex justify-between text-zen-muted text-xs">
@@ -191,24 +182,37 @@ export default function PanierPage() {
               </div>
 
               <div className="border-t border-gray-100 pt-4 flex justify-between items-baseline">
-                <span className="font-sans font-medium text-zen-bark">Total TTC</span>
-                <span className="font-sans font-bold text-zen-bark text-2xl">
-                  {orderTotal.toFixed(0)} €
+                <span className="font-sans font-medium text-zen-bark text-base">Total TTC</span>
+                <span className="font-serif font-bold text-zen-bark text-3xl">
+                  {orderTotal.toFixed(2).replace('.', ',')} €
                 </span>
               </div>
 
               <button
                 onClick={() => router.push(`/${locale}/checkout`)}
-                className="w-full bg-zen-terracotta text-white font-sans font-medium py-4 rounded-xl hover:bg-zen-terracotta/90 transition-colors text-sm"
+                className="w-full bg-zen-terracotta text-white font-sans font-medium py-4 rounded-xl hover:bg-zen-terracotta/90 transition-colors"
               >
                 Passer à la caisse →
               </button>
 
-              <p className="text-center text-[11px] text-zen-muted font-sans">
+              <p className="text-center text-xs text-zen-muted font-sans">
                 🔒 Paiement sécurisé · Retours 30 jours
               </p>
             </div>
           </div>
+        </div>
+
+        {/* ===== BOTTOM: Bundle builder — PLEINE LARGEUR ===== */}
+        <div className="mt-16">
+          <div className="flex items-baseline justify-between mb-3">
+            <h2 className="font-serif text-3xl text-zen-bark">Composez votre coffret</h2>
+            <span className="text-sm font-sans text-zen-terracotta font-medium">-15% par coffret</span>
+          </div>
+          <p className="text-sm font-sans text-zen-muted mb-8">
+            Sélectionnez les produits que vous voulez, décochez ceux que vous ne souhaitez pas.{' '}
+            Cliquez sur ↻ pour tirer de nouvelles suggestions.
+          </p>
+          <BundleBuilder />
         </div>
       </div>
     </div>
