@@ -9,23 +9,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Univers du Zen — palette naturelle chaude
         zen: {
-          beige:      '#F5EFE6', // fond principal
-          cream:      '#FAF7F2', // fond secondaire
-          sand:       '#E8DDD0', // bordures douces
-          terracotta: '#C4714A', // CTA principal
-          'terra-dark': '#A85A35', // hover CTA
-          sage:       '#7A9E7E', // accent nature
-          'sage-dark':'#5C7F60', // hover sage
-          bark:       '#3B2A1F', // texte principal
-          muted:      '#8C7B6E', // texte secondaire
-          gold:       '#C9A96E', // fidélité/VIP
+          beige:        '#F5EFE6',
+          cream:        '#FAF7F2',
+          sand:         '#E8DDD0',
+          terracotta:   '#C4714A',
+          'terra-dark': '#A85A35',
+          sage:         '#7A9E7E',
+          'sage-dark':  '#5C7F60',
+          bark:         '#3B2A1F',
+          muted:        '#8C7B6E',
+          gold:         '#C9A96E',
         },
       },
       fontFamily: {
-        serif: ['var(--font-fraunces)', 'Georgia', 'serif'],
-        sans:  ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-serif)', 'Georgia', 'serif'],
+        sans:  ['var(--font-sans)', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         DEFAULT: '0.5rem',
