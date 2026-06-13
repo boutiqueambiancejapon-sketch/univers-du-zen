@@ -7,8 +7,41 @@
   "description": "Plongez au cœur d'une légende millénaire avec notre Élixir Parfum Sang de Dragon Mystique. Cette huile envoûtante de 10ml est bien plus qu'une simple fragrance ; c'est une invitation à explorer les profondeurs de l'ancien monde, où les dragons régnaient et les secrets étaient gardés. Le Sang de Dragon, résine légendaire aux teintes écarlates, est depuis des siècles vénéré pour ses propriétés protectrices, purificatrices et énergisantes. Notre élixir capture cette essence mythique, vous offrant un voyage sensoriel unique qui éveille l'imagination et l'esprit.\n\nLaissez-vous charmer par les notes riches et complexes de cet élixir. Son bouquet olfactif unique mêle des accords boisés profonds à des touches terreuses, rehaussées par une subtile pointe épicée et résineuse. Chaque goutte libère une fragrance puissante et réconfortante qui transforme instantanément l'atmosphère de votre intérieur. Idéal pour la méditation, le yoga ou toute pratique spirituelle, il aide à créer un espace sacré propice à la concentration et à l'introspection. Il est également parfait pour masquer les odeurs indésirables et laisser place à une ambiance de sérénité et de protection.\n\nNotre Élixir Parfum Sang de Dragon est conçu pour une utilisation polyvalente. Ajoutez quelques gouttes à votre diffuseur d'arômes pour purifier l'air et diffuser sa fragrance envoûtante dans toute la pièce. Il peut également être utilisé pour rafraîchir un pot-pourri, parfumer des bougies artisanales ou même quelques linges, toujours avec parcimonie. Chaque flacon de 10ml est le fruit d'une sélection rigoureuse des meilleurs ingrédients, garantissant une intensité et une longévité exceptionnelles. Offrez-vous ou offrez à vos proches cette expérience olfactive singulière, un véritable talisman parfumé pour le corps et l'esprit.",
   "meta_description": "Découvrez l'Élixir Parfum Sang de Dragon Mystique 10ml. Créez une ambiance unique, protectrice et énergisante avec cette huile envoûtante. Idéale pour la méditation. Achetez maintenant !",
   "tags": "huile parfumée, sang de dragon, parfum mystique, aromathérapie, ambiance spirituelle, méditation, protection énergétique, senteur boisée",
-  "images": [
-    "image-1.jpg"
+  "images": ["image-1.jpg"],
+  "pushed_at": "2026-06-13T22:13:13.795Z",
+  "category": "Encens & Rituel",
+  "faqFr": [
+    {
+      "question": "Comment utiliser l'élixir Sang de Dragon pour la méditation ?",
+      "answer": "Versez 3 à 5 gouttes dans votre diffuseur électrique 10 minutes avant votre séance. La fragrance résineuse et boisée aide à ancrer l'esprit et à favoriser un état de concentration profonde."
+    },
+    {
+      "question": "Puis-je utiliser cette huile dans un brûle-parfum traditionnel ?",
+      "answer": "Oui, quelques gouttes dans le bol d'eau de votre brûle-parfum suffisent pour diffuser la fragrance doucement. Veillez à ne jamais laisser le brûle-parfum sans surveillance."
+    },
+    {
+      "question": "L'huile Sang de Dragon est-elle compatible avec les projets DIY ?",
+      "answer": "Absolument. Elle s'intègre parfaitement dans la fabrication de bougies artisanales, de savons maison ou de pot-pourris. Respectez les dosages recommandés (environ 3 % dans les bougies)."
+    },
+    {
+      "question": "Quelle est la durée de vie de ce flacon de 10ml ?",
+      "answer": "Grâce à sa formule concentrée, un flacon de 10ml peut durer plusieurs semaines à plusieurs mois selon la fréquence d'utilisation. Conservez-le à l'abri de la lumière et de la chaleur pour préserver ses qualités aromatiques."
+    }
   ],
-  "pushed_at": "2026-06-13T22:13:13.795Z"
+  "characteristics": [
+    { "label": "Contenance", "value": "10 ml" },
+    { "label": "Famille olfactive", "value": "Boisée & Résineuse" },
+    { "label": "Utilisation", "value": "Diffuseur, brûle-parfum, bougies DIY, pot-pourri" },
+    { "label": "Convient à", "value": "Méditation, rituels de bien-être, ambiance spirituelle" },
+    { "label": "Concentration", "value": "Hautement concentrée" },
+    { "label": "Vegan & Cruelty-free", "value": "Oui" }
+  ],
+  "usageFr": "Versez 3 à 5 gouttes dans votre diffuseur d'arômes ou brûle-parfum pour créer une atmosphère mystique et enveloppante. Pour les projets DIY, incorporez-la à vos bougies ou savons en respectant un dosage de 3 à 5 %. Conservez le flacon fermé, à l'abri de la lumière directe et de la chaleur.",
+  "benefitsFr": [
+    "Crée une atmosphère protectrice et sacrée",
+    "Favorise la concentration et la méditation",
+    "Fragrance longue durée grâce à sa formule concentrée",
+    "Polyvalente : diffusion, DIY, pot-pourri"
+  ],
+  "enriched_at": "2026-06-14T00:00:00.000Z"
 }
