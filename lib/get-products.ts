@@ -15,7 +15,7 @@ export interface PublishedProduct {
   short_description?: string;
   description?: string;
   meta_description?: string;
-  /** Parsed as string[] — stored as a comma-separated string in JSON but normalized on read. */
+  /** Toujours normalisé en string[] à la lecture. */
   tags?: string[];
   images: string[];
   retail_price_eur?: number;
@@ -27,9 +27,10 @@ export interface PublishedProduct {
   is_vegan?: boolean;
   is_cruelty_free?: boolean;
   pushed_at?: string;
-  // Legacy compat (ProductCard attend ces champs)
+  // Champs legacy attendus par ProductCard / ProductDetailClient
   nameFr?: string;
   descriptionFr?: string;
+  shortDescriptionFr?: string;
   retailPriceEur?: number;
   compareAtPriceEur?: number;
   stockStatus?: 'Normal' | 'Low' | 'VeryLow' | 'OutOfStock';
@@ -40,8 +41,21 @@ export interface PublishedProduct {
 }
 
 const PRODUCTS_DIR = path.join(process.cwd(), 'products');
+const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
 
-/** Normalise tags: accepte une chaîne CSV ou un tableau déjà parsé. */
+/* ── Helpers ──────────────────────────────────────────────────────────────── */
+
+/** Accepte "€3.70", "3.70", 3.70, undefined → number | undefined */
+function parsePrice(raw: unknown): number | undefined {
+  if (typeof raw === 'number') return raw > 0 ? raw : undefined;
+  if (typeof raw === 'string') {
+    const n = parseFloat(raw.replace(/[^0-9.]/g, ''));
+    return isNaN(n) || n <= 0 ? undefined : n;
+  }
+  return undefined;
+}
+
+/** Accepte "tag1,tag2", ["tag1","tag2"], undefined → string[] */
 function parseTags(raw: unknown): string[] {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw.map(String).filter(Boolean);
@@ -49,11 +63,62 @@ function parseTags(raw: unknown): string[] {
   return [];
 }
 
+/** Normalise les URLs des images (GitHub raw si chemin relatif). */
+function parseImages(raw: unknown[], slug: string): string[] {
+  return (raw ?? []).map((img: unknown) => {
+    const s = String(img);
+    return s.startsWith('http') ? s : `${REPO_RAW}/products/${slug}/${s}`;
+  });
+}
+
+/** Mappe un objet JSON brut vers PublishedProduct. */
+function mapProduct(raw: Record<string, unknown>, slug: string): PublishedProduct {
+  const images = parseImages((raw.images as unknown[]) ?? [], slug);
+
+  // Prix : essaie retail_price_eur (nombre), puis price (string "€x.xx")
+  const retailPriceEur =
+    parsePrice(raw.retail_price_eur) ??
+    parsePrice(raw.retailPriceEur)  ??
+    parsePrice(raw.price);
+
+  const compareAtPriceEur =
+    parsePrice(raw.compare_at_price_eur) ??
+    parsePrice(raw.compareAtPriceEur)    ??
+    parsePrice(raw.compare_price);
+
+  const stockStatus =
+    (raw.stock_status as PublishedProduct['stockStatus']) ??
+    (raw.stockStatus  as PublishedProduct['stockStatus']) ??
+    'Normal';
+
+  return {
+    ...raw as Partial<PublishedProduct>,
+    slug,
+    images,
+    tags:              parseTags(raw.tags),
+    nameFr:            (raw.name ?? raw.nameFr) as string,
+    descriptionFr:     (raw.description ?? raw.descriptionFr) as string | undefined,
+    shortDescriptionFr:(raw.short_description ?? raw.shortDescriptionFr) as string | undefined,
+    retailPriceEur,
+    compareAtPriceEur,
+    retail_price_eur:  retailPriceEur,
+    compare_at_price_eur: compareAtPriceEur,
+    stockStatus,
+    stock_status:      stockStatus,
+    stockQty:          (raw.stock_qty ?? raw.stockQty ?? 0) as number,
+    isBestSeller:      Boolean(raw.is_best_seller ?? raw.isBestSeller ?? false),
+    isVegan:           Boolean(raw.is_vegan      ?? raw.isVegan      ?? true),
+    isCrueltyFree:     Boolean(raw.is_cruelty_free ?? raw.isCrueltyFree ?? true),
+    category:          (raw.category ?? 'huiles-fragrance') as string,
+  };
+}
+
+/* ── API publique ─────────────────────────────────────────────────────────── */
+
 export function getPublishedProducts(): PublishedProduct[] {
   try {
     const catalogPath = path.join(PRODUCTS_DIR, 'catalog.json');
     if (!fs.existsSync(catalogPath)) return [];
-
     const catalog: { slug: string }[] = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
 
     return catalog
@@ -62,27 +127,7 @@ export function getPublishedProducts(): PublishedProduct[] {
           const dataPath = path.join(PRODUCTS_DIR, slug, 'data.json');
           if (!fs.existsSync(dataPath)) return null;
           const raw = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-
-          const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
-          const images = (raw.images ?? []).map((img: string) =>
-            img.startsWith('http') ? img : `${REPO_RAW}/products/${slug}/${img}`
-          );
-
-          return {
-            ...raw,
-            images,
-            tags:              parseTags(raw.tags),
-            nameFr:            raw.name,
-            descriptionFr:     raw.description,
-            retailPriceEur:    raw.retail_price_eur,
-            compareAtPriceEur: raw.compare_at_price_eur,
-            stockStatus:       raw.stock_status ?? 'Normal',
-            stockQty:          raw.stock_qty ?? 0,
-            isBestSeller:      raw.is_best_seller ?? false,
-            isVegan:           raw.is_vegan ?? true,
-            isCrueltyFree:     raw.is_cruelty_free ?? true,
-            category:          raw.category ?? 'huiles-fragrance',
-          } as PublishedProduct;
+          return mapProduct(raw, slug);
         } catch {
           return null;
         }
@@ -98,25 +143,7 @@ export function getProductBySlug(slug: string): PublishedProduct | null {
     const dataPath = path.join(PRODUCTS_DIR, slug, 'data.json');
     if (!fs.existsSync(dataPath)) return null;
     const raw = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
-    const images = (raw.images ?? []).map((img: string) =>
-      img.startsWith('http') ? img : `${REPO_RAW}/products/${slug}/${img}`
-    );
-    return {
-      ...raw,
-      images,
-      tags:              parseTags(raw.tags),
-      nameFr:            raw.name,
-      descriptionFr:     raw.description,
-      retailPriceEur:    raw.retail_price_eur,
-      compareAtPriceEur: raw.compare_at_price_eur,
-      stockStatus:       raw.stock_status ?? 'Normal',
-      stockQty:          raw.stock_qty ?? 0,
-      isBestSeller:      raw.is_best_seller ?? false,
-      isVegan:           raw.is_vegan ?? true,
-      isCrueltyFree:     raw.is_cruelty_free ?? true,
-      category:          raw.category ?? 'huiles-fragrance',
-    };
+    return mapProduct(raw, slug);
   } catch {
     return null;
   }
