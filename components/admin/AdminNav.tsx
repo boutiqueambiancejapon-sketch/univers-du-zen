@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Receipt, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, Receipt, BookOpen, ShoppingBag, LogOut } from 'lucide-react';
 
 const LINKS = [
-  { href: '/admin',           label: 'Vue d\'ensemble', icon: LayoutDashboard, exact: true },
-  { href: '/admin/commandes', label: 'Pipeline AW',     icon: Package,         exact: false },
-  { href: '/admin/tva',       label: 'TVA OSS',         icon: Receipt,         exact: false },
+  { href: '/admin',            label: 'Vue d\'ensemble', icon: LayoutDashboard, exact: true },
+  { href: '/admin/catalogue',  label: 'Catalogue',       icon: BookOpen,        exact: false },
+  { href: '/admin/produits',   label: 'Produits',        icon: ShoppingBag,     exact: false },
+  { href: '/admin/commandes',  label: 'Commandes',       icon: Package,         exact: false },
+  { href: '/admin/tva',        label: 'TVA OSS',         icon: Receipt,         exact: false },
 ];
 
 export default function AdminNav() {
@@ -20,7 +22,9 @@ export default function AdminNav() {
         return (
           <Link key={href} href={href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-              active ? 'bg-white/10 text-white font-medium' : 'text-white/50 hover:text-white hover:bg-white/5'
+              active
+                ? 'bg-white/10 text-white font-medium'
+                : 'text-white/50 hover:text-white hover:bg-white/5'
             }`}>
             <Icon size={15} />
             {label}
