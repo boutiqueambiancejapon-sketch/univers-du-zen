@@ -34,7 +34,7 @@ const CATEGORIES = [
   {
     slug: 'maison-deco',
     label: 'Maison & Déco',
-    desc: 'Objets qui apaisent l'espace',
+    desc: "Objets qui apaisent l'espace",
     image: '/images/udz-cat-maison.jpeg',
     span: 'md:col-span-2',
   },
@@ -70,16 +70,13 @@ export default function CategoriesGrid() {
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-zen-bark/80 via-zen-bark/20 to-transparent" />
-            {/* Text */}
             <div className="absolute bottom-0 left-0 p-5">
               <p className="text-white font-serif text-xl leading-tight">{label}</p>
               <p className="text-white/70 text-xs mt-1 font-sans">{desc}</p>
             </div>
-            {/* Arrow hover */}
             <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/0 group-hover:bg-white/20 flex items-center justify-center transition-all duration-300">
-              <span className="text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+              <span className="text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
             </div>
           </Link>
         ))}
