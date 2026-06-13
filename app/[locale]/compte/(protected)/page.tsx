@@ -55,9 +55,9 @@ export default async function ComptePage({ params }: { params: { locale: string 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { icon: Package,    label: 'Commandes',    value: (orders ?? []).length,                           suffix: '' },
-          { icon: TrendingUp, label: 'Total dépensé', value: totalSpent.toFixed(2).replace('.', ','),        suffix: ' €' },
-          { icon: null,       label: 'Points fidélité', value: loyaltyPts,                                   suffix: ' pts' },
+          { icon: Package,    label: 'Commandes',     value: (orders ?? []).length,                        suffix: '' },
+          { icon: TrendingUp, label: 'Total dépensé', value: totalSpent.toFixed(2).replace('.', ','),      suffix: ' €' },
+          { icon: null,       label: 'Points fidélité', value: loyaltyPts,                                 suffix: ' pts' },
         ].map(({ icon: Icon, label, value, suffix }, i) => (
           <div key={label} className="rounded-2xl p-6" style={{ background: '#fff', border: '1px solid rgba(44,36,32,.07)' }}>
             <div className="flex items-center gap-2.5 mb-4">
@@ -84,7 +84,6 @@ export default async function ComptePage({ params }: { params: { locale: string 
         background: 'linear-gradient(155deg, #3A332B 0%, #2C2420 100%)',
         color: '#F2ECE0',
       }}>
-        {/* Subtle glow */}
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none"
           style={{ background: 'radial-gradient(circle, rgba(193,113,74,.2), transparent 70%)', transform: 'translate(30%, -30%)' }} />
 
@@ -104,7 +103,6 @@ export default async function ComptePage({ params }: { params: { locale: string 
             </span>
           </div>
 
-          {/* Progress bar */}
           <div className="relative h-2 rounded-full mb-2 overflow-hidden" style={{ background: 'rgba(242,236,224,.12)' }}>
             <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
               style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #C1714A, #E8C5A0)' }} />
@@ -132,7 +130,7 @@ export default async function ComptePage({ params }: { params: { locale: string 
               Tout voir <ChevronRight size={13} />
             </Link>
           </div>
-          <div style={{ divideColor: 'rgba(44,36,32,.05)' }}>
+          <div>
             {(orders ?? []).map(o => {
               const date = new Date(o.created_at).toLocaleDateString('fr-BE', { day: '2-digit', month: 'short', year: 'numeric' });
               const items: any[] = o.items ?? [];
