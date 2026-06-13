@@ -8,7 +8,7 @@ const ITEMS = [
   },
   {
     icon: Globe,
-    title: 'Expédié depuis l'Europe',
+    title: "Expédié depuis l'Europe",
     desc: 'Stocks en Slovaquie · Livraison 3–5 jours',
   },
   {
