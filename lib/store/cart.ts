@@ -4,6 +4,10 @@ import type { CartItem, Product } from '@/lib/types';
 
 interface CartStore {
   items: CartItem[];
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  toggleCart: () => void;
   addItem: (product: Product, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -15,6 +19,11 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      isOpen: false,
+
+      openCart:   () => set({ isOpen: true }),
+      closeCart:  () => set({ isOpen: false }),
+      toggleCart: () => set(s => ({ isOpen: !s.isOpen })),
 
       addItem(product, quantity = 1) {
         set(state => {
@@ -30,6 +39,8 @@ export const useCartStore = create<CartStore>()(
           }
           return { items: [...state.items, { product, quantity }] };
         });
+        // Auto-ouvre le drawer lors d'un ajout
+        set({ isOpen: true });
       },
 
       removeItem(productId) {
@@ -61,6 +72,9 @@ export const useCartStore = create<CartStore>()(
         );
       },
     }),
-    { name: 'udz-cart' }
+    {
+      name: 'udz-cart',
+      partialize: (state) => ({ items: state.items }), // isOpen non persisté
+    }
   )
 );
