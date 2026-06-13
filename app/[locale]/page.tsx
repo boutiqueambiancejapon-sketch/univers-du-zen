@@ -6,50 +6,41 @@ import EthicsSection from '@/components/home/EthicsSection';
 import FeaturedSection from '@/components/home/FeaturedSection';
 import StatsBar from '@/components/home/StatsBar';
 import ReviewsSection from '@/components/home/ReviewsSection';
-import { DEMO_PRODUCTS } from '@/lib/demo-products';
-
-const BOUGIES_SELECTION = DEMO_PRODUCTS.filter(p =>
-  ['bougies', 'encens'].includes(p.category ?? '')
-);
-
-const AROMA_SELECTION = DEMO_PRODUCTS.filter(p =>
-  ['aromatherapie', 'pierres-cristaux', 'thes-artisanaux'].includes(p.category ?? '')
-);
+import { getPublishedProducts } from '@/lib/get-products';
 
 export default function HomePage() {
+  const products = getPublishedProducts();
+
+  // Huiles de fragrance en vedette (collection principale actuelle)
+  const huilesFeatured = products.slice(0, 4);
+  // Best sellers = les 4 premiers dispo
+  const bestSellers = products.slice(0, 4);
+
   return (
     <>
       <Hero />
       <EthicsBar />
       <CategoriesGrid />
 
-      <FeaturedSection
-        sectionLabel="La collection à l&apos;honneur"
-        title="Ambiancer la maison"
-        description="Bougies de soja, encens et parfums naturels pour transformer votre intérieur en espace de quiétude."
-        products={BOUGIES_SELECTION}
-        ctaHref="/boutique/bougies"
-        cardBg="#2B4036"
-        pieceCount={8}
-        discount={15}
-      />
+      {products.length > 0 && (
+        <FeaturedSection
+          sectionLabel="Nouveautés"
+          title="Huiles de Fragrance"
+          description="Nos huiles parfumées naturelles pour diffuseur, brûle-parfum et créations DIY. Longue tenue, formulas haute concentration."
+          products={huilesFeatured as any}
+          ctaHref="/boutique"
+          cardBg="#2B4036"
+          pieceCount={products.length}
+        />
+      )}
 
       <StatsBar />
 
-      <BestSellers />
-
-      <FeaturedSection
-        sectionLabel="Les incontournables"
-        title="Aromathérapie Essentielle"
-        description="Huiles pures, diffuseurs et cristaux pour un bien-être au quotidien. Sélectionnés avec soin, certifiés sans test animal."
-        products={AROMA_SELECTION}
-        ctaHref="/boutique/aromatherapie"
-        cardBg="#3B2A1F"
-        pieceCount={12}
-      />
+      {products.length > 0 && (
+        <BestSellers products={bestSellers as any} />
+      )}
 
       <ReviewsSection />
-
       <EthicsSection />
     </>
   );
