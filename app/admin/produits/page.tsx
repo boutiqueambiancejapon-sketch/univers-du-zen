@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CheckCircle2, ExternalLink, Package } from 'lucide-react';
+import EnrichButton from '@/components/admin/EnrichButton';
 
 interface CatalogEntry { slug: string; pushed_at: string }
 interface ProductData {
@@ -10,6 +11,8 @@ interface ProductData {
   tags: string;
   images: string[];
   pushed_at: string;
+  enriched_at?: string;
+  faqFr?: unknown[];
 }
 
 const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
@@ -37,12 +40,16 @@ export default async function ProduitsPage() {
     await Promise.all(catalog.map(e => getProductData(e.slug)))
   ).filter((p): p is ProductData => p !== null);
 
+  const enrichedCount = products.filter(p => p.enriched_at || p.faqFr).length;
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Produits publiés</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{products.length} produits en ligne</p>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {products.length} produits en ligne · {enrichedCount} enrichis
+          </p>
         </div>
         <Link href="/admin/catalogue"
           className="flex items-center gap-2 text-sm font-medium bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors">
@@ -58,13 +65,15 @@ export default async function ProduitsPage() {
               <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400 hidden lg:table-cell">Tags</th>
               <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Publié le</th>
               <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Statut</th>
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">SEO+</th>
               <th className="px-5 py-3" />
             </tr>
           </thead>
           <tbody>
-            {products.map((p, i) => {
+            {products.map((p) => {
               const date = new Date(p.pushed_at).toLocaleDateString('fr-BE', { day: '2-digit', month: 'short', year: 'numeric' });
               const imageUrl = p.images?.[0] ? `${REPO_RAW}/products/${p.slug}/${p.images[0]}` : null;
+              const isEnriched = !!(p.enriched_at || p.faqFr);
               return (
                 <tr key={p.slug} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-4">
@@ -94,9 +103,12 @@ export default async function ProduitsPage() {
                       <CheckCircle2 size={11} /> En ligne
                     </span>
                   </td>
+                  <td className="px-5 py-4">
+                    <EnrichButton slug={p.slug} alreadyEnriched={isEnriched} />
+                  </td>
                   <td className="px-5 py-4 text-right">
                     <a
-                      href={`https://univers-du-zen.vercel.app/fr-BE/boutique/${p.slug}`}
+                      href={`https://universduzen.com/fr-BE/boutique/${p.slug}`}
                       target="_blank" rel="noopener noreferrer"
                       className="text-gray-400 hover:text-gray-700 transition-colors inline-flex items-center gap-1 text-xs"
                     >
@@ -109,7 +121,7 @@ export default async function ProduitsPage() {
 
             {products.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-16 text-center text-gray-400 text-sm">
+                <td colSpan={6} className="px-5 py-16 text-center text-gray-400 text-sm">
                   Aucun produit publié. <Link href="/admin/catalogue" className="text-blue-500 hover:underline">Aller au catalogue →</Link>
                 </td>
               </tr>
