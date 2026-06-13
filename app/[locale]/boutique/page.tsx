@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
+import Link from 'next/link';
 import ShopGrid from '@/components/shop/ShopGrid';
 import { ALL_PRODUCTS, CATEGORIES } from '@/lib/all-products';
 
@@ -14,21 +15,43 @@ export default async function BoutiquePage() {
 
   return (
     <>
-      <div className="bg-zen-beige border-b border-zen-sand">
-        <div className="max-w-7xl mx-auto px-4 py-10">
-          <nav className="text-xs font-sans text-zen-muted mb-4 flex gap-1.5">
-            <a href={`/${locale}`} className="hover:text-zen-bark">Accueil</a>
+      {/* Hero header */}
+      <div style={{ background: '#F5F3EF', borderBottom: '1px solid rgba(44,36,32,.08)' }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 mb-6" style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, letterSpacing: '0.06em', color: 'rgba(44,36,32,.45)' }}>
+            <Link href={`/${locale}`} className="hover:opacity-100 transition-opacity">Accueil</Link>
             <span>/</span>
-            <span className="text-zen-bark">Boutique</span>
+            <span style={{ color: '#2C2420' }}>Boutique</span>
           </nav>
-          <h1 className="font-serif text-3xl md:text-4xl text-zen-bark mb-3">
-            Boutique Bien-être
-          </h1>
-          <p className="text-zen-muted max-w-2xl text-sm leading-relaxed">
-            Plus de 500 produits wellness sélectionnés avec soin — aromathérapie, bougies naturelles,
-            encens, cristaux et objets déco pour le corps, l&apos;esprit et la maison.
-            Tous nos produits sont cruelty-free et expédiés depuis l&apos;Europe.
-          </p>
+
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <p className="text-xs font-sans uppercase tracking-widest mb-3" style={{ color: '#C1714A', letterSpacing: '0.1em' }}>
+                Toute la collection
+              </p>
+              <h1 className="font-serif" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#2C2420', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
+                Boutique Bien-être
+              </h1>
+              <p className="mt-3 text-sm font-sans leading-relaxed" style={{ color: '#9a8878', maxWidth: 480 }}>
+                Aromathérapie, bougies naturelles, encens, cristaux et déco — sélection éthique, cruelty-free, expédiée depuis l&apos;Europe.
+              </p>
+            </div>
+
+            {/* Mini stats */}
+            <div className="flex gap-6 flex-shrink-0">
+              {[
+                { v: `${ALL_PRODUCTS.length}+`, l: 'produits' },
+                { v: '100%',  l: 'cruelty-free' },
+                { v: '3–5j',  l: 'livraison' },
+              ].map(({ v, l }) => (
+                <div key={l} className="text-center">
+                  <p className="font-serif font-bold" style={{ fontSize: 22, color: '#2C2420' }}>{v}</p>
+                  <p className="text-xs font-sans" style={{ color: '#9a8878' }}>{l}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
