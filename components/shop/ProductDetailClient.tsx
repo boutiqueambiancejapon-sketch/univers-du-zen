@@ -15,12 +15,16 @@ import BundleBuilder from './BundleBuilder';
 import type { DemoProduct } from '@/lib/demo-products';
 
 const CATEGORY_LABELS: Record<string, string> = {
-  aromatherapie: 'Aromathérapie',
-  bougies: 'Bougies',
-  encens: 'Encens',
-  'pierres-cristaux': 'Pierres & Cristaux',
-  'maison-deco': 'Maison & Déco',
-  'thes-artisanaux': 'Thés Artisanaux',
+  'huiles-fragrance':           'Huiles de Fragrance',
+  'aromatherapie':              'Aromathérapie',
+  'encens-rituels':             'Encens & Rituels',
+  'cristaux-lithotherapie':     'Cristaux & Lithothérapie',
+  'bougies-photophores':        'Bougies & Lumières',
+  'bien-etre-corps':            'Bien-être Corps',
+  'deco-maison-zen':            'Déco & Maison Zen',
+  'the-tisanes':                'Thé & Tisanes',
+  'instruments-sonotherapie':   'Instruments & Sonothérapie',
+  'bijoux-cristaux':            'Bijoux & Cristaux Portés',
 };
 
 const VOLUME_TIERS = [
@@ -61,9 +65,11 @@ type TabKey = 'description' | 'caracteristiques' | 'usage' | 'faq';
 interface Props {
   product: DemoProduct;
   related: DemoProduct[];
+  /** All published products — used as the BundleBuilder pool. */
+  allProducts?: DemoProduct[];
 }
 
-export default function ProductDetailClient({ product, related }: Props) {
+export default function ProductDetailClient({ product, related, allProducts = [] }: Props) {
   const locale = useLocale();
   const addItem = useCartStore(s => s.addItem);
   const [qty, setQty] = useState(1);
@@ -93,7 +99,6 @@ export default function ProductDetailClient({ product, related }: Props) {
 
   useEffect(() => {
     setDeliveryDate(getDeliveryDate());
-    // Random viewers between 8 and 47, seeded by product id for consistency within session
     setViewers(8 + Math.floor(Math.random() * 39));
   }, []);
 
@@ -495,16 +500,18 @@ export default function ProductDetailClient({ product, related }: Props) {
       </section>
 
       {/* ===== BUNDLE BUILDER ===== */}
-      <section className="mt-16 pt-12 border-t border-zen-sand">
-        <div className="flex items-baseline justify-between mb-3">
-          <h2 className="font-serif text-3xl lg:text-4xl text-zen-bark">Composez votre coffret</h2>
-          <span className="text-sm font-sans text-zen-terracotta font-medium">-15% par coffret</span>
-        </div>
-        <p className="text-sm font-sans text-zen-muted mb-10 max-w-xl">
-          Associez ce produit à d'autres favoris. Décochez ce que vous ne voulez pas, cliquez sur ↻ pour de nouvelles suggestions.
-        </p>
-        <BundleBuilder />
-      </section>
+      {allProducts.length >= BUNDLE_SIZE * 3 && (
+        <section className="mt-16 pt-12 border-t border-zen-sand">
+          <div className="flex items-baseline justify-between mb-3">
+            <h2 className="font-serif text-3xl lg:text-4xl text-zen-bark">Composez votre coffret</h2>
+            <span className="text-sm font-sans text-zen-terracotta font-medium">-15% par coffret</span>
+          </div>
+          <p className="text-sm font-sans text-zen-muted mb-10 max-w-xl">
+            Associez ce produit à d'autres favoris. Décochez ce que vous ne voulez pas, cliquez sur ↻ pour de nouvelles suggestions.
+          </p>
+          <BundleBuilder products={allProducts} />
+        </section>
+      )}
 
       {/* ===== RELATED PRODUCTS ===== */}
       {related.length > 0 && (
