@@ -1,6 +1,11 @@
 /**
  * Source de vérité produits publiés.
  * Utilisable uniquement côté serveur (Server Components).
+ *
+ * STRATÉGIE PRIX :
+ *  - Prix fournisseur (brut)  × 3   → prix de vente arrondi à .99
+ *  - Prix fournisseur (brut)  × 4.5 → compareAt (barré) arrondi à .99
+ *  → Affiche ~33 % de remise, marge nette ≥ 66 %.
  */
 
 import fs from 'fs';
@@ -47,9 +52,27 @@ export interface PublishedProduct {
 const PRODUCTS_DIR = path.join(process.cwd(), 'products');
 const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
 
+/* ── Constantes de marge ────────────────────────────────────────────────────
+   Modifier ici pour ajuster la politique tarifaire globale.
+   MARKUP       = coefficient appliqué au coût fournisseur → prix affiché
+   COMPARE_MULT = coefficient pour le prix barré (> MARKUP pour afficher remise)
+   Remise visible ≈ 1 - MARKUP / COMPARE_MULT  (actuellement ~33 %)
+─────────────────────────────────────────────────────────────────────────── */
+const MARKUP       = 3;
+const COMPARE_MULT = 4.5;
+
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 
-function parsePrice(raw: unknown): number | undefined {
+/**
+ * Arrondit vers le haut au prochain entier puis soustrait 0,01.
+ * Ex : 11,10 → 11,99 | 15,00 → 14,99 | 4,50 → 4,99
+ */
+function psychPrice(raw: number): number {
+  return Math.ceil(raw) - 0.01;
+}
+
+/** Extrait un nombre depuis "€3.70", 3.70 ou undefined. */
+function parseRawPrice(raw: unknown): number | undefined {
   if (typeof raw === 'number') return raw > 0 ? raw : undefined;
   if (typeof raw === 'string') {
     const n = parseFloat(raw.replace(/[^0-9.]/g, ''));
@@ -75,15 +98,16 @@ function parseImages(raw: unknown[], slug: string): string[] {
 function mapProduct(raw: Record<string, unknown>, slug: string): PublishedProduct {
   const images = parseImages((raw.images as unknown[]) ?? [], slug);
 
-  const retailPriceEur =
-    parsePrice(raw.retail_price_eur) ??
-    parsePrice(raw.retailPriceEur)   ??
-    parsePrice(raw.price);
+  // Coût fournisseur brut (le champ "price" du pipeline vaut ex. "€3.70")
+  const supplierCost =
+    parseRawPrice(raw.retail_price_eur) ??
+    parseRawPrice(raw.retailPriceEur)   ??
+    parseRawPrice(raw.price);
 
-  const compareAtPriceEur =
-    parsePrice(raw.compare_at_price_eur) ??
-    parsePrice(raw.compareAtPriceEur)    ??
-    parsePrice(raw.compare_price);
+  // Prix de vente : coût × MARKUP arrondi à .99
+  const retailPriceEur   = supplierCost ? psychPrice(supplierCost * MARKUP)       : undefined;
+  // Prix barré : coût × COMPARE_MULT arrondi à .99 (affiche une remise ~33 %)
+  const compareAtPriceEur = supplierCost ? psychPrice(supplierCost * COMPARE_MULT) : undefined;
 
   const stockStatus =
     (raw.stock_status as PublishedProduct['stockStatus']) ??
@@ -93,49 +117,42 @@ function mapProduct(raw: Record<string, unknown>, slug: string): PublishedProduc
   const nameFr = String(raw.name ?? raw.nameFr ?? slug);
 
   return {
-    // Champs primitifs — explicitement typés pour satisfaire TS
     id:    String(raw.id ?? slug),
     slug,
     name:  nameFr,
     images,
     tags:  parseTags(raw.tags),
 
-    // Texte produit
     nameFr,
     shortDescriptionFr: (raw.short_description ?? raw.shortDescriptionFr ?? undefined) as string | undefined,
-    descriptionFr:      (raw.description ?? raw.descriptionFr ?? undefined) as string | undefined,
-    longDescriptionFr:  (raw.long_description ?? raw.longDescriptionFr ?? undefined) as string | undefined,
-    usageFr:            (raw.usage ?? raw.usageFr ?? undefined) as string | undefined,
+    descriptionFr:      (raw.description        ?? raw.descriptionFr      ?? undefined) as string | undefined,
+    longDescriptionFr:  (raw.long_description   ?? raw.longDescriptionFr  ?? undefined) as string | undefined,
+    usageFr:            (raw.usage              ?? raw.usageFr            ?? undefined) as string | undefined,
     meta_description:   (raw.meta_description ?? undefined) as string | undefined,
-    original_name:      (raw.original_name ?? undefined) as string | undefined,
+    original_name:      (raw.original_name    ?? undefined) as string | undefined,
 
-    // Tableaux enrichis
-    benefitsFr:     Array.isArray(raw.benefitsFr) ? raw.benefitsFr as string[] : undefined,
-    faqFr:          Array.isArray(raw.faqFr)      ? raw.faqFr      as PublishedProduct['faqFr'] : undefined,
+    benefitsFr:     Array.isArray(raw.benefitsFr)      ? raw.benefitsFr      as string[] : undefined,
+    faqFr:          Array.isArray(raw.faqFr)           ? raw.faqFr           as PublishedProduct['faqFr'] : undefined,
     characteristics:Array.isArray(raw.characteristics) ? raw.characteristics as PublishedProduct['characteristics'] : undefined,
 
-    // Prix
+    // Prix calculés (jamais le prix brut fournisseur)
     retailPriceEur,
     compareAtPriceEur,
     retail_price_eur:     retailPriceEur,
     compare_at_price_eur: compareAtPriceEur,
 
-    // Stock
     stockStatus,
     stock_status: stockStatus,
     stockQty:     (raw.stock_qty ?? raw.stockQty ?? 0) as number,
     stock_qty:    (raw.stock_qty ?? raw.stockQty ?? 0) as number,
 
-    // Flags
     isBestSeller:  Boolean(raw.is_best_seller  ?? raw.isBestSeller  ?? false),
     isVegan:       Boolean(raw.is_vegan        ?? raw.isVegan        ?? true),
     isCrueltyFree: Boolean(raw.is_cruelty_free ?? raw.isCrueltyFree ?? true),
     isOrganic:     Boolean(raw.is_organic      ?? raw.isOrganic      ?? false),
 
-    // Catégorie
     category: String(raw.category ?? raw.dept ?? 'huiles-fragrance'),
 
-    // Dates
     pushed_at: (raw.pushed_at ?? undefined) as string | undefined,
   };
 }
