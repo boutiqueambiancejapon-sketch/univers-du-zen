@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -103,29 +102,27 @@ function fmt(n: number) {
 
 /* ─── Composant principal ─────────────────────────────────────────────────── */
 export default function CheckoutClient() {
-  const locale  = useLocale();
-  const router  = useRouter();
-  const items   = useCartStore(s => s.items);
-  const getTotal = useCartStore(s => s.total);
+  const locale    = useLocale();
+  const items     = useCartStore(s => s.items);
+  const getTotal  = useCartStore(s => s.total);
   const clearCart = useCartStore(s => s.clearCart);
 
-  const [form, setForm]   = useState<Field>(INITIAL_FORM);
+  const [form, setForm]     = useState<Field>(INITIAL_FORM);
   const [method, setMethod] = useState('bancontact');
   const [loading, setLoading] = useState(false);
   const [error, setError]   = useState('');
   const [mounted, setMounted] = useState(false);
 
-  // Évite le flash SSR avec zustand persist
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
 
-  const subtotal = getTotal();
+  const subtotal    = getTotal();
   const shippingFree = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const shipping = shippingFree ? 0 : SHIPPING_COST;
-  const total    = subtotal + shipping;
+  const shipping    = shippingFree ? 0 : SHIPPING_COST;
+  const total       = subtotal + shipping;
 
-  /* ── Redirect si panier vide ─── */
+  /* ── Panier vide ─── */
   if (items.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-6 text-center">
@@ -144,22 +141,22 @@ export default function CheckoutClient() {
     );
   }
 
-  /* ── Validation basique ─── */
+  /* ── Validation ─── */
   function validate(): string | null {
-    if (!form.email.includes('@'))       return 'Email invalide.';
-    if (!form.firstName.trim())          return 'Prénom requis.';
-    if (!form.lastName.trim())           return 'Nom requis.';
-    if (!form.address.trim())            return 'Adresse requise.';
-    if (!form.postalCode.trim())         return 'Code postal requis.';
-    if (!form.city.trim())               return 'Ville requise.';
+    if (!form.email.includes('@')) return 'Email invalide.';
+    if (!form.firstName.trim())   return 'Prénom requis.';
+    if (!form.lastName.trim())    return 'Nom requis.';
+    if (!form.address.trim())     return 'Adresse requise.';
+    if (!form.postalCode.trim())  return 'Code postal requis.';
+    if (!form.city.trim())        return 'Ville requise.';
     return null;
   }
 
   /* ── Soumission ─── */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const validationError = validate();
-    if (validationError) { setError(validationError); return; }
+    const err = validate();
+    if (err) { setError(err); return; }
 
     setError('');
     setLoading(true);
@@ -171,8 +168,8 @@ export default function CheckoutClient() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: total,
-          method: method,
+          amount:      total,
+          method:      method,
           description: `Commande Univers du Zen — ${form.firstName} ${form.lastName}`,
           locale,
           returnUrl:  `${siteUrl}/${locale}/checkout/succes`,
@@ -189,7 +186,7 @@ export default function CheckoutClient() {
           },
           orderItems: items.map(i => ({
             id:       i.product.id,
-            name:     i.product.nameFr ?? i.product.name,
+            name:     i.product.nameFr ?? '',
             quantity: i.quantity,
             price:    i.product.retailPriceEur,
           })),
@@ -203,7 +200,6 @@ export default function CheckoutClient() {
         return;
       }
 
-      // Vide le panier local avant redirect (sera rechargé si annulation)
       clearCart();
       window.location.href = data.checkoutUrl;
     } catch {
@@ -219,7 +215,7 @@ export default function CheckoutClient() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F3]">
-      {/* ── Header simplifié ─────────────────────────────────────────── */}
+      {/* ── Header ─── */}
       <header className="bg-white border-b border-zen-sand">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href={`/${locale}`} className="font-serif text-xl text-zen-bark tracking-wide">
@@ -232,7 +228,7 @@ export default function CheckoutClient() {
         </div>
       </header>
 
-      {/* ── Fil d'Ariane ─────────────────────────────────────────────── */}
+      {/* ── Fil d'Ariane ─── */}
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-1.5 text-xs font-sans text-zen-muted">
         <Link href={`/${locale}/boutique`} className="hover:text-zen-bark transition-colors">Boutique</Link>
         <ChevronRight size={11} />
@@ -243,13 +239,11 @@ export default function CheckoutClient() {
 
       <div className="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10 items-start">
 
-        {/* ═══════════════════════════════════════════════════════════
-            COLONNE GAUCHE — Formulaire
-        ════════════════════════════════════════════════════════════ */}
+        {/* ══ FORMULAIRE ══ */}
         <div>
           <form onSubmit={handleSubmit} noValidate className="space-y-6">
 
-            {/* — Contact ——————————————————————————————————— */}
+            {/* Contact */}
             <section className="bg-white rounded-2xl border border-zen-sand p-6">
               <h2 className="font-serif text-xl text-zen-bark mb-5">Contact</h2>
               <div className="space-y-4">
@@ -266,7 +260,7 @@ export default function CheckoutClient() {
               </div>
             </section>
 
-            {/* — Adresse de livraison ——————————————————————— */}
+            {/* Adresse */}
             <section className="bg-white rounded-2xl border border-zen-sand p-6">
               <h2 className="font-serif text-xl text-zen-bark mb-5">Adresse de livraison</h2>
               <div className="space-y-4">
@@ -282,15 +276,10 @@ export default function CheckoutClient() {
                       onChange={v => field('city', v)} placeholder="Bruxelles" />
                   </div>
                 </div>
-
-                {/* Pays */}
                 <div>
                   <label className="block text-xs font-sans font-medium text-zen-bark mb-1.5">Pays</label>
-                  <select
-                    value={form.country}
-                    onChange={e => field('country', e.target.value)}
-                    className="w-full rounded-xl border border-zen-sand px-4 py-3 text-sm font-sans text-zen-bark bg-white focus:outline-none focus:ring-2 focus:ring-zen-bark/20 focus:border-zen-bark transition-colors"
-                  >
+                  <select value={form.country} onChange={e => field('country', e.target.value)}
+                    className="w-full rounded-xl border border-zen-sand px-4 py-3 text-sm font-sans text-zen-bark bg-white focus:outline-none focus:ring-2 focus:ring-zen-bark/20 focus:border-zen-bark transition-colors">
                     <option value="BE">🇧🇪 Belgique</option>
                     <option value="FR">🇫🇷 France</option>
                     <option value="NL">🇳🇱 Pays-Bas</option>
@@ -302,7 +291,7 @@ export default function CheckoutClient() {
               </div>
             </section>
 
-            {/* — Méthode de paiement ———————————————————————— */}
+            {/* Méthode de paiement */}
             <section className="bg-white rounded-2xl border border-zen-sand p-6">
               <h2 className="font-serif text-xl text-zen-bark mb-5">Méthode de paiement</h2>
               <div className="space-y-2.5">
@@ -311,14 +300,10 @@ export default function CheckoutClient() {
                   return (
                     <label key={pm.id}
                       className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                        isSelected
-                          ? 'border-zen-bark bg-zen-bark/5'
-                          : 'border-zen-sand hover:border-zen-bark/40 bg-white'
-                      }`}
-                    >
+                        isSelected ? 'border-zen-bark bg-zen-bark/5' : 'border-zen-sand hover:border-zen-bark/40 bg-white'
+                      }`}>
                       <input type="radio" name="paymentMethod" value={pm.id}
-                        checked={isSelected} onChange={() => setMethod(pm.id)}
-                        className="sr-only" />
+                        checked={isSelected} onChange={() => setMethod(pm.id)} className="sr-only" />
                       <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
                         isSelected ? 'border-zen-bark' : 'border-gray-300'
                       }`}>
@@ -337,7 +322,7 @@ export default function CheckoutClient() {
               </div>
             </section>
 
-            {/* — Erreur ———————————————————————————————————— */}
+            {/* Erreur */}
             {error && (
               <div className="flex items-start gap-3 px-4 py-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-700 font-sans">
                 <AlertCircle size={16} className="mt-0.5 flex-shrink-0 text-red-500" />
@@ -345,12 +330,9 @@ export default function CheckoutClient() {
               </div>
             )}
 
-            {/* — CTA ———————————————————————————————————————— */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-3 bg-zen-bark text-white font-sans font-semibold py-4 px-8 rounded-2xl text-base hover:bg-zen-terracotta active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-            >
+            {/* CTA */}
+            <button type="submit" disabled={loading}
+              className="w-full flex items-center justify-center gap-3 bg-zen-bark text-white font-sans font-semibold py-4 px-8 rounded-2xl text-base hover:bg-zen-terracotta active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
               {loading ? (
                 <>
                   <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
@@ -360,15 +342,10 @@ export default function CheckoutClient() {
                   Redirection vers Mollie…
                 </>
               ) : (
-                <>
-                  <Lock size={16} />
-                  Commander — {fmt(total)} €
-                  <ChevronRight size={16} />
-                </>
+                <><Lock size={16} /> Commander — {fmt(total)} € <ChevronRight size={16} /></>
               )}
             </button>
 
-            {/* — Sécurité ——————————————————————————————————— */}
             <div className="flex items-center justify-center gap-2 text-xs font-sans text-zen-muted">
               <Lock size={11} className="text-zen-sage" />
               Paiement sécurisé SSL • Fourni par Mollie
@@ -376,21 +353,17 @@ export default function CheckoutClient() {
           </form>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-            COLONNE DROITE — Résumé commande
-        ════════════════════════════════════════════════════════════ */}
+        {/* ══ RÉSUMÉ COMMANDE ══ */}
         <div className="lg:sticky lg:top-6 space-y-4">
           <div className="bg-white rounded-2xl border border-zen-sand p-6">
             <h2 className="font-serif text-xl text-zen-bark mb-5 flex items-center gap-2">
-              <Package size={18} className="text-zen-terracotta" />
-              Votre commande
+              <Package size={18} className="text-zen-terracotta" /> Votre commande
             </h2>
 
-            {/* Articles */}
             <div className="space-y-4 mb-5">
               {items.map(({ product, quantity }) => {
                 const img   = product.images?.[0];
-                const name  = product.nameFr ?? (product as any).name ?? '—';
+                const name  = product.nameFr ?? '—';
                 const price = (product.retailPriceEur ?? 0) * quantity;
                 return (
                   <div key={product.id} className="flex items-center gap-3">
@@ -408,29 +381,21 @@ export default function CheckoutClient() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-sans font-medium text-zen-bark leading-snug line-clamp-2">{name}</p>
                     </div>
-                    <p className="font-serif font-semibold text-zen-bark text-sm flex-shrink-0">
-                      {fmt(price)} €
-                    </p>
+                    <p className="font-serif font-semibold text-zen-bark text-sm flex-shrink-0">{fmt(price)} €</p>
                   </div>
                 );
               })}
             </div>
 
-            {/* Séparateur */}
             <div className="border-t border-zen-sand pt-4 space-y-2.5">
               <div className="flex justify-between text-sm font-sans text-zen-muted">
-                <span>Sous-total</span>
-                <span>{fmt(subtotal)} €</span>
+                <span>Sous-total</span><span>{fmt(subtotal)} €</span>
               </div>
               <div className="flex justify-between text-sm font-sans items-center">
-                <span className="flex items-center gap-1.5 text-zen-muted">
-                  <Truck size={13} /> Livraison
-                </span>
-                {shippingFree ? (
-                  <span className="text-green-600 font-medium font-sans text-sm">Gratuite 🎉</span>
-                ) : (
-                  <span className="text-zen-bark font-sans text-sm">{fmt(SHIPPING_COST)} €</span>
-                )}
+                <span className="flex items-center gap-1.5 text-zen-muted"><Truck size={13} /> Livraison</span>
+                {shippingFree
+                  ? <span className="text-green-600 font-medium font-sans text-sm">Gratuite 🎉</span>
+                  : <span className="text-zen-bark font-sans text-sm">{fmt(SHIPPING_COST)} €</span>}
               </div>
               {!shippingFree && (
                 <p className="text-[11px] font-sans text-zen-muted bg-zen-beige rounded-lg px-3 py-2">
@@ -443,11 +408,10 @@ export default function CheckoutClient() {
               <span className="font-serif text-lg text-zen-bark">Total</span>
               <span className="font-serif text-2xl font-bold text-zen-bark">{fmt(total)} €</span>
             </div>
-
             <p className="text-[11px] font-sans text-zen-muted text-center mt-1">TVA incluse</p>
           </div>
 
-          {/* Badges de confiance */}
+          {/* Badges confiance */}
           <div className="bg-white rounded-2xl border border-zen-sand p-5 space-y-3">
             {[
               { Icon: Lock,  text: 'Paiement 100% sécurisé (SSL)' },
@@ -455,13 +419,11 @@ export default function CheckoutClient() {
               { Icon: Check, text: 'Retour sous 30 jours garanti' },
             ].map(({ Icon, text }) => (
               <div key={text} className="flex items-center gap-3 text-sm font-sans text-zen-muted">
-                <Icon size={15} className="text-zen-sage flex-shrink-0" />
-                {text}
+                <Icon size={15} className="text-zen-sage flex-shrink-0" /> {text}
               </div>
             ))}
           </div>
 
-          {/* Mollie trust badge */}
           <div className="flex items-center justify-center gap-2 text-[11px] font-sans text-zen-muted">
             <Lock size={10} className="text-zen-sage" />
             Paiement sécurisé et fourni par Mollie
@@ -472,26 +434,17 @@ export default function CheckoutClient() {
   );
 }
 
-/* ─── InputField helper ───────────────────────────────────────────────────── */
+/* ─── InputField ──────────────────────────────────────────────────────────── */
 function InputField({
   label, value, onChange, placeholder = '', type = 'text',
 }: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  type?: string;
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string;
 }) {
   return (
     <div>
       <label className="block text-xs font-sans font-medium text-zen-bark mb-1.5">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded-xl border border-zen-sand px-4 py-3 text-sm font-sans text-zen-bark placeholder:text-zen-muted/60 bg-white focus:outline-none focus:ring-2 focus:ring-zen-bark/20 focus:border-zen-bark transition-colors"
-      />
+      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+        className="w-full rounded-xl border border-zen-sand px-4 py-3 text-sm font-sans text-zen-bark placeholder:text-zen-muted/60 bg-white focus:outline-none focus:ring-2 focus:ring-zen-bark/20 focus:border-zen-bark transition-colors" />
     </div>
   );
 }
