@@ -1,0 +1,12 @@
+{
+  "name": "mcp-retina",
+  "version": "1.0.0",
+  "description": "MCP server pour accès au catalogue Retina depuis Claude",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}
