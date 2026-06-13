@@ -54,8 +54,9 @@
     @apply flex flex-col items-center gap-1 text-xs text-zen-muted;
   }
 
+  /* group ne peut pas s'utiliser avec @apply — appliquer group directement dans le HTML */
   .card-product {
-    @apply bg-white rounded-lg overflow-hidden group cursor-pointer;
+    @apply bg-white rounded-lg overflow-hidden cursor-pointer;
   }
 }
 
