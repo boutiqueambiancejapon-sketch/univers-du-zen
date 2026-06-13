@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { placeOrder } from '@/lib/retina';
+import type { RetinaOrderItem } from '@/lib/retina';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'boutiqueambiancejapon@gmail.com';
 
@@ -31,13 +32,13 @@ export async function POST(
 
   // Map items to Retina format (product ids are stored as numeric strings like '187398')
   const items: any[] = order.items ?? [];
-  const retinaItems = items
-    .map((item: any) => {
+  const retinaItems: RetinaOrderItem[] = items
+    .map((item: any): RetinaOrderItem | null => {
       const retinaId = parseInt(item.productId ?? item.sku ?? '', 10);
       if (isNaN(retinaId)) return null;
       return { product_id: retinaId, quantity: item.quantity };
     })
-    .filter(Boolean);
+    .filter((x): x is RetinaOrderItem => x !== null);
 
   if (retinaItems.length === 0) {
     return NextResponse.json({
