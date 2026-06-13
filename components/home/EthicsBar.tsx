@@ -1,42 +1,39 @@
-import { Leaf, Shield, Globe, Heart } from 'lucide-react';
-
 const ITEMS = [
-  {
-    icon: Leaf,
-    title: 'Sélection éthique',
-    desc: 'Sans test sur animaux, matières durables',
-  },
-  {
-    icon: Globe,
-    title: "Expédié depuis l'Europe",
-    desc: 'Stocks en Slovaquie · Livraison 3–5 jours',
-  },
-  {
-    icon: Shield,
-    title: 'Paiement sécurisé',
-    desc: 'Bancontact, carte, PayPal',
-  },
-  {
-    icon: Heart,
-    title: 'Retours 30 jours',
-    desc: 'Satisfait ou remboursé, sans question',
-  },
+  '— SÉLECTION 100% NATURELLE',
+  '— SANS TEST SUR ANIMAUX',
+  '— EXPÉDIÉ DEPUIS L\'EUROPE',
+  '— LIVRAISON OFFERTE DÈS 59 €',
+  '— RETOURS 30 JOURS',
+  '— PAIEMENT SÉCURISÉ',
+  '— STOCKS EN SLOVAQUIE',
+  '— LIVRAISON 3–5 JOURS',
 ];
 
 export default function EthicsBar() {
+  const text = ITEMS.join('  ');
+
   return (
-    <section className="bg-zen-beige border-y border-zen-sand">
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-        {ITEMS.map(({ icon: Icon, title, desc }) => (
-          <div key={title} className="flex items-start gap-3">
-            <Icon size={20} className="text-zen-sage mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-zen-bark">{title}</p>
-              <p className="text-xs text-zen-muted mt-0.5">{desc}</p>
-            </div>
+    <div className="overflow-hidden" style={{ background: '#2C2420', color: '#F2ECE0' }}>
+      <div className="flex py-3" style={{ animation: 'marquee 28s linear infinite' }}>
+        {/* Double pour boucle seamless */}
+        {[0, 1].map(k => (
+          <div key={k} className="flex flex-shrink-0 items-center gap-0 whitespace-nowrap pr-0">
+            {ITEMS.map((item, i) => (
+              <span key={i} className="font-sans font-medium" style={{ fontSize: 12, letterSpacing: '0.06em', paddingRight: 40, color: 'rgba(242,236,224,.75)' }}>
+                {item}
+                {i < ITEMS.length - 1 && ''}
+              </span>
+            ))}
           </div>
         ))}
       </div>
-    </section>
+
+      <style>{`
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+      `}</style>
+    </div>
   );
 }
