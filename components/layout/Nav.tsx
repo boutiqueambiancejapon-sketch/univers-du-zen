@@ -2,26 +2,35 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useTranslations, useLocale } from 'next-intl';
-import { Search, User, ShoppingBag, Menu, X } from 'lucide-react';
+import { useLocale } from 'next-intl';
+import { Search, User, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
 import CartDrawer from '@/components/shop/CartDrawer';
 import LiveNotification from '@/components/shop/LiveNotification';
 
-const CATEGORIES = [
-  { key: 'aromatherapy', slug: 'aromatherapie' },
-  { key: 'candles',      slug: 'bougies' },
-  { key: 'incense',      slug: 'encens' },
-  { key: 'gemstones',    slug: 'pierres-cristaux' },
-  { key: 'home',         slug: 'maison-deco' },
-  { key: 'music',        slug: 'musique-sons' },
-  { key: 'tea',          slug: 'thes-artisanaux' },
+/** Slugs alignés sur lib/demo-products.ts — NE PAS modifier sans mettre à jour generateStaticParams */
+const NAV_CATEGORIES = [
+  { slug: 'huiles-fragrance',         label: 'Huiles & Fragrance' },
+  { slug: 'aromatherapie',            label: 'Aromathérapie' },
+  { slug: 'encens-rituels',           label: 'Encens & Rituels' },
+  { slug: 'cristaux-lithotherapie',   label: 'Cristaux' },
+  { slug: 'bougies-photophores',      label: 'Bougies' },
+  { slug: 'bien-etre-corps',          label: 'Bien-être' },
+  { slug: 'deco-maison-zen',          label: 'Maison Zen' },
+  { slug: 'the-tisanes',              label: 'Thé & Tisanes' },
+  { slug: 'instruments-sonotherapie', label: 'Sonothérapie' },
+  { slug: 'bijoux-cristaux',          label: 'Bijoux' },
 ] as const;
 
+/** Affichés directement dans la nav desktop (les + commerciaux) */
+const NAV_MAIN = NAV_CATEGORIES.slice(0, 6);
+/** Cachés dans le dropdown "Plus" */
+const NAV_MORE = NAV_CATEGORIES.slice(6);
+
 export default function Nav() {
-  const t      = useTranslations('nav');
   const locale = useLocale();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [moreOpen, setMoreOpen]     = useState(false);
 
   const itemCount  = useCartStore(s => s.items.reduce((n, i) => n + i.quantity, 0));
   const toggleCart = useCartStore(s => s.toggleCart);
@@ -31,7 +40,7 @@ export default function Nav() {
   return (
     <>
       <nav className="bg-zen-cream border-b border-zen-sand sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
 
           {/* Logo */}
           <Link href={href('/')} className="flex-shrink-0">
@@ -41,50 +50,64 @@ export default function Nav() {
           </Link>
 
           {/* Nav desktop */}
-          <ul className="hidden lg:flex items-center gap-6">
+          <ul className="hidden lg:flex items-center gap-1">
             <li>
-              <Link
-                href={href('/boutique')}
-                className="text-sm font-medium text-zen-bark hover:text-zen-terracotta transition-colors"
-              >
-                {t('shop')}
+              <Link href={href('/boutique')}
+                className="text-sm font-semibold text-zen-bark hover:text-zen-terracotta transition-colors px-3 py-2 rounded-lg hover:bg-zen-beige">
+                Boutique
               </Link>
             </li>
-            {CATEGORIES.map(({ key, slug }) => (
-              <li key={key}>
-                <Link
-                  href={href(`/boutique/${slug}`)}
-                  className="text-sm text-zen-muted hover:text-zen-bark transition-colors"
-                >
-                  {t(key)}
+
+            {NAV_MAIN.map(({ slug, label }) => (
+              <li key={slug}>
+                <Link href={href(`/boutique/${slug}`)}
+                  className="text-sm text-zen-muted hover:text-zen-bark hover:bg-zen-beige transition-colors px-3 py-2 rounded-lg block whitespace-nowrap">
+                  {label}
                 </Link>
               </li>
             ))}
+
+            {/* Dropdown "Plus" pour les 4 dernières catégories */}
+            <li className="relative">
+              <button
+                onClick={() => setMoreOpen(o => !o)}
+                className="flex items-center gap-1 text-sm text-zen-muted hover:text-zen-bark hover:bg-zen-beige transition-colors px-3 py-2 rounded-lg"
+              >
+                Plus <ChevronDown size={13} className={`transition-transform ${moreOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {moreOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} />
+                  <ul className="absolute top-full right-0 mt-1 bg-white rounded-xl shadow-xl border border-zen-sand z-50 py-2 min-w-[180px]">
+                    {NAV_MORE.map(({ slug, label }) => (
+                      <li key={slug}>
+                        <Link href={href(`/boutique/${slug}`)}
+                          className="block px-4 py-2.5 text-sm text-zen-bark hover:bg-zen-beige transition-colors"
+                          onClick={() => setMoreOpen(false)}>
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </li>
           </ul>
 
           {/* Icons */}
-          <div className="flex items-center gap-3">
-            <button
-              aria-label={t('search')}
-              className="p-2 text-zen-bark hover:text-zen-terracotta transition-colors"
-            >
+          <div className="flex items-center gap-1">
+            <button aria-label="Rechercher"
+              className="p-2 text-zen-bark hover:text-zen-terracotta hover:bg-zen-beige rounded-lg transition-colors">
               <Search size={20} />
             </button>
 
-            <Link
-              href={href('/compte')}
-              aria-label={t('account')}
-              className="p-2 text-zen-bark hover:text-zen-terracotta transition-colors"
-            >
+            <Link href={href('/compte')} aria-label="Mon compte"
+              className="p-2 text-zen-bark hover:text-zen-terracotta hover:bg-zen-beige rounded-lg transition-colors">
               <User size={20} />
             </Link>
 
-            {/* Panier → ouvre le drawer */}
-            <button
-              onClick={toggleCart}
-              aria-label={t('cart')}
-              className="relative p-2 text-zen-bark hover:text-zen-terracotta transition-colors"
-            >
+            <button onClick={toggleCart} aria-label="Panier"
+              className="relative p-2 text-zen-bark hover:text-zen-terracotta hover:bg-zen-beige rounded-lg transition-colors">
               <ShoppingBag size={20} />
               {itemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-zen-terracotta text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
@@ -93,38 +116,30 @@ export default function Nav() {
               )}
             </button>
 
-            {/* Burger mobile */}
-            <button
-              className="lg:hidden p-2 text-zen-bark"
-              onClick={() => setMobileOpen(o => !o)}
-              aria-label="Menu"
-            >
+            <button className="lg:hidden p-2 text-zen-bark hover:bg-zen-beige rounded-lg transition-colors"
+              onClick={() => setMobileOpen(o => !o)} aria-label="Menu">
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Menu mobile */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-zen-sand bg-zen-cream">
-            <ul className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3">
+            <ul className="max-w-7xl mx-auto px-4 py-4 space-y-1">
               <li>
-                <Link
-                  href={href('/boutique')}
-                  className="text-sm font-medium text-zen-bark"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {t('shop')}
+                <Link href={href('/boutique')}
+                  className="block px-3 py-2.5 text-sm font-semibold text-zen-bark rounded-xl hover:bg-zen-beige transition-colors"
+                  onClick={() => setMobileOpen(false)}>
+                  Toute la boutique
                 </Link>
               </li>
-              {CATEGORIES.map(({ key, slug }) => (
-                <li key={key}>
-                  <Link
-                    href={href(`/boutique/${slug}`)}
-                    className="text-sm text-zen-muted"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {t(key)}
+              {NAV_CATEGORIES.map(({ slug, label }) => (
+                <li key={slug}>
+                  <Link href={href(`/boutique/${slug}`)}
+                    className="block px-3 py-2.5 text-sm text-zen-muted rounded-xl hover:bg-zen-beige hover:text-zen-bark transition-colors"
+                    onClick={() => setMobileOpen(false)}>
+                    {label}
                   </Link>
                 </li>
               ))}
@@ -133,7 +148,6 @@ export default function Nav() {
         )}
       </nav>
 
-      {/* Portals rendus dans le Nav (toujours présent dans le layout) */}
       <CartDrawer />
       <LiveNotification />
     </>
