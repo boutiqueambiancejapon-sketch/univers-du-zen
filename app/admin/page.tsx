@@ -12,17 +12,46 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   failed:     { label: 'Échouée',        color: 'bg-red-100 text-red-600' },
 };
 
-const COUNTRY_NAMES: Record<string, string> = { BE: 'Belgique', FR: 'France', NL: 'Pays-Bas', LU: 'Luxembourg', DE: 'Allemagne' };
+const COUNTRY_NAMES: Record<string, string> = { BE: 'Belgique', FR: 'France', NL: 'Pays-Bas' };
 
 export default async function AdminPage() {
-  const supabase = createAdminClient();
+  // Surface errors instead of blank page
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+        <h1 className="text-lg font-semibold text-red-700 mb-2">Variable manquante</h1>
+        <p className="text-sm text-red-600">
+          <code className="bg-red-100 px-1.5 py-0.5 rounded">SUPABASE_SERVICE_ROLE_KEY</code> n'est pas définie dans les variables d'environnement Vercel.
+        </p>
+        <p className="text-sm text-red-500 mt-2">Vercel → Settings → Environment Variables → ajouter la clé → Redeploy.</p>
+      </div>
+    );
+  }
 
-  const { data: allOrders } = await supabase
-    .from('orders')
-    .select('id, created_at, email, total_eur, shipping_eur, vat_amount_eur, status, country_code, items, supplier_order_id')
-    .order('created_at', { ascending: false });
+  let orders: any[] = [];
+  let fetchError: string | null = null;
 
-  const orders = allOrders ?? [];
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from('orders')
+      .select('id, created_at, email, total_eur, shipping_eur, vat_amount_eur, status, country_code, items, supplier_order_id')
+      .order('created_at', { ascending: false });
+
+    if (error) fetchError = error.message;
+    else orders = data ?? [];
+  } catch (e: any) {
+    fetchError = e?.message ?? 'Erreur inconnue';
+  }
+
+  if (fetchError) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+        <h1 className="text-lg font-semibold text-red-700 mb-2">Erreur Supabase</h1>
+        <p className="text-sm text-red-600 font-mono">{fetchError}</p>
+      </div>
+    );
+  }
 
   // Revenue
   const revenue = orders
@@ -44,13 +73,11 @@ export default async function AdminPage() {
   const revenueLastMonth = lastMonth.filter(o => ['paid','processing','shipped','delivered'].includes(o.status)).reduce((s, o) => s + (o.total_eur ?? 0), 0);
   const monthGrowth = revenueLastMonth > 0 ? ((revenueThisMonth - revenueLastMonth) / revenueLastMonth * 100).toFixed(0) : '—';
 
-  // By status
   const byStatus = orders.reduce((acc, o) => {
     acc[o.status] = (acc[o.status] ?? 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  // TVA par pays
   const vatByCountry = orders
     .filter(o => ['paid','processing','shipped','delivered'].includes(o.status))
     .reduce((acc, o) => {
@@ -59,7 +86,6 @@ export default async function AdminPage() {
       return acc;
     }, {} as Record<string, number>);
 
-  // Pending orders (paid but not yet sent to supplier)
   const pendingPush = orders.filter(o => o.status === 'paid' && !o.supplier_order_id).length;
 
   return (
@@ -85,10 +111,10 @@ export default async function AdminPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'CA total', value: `${revenue.toFixed(2).replace('.', ',')} €`, sub: 'commandes validées', icon: TrendingUp, color: 'text-emerald-600' },
-          { label: 'Ce mois-ci', value: `${revenueThisMonth.toFixed(2).replace('.', ',')} €`, sub: `${monthGrowth !== '—' ? (Number(monthGrowth) >= 0 ? '+' : '') + monthGrowth + '% vs mois préc.' : 'premier mois'}`, icon: TrendingUp, color: 'text-blue-600' },
-          { label: 'Commandes', value: orders.length.toString(), sub: `${byStatus['paid'] ?? 0} payées, ${byStatus['pending'] ?? 0} en attente`, icon: Package, color: 'text-violet-600' },
-          { label: 'À transmettre', value: pendingPush.toString(), sub: 'commandes payées non envoyées', icon: AlertCircle, color: pendingPush > 0 ? 'text-red-500' : 'text-gray-400' },
+          { label: 'CA total',       value: `${revenue.toFixed(2).replace('.', ',')} €`,          sub: 'commandes validées',                                                                                  icon: TrendingUp, color: 'text-emerald-600' },
+          { label: 'Ce mois-ci',     value: `${revenueThisMonth.toFixed(2).replace('.', ',')} €`, sub: monthGrowth !== '—' ? `${Number(monthGrowth) >= 0 ? '+' : ''}${monthGrowth}% vs mois préc.` : 'premier mois', icon: TrendingUp, color: 'text-blue-600' },
+          { label: 'Commandes',      value: orders.length.toString(),                              sub: `${byStatus['paid'] ?? 0} payées, ${byStatus['pending'] ?? 0} en attente`,                             icon: Package,    color: 'text-violet-600' },
+          { label: 'À transmettre',  value: pendingPush.toString(),                                sub: 'commandes payées non envoyées',                                                                         icon: AlertCircle, color: pendingPush > 0 ? 'text-red-500' : 'text-gray-400' },
         ].map(({ label, value, sub, icon: Icon, color }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-3">
@@ -102,7 +128,7 @@ export default async function AdminPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Status breakdown */}
+        {/* Status */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h2 className="text-sm font-semibold text-gray-700 mb-4">Par statut</h2>
           <div className="space-y-2.5">
@@ -115,7 +141,7 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        {/* TVA OSS */}
+        {/* TVA */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-700">TVA OSS collectée</h2>
@@ -128,7 +154,7 @@ export default async function AdminPage() {
                 <span className="text-sm font-semibold text-gray-900">{vat.toFixed(2).replace('.', ',')} €</span>
               </div>
             ))}
-            {Object.keys(vatByCountry).length === 0 && <p className="text-sm text-gray-400">Aucune donnée</p>}
+            {Object.keys(vatByCountry).length === 0 && <p className="text-sm text-gray-400">Aucune commande validée</p>}
             <div className="flex items-center justify-between pt-2 border-t border-gray-100">
               <span className="text-sm font-semibold text-gray-700">Total</span>
               <span className="text-sm font-bold text-gray-900">
@@ -138,25 +164,29 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        {/* Recent activity */}
+        {/* Activité récente */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h2 className="text-sm font-semibold text-gray-700 mb-4">Activité récente</h2>
-          <div className="space-y-3">
-            {orders.slice(0, 5).map(o => {
-              const cfg = STATUS_CONFIG[o.status] ?? { label: o.status, color: 'bg-gray-100 text-gray-500' };
-              const date = new Date(o.created_at).toLocaleDateString('fr-BE', { day: '2-digit', month: 'short' });
-              return (
-                <div key={o.id} className="flex items-center gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-700 truncate">{o.email}</p>
-                    <p className="text-[10px] text-gray-400">{date} · #{o.id.slice(0, 6).toUpperCase()}</p>
+          {orders.length === 0 ? (
+            <p className="text-sm text-gray-400">Aucune commande pour l'instant.</p>
+          ) : (
+            <div className="space-y-3">
+              {orders.slice(0, 5).map(o => {
+                const cfg = STATUS_CONFIG[o.status] ?? { label: o.status, color: 'bg-gray-100 text-gray-500' };
+                const date = new Date(o.created_at).toLocaleDateString('fr-BE', { day: '2-digit', month: 'short' });
+                return (
+                  <div key={o.id} className="flex items-center gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-gray-700 truncate">{o.email}</p>
+                      <p className="text-[10px] text-gray-400">{date} · #{o.id.slice(0, 6).toUpperCase()}</p>
+                    </div>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${cfg.color}`}>{cfg.label}</span>
+                    <span className="text-xs font-semibold text-gray-700 flex-shrink-0">{Number(o.total_eur ?? 0).toFixed(0)} €</span>
                   </div>
-                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${cfg.color}`}>{cfg.label}</span>
-                  <span className="text-xs font-semibold text-gray-700 flex-shrink-0">{Number(o.total_eur).toFixed(0)} €</span>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
           <Link href="/admin/commandes" className="flex items-center gap-1 text-xs text-blue-600 hover:underline mt-4">
             Voir toutes les commandes <ChevronRight size={12} />
           </Link>
