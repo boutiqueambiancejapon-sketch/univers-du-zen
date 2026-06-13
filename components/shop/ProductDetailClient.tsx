@@ -14,7 +14,6 @@ import ProductCard from './ProductCard';
 import BundleBuilder from './BundleBuilder';
 import type { DemoProduct } from '@/lib/demo-products';
 
-/** Minimum pool size to show the BundleBuilder (3 bundles × 3 products). */
 const BUNDLE_MIN_POOL = 9;
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -68,7 +67,6 @@ type TabKey = 'description' | 'caracteristiques' | 'usage' | 'faq';
 interface Props {
   product: DemoProduct;
   related: DemoProduct[];
-  /** All published products — used as the BundleBuilder pool. */
   allProducts?: DemoProduct[];
 }
 
@@ -100,6 +98,19 @@ export default function ProductDetailClient({ product, related, allProducts = []
   const effectiveUnitPrice = activeTier ? basePrice * (1 - activeTier.discount) : basePrice;
   const effectiveTotal = effectiveUnitPrice * effectiveQty;
 
+  // Tabs dynamiques — on masque ceux sans contenu
+  const hasDescription = !!(product.longDescriptionFr ?? product.descriptionFr);
+  const hasCarac       = !!(product.characteristics?.length);
+  const hasUsage       = !!(product.usageFr);
+  const hasFaq         = !!(product.faqFr?.length);
+
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: 'description',    label: 'Description' },
+    ...(hasCarac ? [{ key: 'caracteristiques' as TabKey, label: 'Caractéristiques' }] : []),
+    ...(hasUsage ? [{ key: 'usage'            as TabKey, label: "Conseils d'utilisation" }] : []),
+    ...(hasFaq   ? [{ key: 'faq'              as TabKey, label: 'FAQ' }] : []),
+  ];
+
   useEffect(() => {
     setDeliveryDate(getDeliveryDate());
     setViewers(8 + Math.floor(Math.random() * 39));
@@ -116,6 +127,11 @@ export default function ProductDetailClient({ product, related, allProducts = []
     return () => obs.disconnect();
   }, []);
 
+  // Si l'onglet actif n'existe plus dans la liste dynamique, reset à description
+  useEffect(() => {
+    if (!tabs.find(t => t.key === activeTab)) setActiveTab('description');
+  }, [tabs, activeTab]);
+
   function handleAddToCart() {
     const productToAdd = activeTier
       ? {
@@ -128,13 +144,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
-
-  const tabs: { key: TabKey; label: string }[] = [
-    { key: 'description', label: 'Description' },
-    { key: 'caracteristiques', label: 'Caractéristiques' },
-    { key: 'usage', label: "Conseils d'utilisation" },
-    { key: 'faq', label: 'FAQ' },
-  ];
 
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
@@ -199,7 +208,7 @@ export default function ProductDetailClient({ product, related, allProducts = []
           </button>
 
           <div className="flex items-baseline gap-3 mb-4">
-            <span className="font-serif text-4xl text-zen-bark">{basePrice} €</span>
+            <span className="font-serif text-4xl text-zen-bark">{basePrice > 0 ? `${basePrice} €` : '—'}</span>
             {product.compareAtPriceEur && <span className="text-xl text-zen-muted line-through">{product.compareAtPriceEur} €</span>}
             {discount && <span className="text-sm font-sans font-semibold text-zen-terracotta bg-zen-terracotta/10 px-2 py-0.5 rounded">Économisez {discount}%</span>}
           </div>
@@ -229,14 +238,13 @@ export default function ProductDetailClient({ product, related, allProducts = []
                 ♥ Sans test animal
               </span>
             )}
-            {product.isOrganic && (
+            {(product as any).isOrganic && (
               <span className="flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-sans">
                 <Leaf size={11} /> Bio certifié
               </span>
             )}
           </div>
 
-          {/* ===== SOCIAL PROOF — viewers ===== */}
           {viewers > 0 && !isOutOfStock && (
             <div className="flex items-center gap-2 mb-4">
               <span className="relative flex h-2 w-2 flex-shrink-0">
@@ -249,7 +257,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
             </div>
           )}
 
-          {/* ===== STOCK URGENCY BADGE ===== */}
           {isVeryLow && (
             <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg" style={{ background: '#FEF3F0', border: '1px solid #FECDB9' }}>
               <span className="w-2 h-2 rounded-full flex-shrink-0 pulse-dot" style={{ background: '#C1714A' }} />
@@ -261,14 +268,12 @@ export default function ProductDetailClient({ product, related, allProducts = []
           {isLow && !isVeryLow && (
             <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
               <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
-              <p className="text-xs font-sans font-semibold text-amber-800">
-                Stock limité — commandez avant rupture
-              </p>
+              <p className="text-xs font-sans font-semibold text-amber-800">Stock limité — commandez avant rupture</p>
             </div>
           )}
 
-          {/* ===== VOLUME PRICING ===== */}
-          {!isOutOfStock && (
+          {/* Volume pricing */}
+          {!isOutOfStock && basePrice > 0 && (
             <div className="border border-zen-sand rounded-2xl overflow-hidden mb-5">
               <div className="flex items-center gap-2.5 px-5 py-3.5 bg-zen-beige border-b border-zen-sand">
                 <Package size={16} className="text-zen-bark flex-shrink-0" />
@@ -280,17 +285,9 @@ export default function ProductDetailClient({ product, related, allProducts = []
                   const totalPrice = unitPrice * tier.qty;
                   const isSelected = volumeTierIdx === i;
                   return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setVolumeTierIdx(isSelected ? null : i)}
-                      className={`w-full text-left px-5 py-4 flex items-center gap-4 transition-colors ${
-                        isSelected ? 'bg-zen-bark/5' : 'hover:bg-zen-beige/60'
-                      }`}
-                    >
-                      <div className={`w-4.5 h-4.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                        isSelected ? 'border-zen-bark' : 'border-gray-300'
-                      }`}>
+                    <button key={i} type="button" onClick={() => setVolumeTierIdx(isSelected ? null : i)}
+                      className={`w-full text-left px-5 py-4 flex items-center gap-4 transition-colors ${isSelected ? 'bg-zen-bark/5' : 'hover:bg-zen-beige/60'}`}>
+                      <div className={`w-4.5 h-4.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${isSelected ? 'border-zen-bark' : 'border-gray-300'}`}>
                         {isSelected && <div className="w-2 h-2 rounded-full bg-zen-bark" />}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -298,15 +295,11 @@ export default function ProductDetailClient({ product, related, allProducts = []
                           <span className="text-sm font-sans font-semibold text-zen-bark">{tier.label}</span>
                           <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${tier.color}`}>{tier.badge}</span>
                         </div>
-                        <p className="text-xs text-zen-muted font-sans">
-                          {unitPrice.toFixed(2).replace('.', ',')} € / unité
-                        </p>
+                        <p className="text-xs text-zen-muted font-sans">{unitPrice.toFixed(2).replace('.', ',')} € / unité</p>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="font-serif font-bold text-zen-bark text-base">{totalPrice.toFixed(2).replace('.', ',')} €</p>
-                        <p className="text-[10px] text-zen-muted font-sans">
-                          économie {(basePrice * tier.discount * tier.qty).toFixed(2).replace('.', ',')} €
-                        </p>
+                        <p className="text-[10px] text-zen-muted font-sans">économie {(basePrice * tier.discount * tier.qty).toFixed(2).replace('.', ',')} €</p>
                       </div>
                     </button>
                   );
@@ -315,7 +308,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
             </div>
           )}
 
-          {/* Delivery estimate */}
           {!isOutOfStock && deliveryDate && (
             <div className="border border-zen-sand rounded-xl p-4 mb-5 flex items-center gap-4 bg-white hover:border-zen-bark/30 transition-colors cursor-default">
               <div className="w-10 h-10 rounded-lg bg-zen-beige flex items-center justify-center flex-shrink-0">
@@ -364,50 +356,30 @@ export default function ProductDetailClient({ product, related, allProducts = []
               </div>
             )}
 
-            <button
-              ref={ctaRef}
-              onClick={handleAddToCart}
-              disabled={isOutOfStock}
+            <button ref={ctaRef} onClick={handleAddToCart} disabled={isOutOfStock}
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-sans font-semibold text-sm transition-all ${
                 added ? 'bg-green-600 text-white'
                 : isOutOfStock ? 'bg-zen-sand text-zen-muted cursor-not-allowed'
                 : 'bg-zen-bark text-white hover:bg-zen-terracotta active:scale-[0.98]'
-              }`}
-            >
-              {added ? (
-                <><Check size={16} /> Ajouté au panier ! 🎉</>
-              ) : isOutOfStock ? 'Rupture de stock' : (
-                <><ShoppingBag size={16} /> Ajouter au panier</>
-              )}
+              }`}>
+              {added ? (<><Check size={16} /> Ajouté au panier ! 🎉</>) : isOutOfStock ? 'Rupture de stock' : (<><ShoppingBag size={16} /> Ajouter au panier</>)}
             </button>
 
-            <button
-              className="w-12 h-12 flex items-center justify-center border border-zen-sand rounded-xl hover:border-zen-terracotta hover:text-zen-terracotta transition-colors flex-shrink-0"
-              aria-label="Ajouter aux favoris"
-            >
+            <button className="w-12 h-12 flex items-center justify-center border border-zen-sand rounded-xl hover:border-zen-terracotta hover:text-zen-terracotta transition-colors flex-shrink-0" aria-label="Favoris">
               <Heart size={18} className="text-zen-bark" />
             </button>
           </div>
 
           <p className="text-xs text-zen-muted text-center mb-6">
-            Total :{' '}
-            <strong className="text-zen-bark">
-              {effectiveTotal.toFixed(2).replace('.', ',')} €
-            </strong>{' '}
-            TVA incluse
-            {activeTier && (
-              <span className="ml-2 text-zen-terracotta font-semibold">
-                (économie {(basePrice * activeTier.discount * activeTier.qty).toFixed(2).replace('.', ',')} €)
-              </span>
-            )}
+            Total : <strong className="text-zen-bark">{effectiveTotal.toFixed(2).replace('.', ',')} €</strong> TVA incluse
+            {activeTier && <span className="ml-2 text-zen-terracotta font-semibold">(économie {(basePrice * activeTier.discount * activeTier.qty).toFixed(2).replace('.', ',')} €)</span>}
           </p>
 
-          {/* Trust strip */}
           <div className="border-t border-zen-sand pt-5 grid grid-cols-3 gap-3">
             {[
-              { icon: Truck, label: 'Livraison offerte', sub: 'dès 59 €' },
-              { icon: RotateCcw, label: 'Retours 30 jours', sub: 'satisfait ou remboursé' },
-              { icon: Shield, label: 'Paiement sécurisé', sub: 'Bancontact, Visa, PayPal' },
+              { icon: Truck,     label: 'Livraison offerte', sub: 'dès 59 €' },
+              { icon: RotateCcw, label: 'Retours 30 jours',  sub: 'satisfait ou remboursé' },
+              { icon: Shield,    label: 'Paiement sécurisé', sub: 'Bancontact, Visa, PayPal' },
             ].map(({ icon: Icon, label, sub }) => (
               <div key={label} className="flex flex-col items-center text-center gap-1">
                 <Icon size={18} className="text-zen-sage" />
@@ -434,7 +406,11 @@ export default function ProductDetailClient({ product, related, allProducts = []
         <div className="py-8 max-w-3xl">
           {activeTab === 'description' && (
             <div className="space-y-4 text-zen-muted leading-relaxed text-sm">
-              {(product.longDescriptionFr ?? product.descriptionFr ?? '').split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
+              {hasDescription ? (
+                (product.longDescriptionFr ?? product.descriptionFr ?? '').split('\n\n').map((p, i) => <p key={i}>{p}</p>)
+              ) : (
+                <p className="text-zen-muted/60 italic">Description détaillée disponible prochainement.</p>
+              )}
             </div>
           )}
           {activeTab === 'caracteristiques' && (
@@ -449,7 +425,9 @@ export default function ProductDetailClient({ product, related, allProducts = []
               </tbody>
             </table>
           )}
-          {activeTab === 'usage' && <p className="text-sm text-zen-muted leading-relaxed">{product.usageFr}</p>}
+          {activeTab === 'usage' && (
+            <p className="text-sm text-zen-muted leading-relaxed">{product.usageFr}</p>
+          )}
           {activeTab === 'faq' && (
             <div className="space-y-2">
               {product.faqFr?.map((item, i) => (
@@ -526,7 +504,7 @@ export default function ProductDetailClient({ product, related, allProducts = []
         </section>
       )}
 
-      {/* ===== STICKY BAR — all screens ===== */}
+      {/* ===== STICKY BAR ===== */}
       <div className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${showStickyBar ? 'translate-y-0' : 'translate-y-full'}`}
         style={{ background: 'rgba(252,250,244,.95)', backdropFilter: 'blur(14px)', borderTop: '1px solid rgba(55,44,32,.1)' }}>
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-4">
