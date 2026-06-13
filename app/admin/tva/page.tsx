@@ -3,10 +3,6 @@ import { createAdminClient } from '@/lib/supabase/server';
 const VAT_RATES: Record<string, number> = { BE: 0.21, FR: 0.20, NL: 0.21, LU: 0.17, DE: 0.19 };
 const COUNTRY_NAMES: Record<string, string> = { BE: 'Belgique', FR: 'France', NL: 'Pays-Bas', LU: 'Luxembourg', DE: 'Allemagne' };
 
-function monthLabel(d: Date) {
-  return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-}
-
 export default async function TvaPage({
   searchParams,
 }: {
@@ -21,13 +17,13 @@ export default async function TvaPage({
 
   const orders = rawOrders ?? [];
 
-  // Build available periods (months)
+  // Build available periods (months) — Array.from instead of spread for TS compat
   const periodSet = new Set<string>();
   orders.forEach(o => {
     const d = new Date(o.created_at);
     periodSet.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
   });
-  const periods = [...periodSet].sort().reverse();
+  const periods = Array.from(periodSet).sort().reverse();
   const activePeriod = searchParams.period ?? periods[0] ?? '';
 
   // Filter by period
@@ -44,14 +40,14 @@ export default async function TvaPage({
     if (!acc[c]) acc[c] = { count: 0, totalTtc: 0, totalHt: 0, tva: 0, rate: VAT_RATES[c] ?? 0.21 };
     acc[c].count++;
     acc[c].totalTtc += o.total_eur ?? 0;
-    acc[c].tva += o.vat_amount_eur ?? 0;
-    acc[c].totalHt += (o.total_eur ?? 0) - (o.vat_amount_eur ?? 0);
+    acc[c].tva      += o.vat_amount_eur ?? 0;
+    acc[c].totalHt  += (o.total_eur ?? 0) - (o.vat_amount_eur ?? 0);
     return acc;
   }, {} as Record<string, { count: number; totalTtc: number; totalHt: number; tva: number; rate: number }>);
 
-  const totalTva = Object.values(byCountry).reduce((s, v) => s + v.tva, 0);
-  const totalTtc = Object.values(byCountry).reduce((s, v) => s + v.totalTtc, 0);
-  const totalHt  = Object.values(byCountry).reduce((s, v) => s + v.totalHt, 0);
+  const totalTva   = Object.values(byCountry).reduce((s, v) => s + v.tva, 0);
+  const totalTtc   = Object.values(byCountry).reduce((s, v) => s + v.totalTtc, 0);
+  const totalHt    = Object.values(byCountry).reduce((s, v) => s + v.totalHt, 0);
   const totalCount = Object.values(byCountry).reduce((s, v) => s + v.count, 0);
 
   // Quarterly rollup
@@ -92,13 +88,11 @@ export default async function TvaPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {[
-          { label: 'CA TTC', value: totalTtc.toFixed(2).replace('.', ',') + ' €', sub: `${totalCount} commandes` },
-          { label: 'CA HT', value: totalHt.toFixed(2).replace('.', ',') + ' €', sub: 'hors taxe' },
+          { label: 'CA TTC',         value: totalTtc.toFixed(2).replace('.', ',') + ' €', sub: `${totalCount} commandes` },
+          { label: 'CA HT',          value: totalHt.toFixed(2).replace('.', ',') + ' €',  sub: 'hors taxe' },
           { label: 'TVA à déclarer', value: totalTva.toFixed(2).replace('.', ',') + ' €', sub: 'total OSS', highlight: true },
         ].map(({ label, value, sub, highlight }) => (
-          <div key={label} className={`rounded-xl border p-5 ${
-            highlight ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-200'
-          }`}>
+          <div key={label} className={`rounded-xl border p-5 ${highlight ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-200'}`}>
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">{label}</p>
             <p className={`text-2xl font-semibold ${highlight ? 'text-amber-700' : 'text-gray-900'}`}>{value}</p>
             <p className="text-xs text-gray-500 mt-1">{sub}</p>
