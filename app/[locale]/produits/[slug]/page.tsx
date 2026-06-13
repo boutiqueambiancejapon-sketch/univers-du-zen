@@ -91,7 +91,11 @@ export default function ProductPage({
     <>
       <Script id="product-jsonld"    type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       <Script id="breadcrumb-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <ProductDetailClient product={product} related={related as any} />
+      <ProductDetailClient
+        product={product as any}
+        related={related as any}
+        allProducts={allProducts as any}
+      />
     </>
   );
 }
