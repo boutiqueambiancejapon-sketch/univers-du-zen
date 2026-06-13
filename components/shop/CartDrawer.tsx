@@ -12,7 +12,7 @@ const FREE_THRESHOLD = 59;
 
 function getUpsells(cartIds: string[], count = 3) {
   return ALL_PRODUCTS
-    .filter(p => p.id != null && !cartIds.includes(p.id!))
+    .filter(p => p.id != null && p.retailPriceEur != null && !cartIds.includes(p.id!))
     .slice(0, count);
 }
 
@@ -148,7 +148,7 @@ export default function CartDrawer() {
                         </button>
                       </div>
                       <p className="font-sans font-semibold text-zen-bark text-sm">
-                        {(product.retailPriceEur * quantity).toFixed(2).replace('.', ',')} €
+                        {((product.retailPriceEur ?? 0) * quantity).toFixed(2).replace('.', ',')} €
                       </p>
                     </div>
                   </div>
@@ -181,7 +181,9 @@ export default function CartDrawer() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-sans text-xs text-zen-bark leading-snug line-clamp-1">{product.nameFr}</p>
-                      <p className="text-xs text-zen-muted mt-0.5">{product.retailPriceEur.toFixed(2).replace('.', ',')} €</p>
+                      <p className="text-xs text-zen-muted mt-0.5">
+                        {(product.retailPriceEur ?? 0).toFixed(2).replace('.', ',')} €
+                      </p>
                     </div>
                     <button
                       onClick={() => addItem(product as any, 1)}
