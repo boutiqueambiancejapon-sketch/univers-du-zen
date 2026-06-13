@@ -40,7 +40,8 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
     : null;
 
   const placeholderBg = PLACEHOLDER_BG[product.category ?? ''] ?? 'bg-zen-sand';
-  const placeholderImg = PLACEHOLDER_IMG[product.category ?? ''];
+  // Use the product's own image first; fall back to category placeholder
+  const imgSrc = product.images?.[0] ?? PLACEHOLDER_IMG[product.category ?? ''];
   const stockBadge = STOCK_BADGE[product.stockStatus ?? ''];
   const isOutOfStock = product.stockStatus === 'OutOfStock';
 
@@ -48,12 +49,13 @@ export default function ProductCard({ product }: { product: Partial<Product> }) 
     <div className="group card-product">
       {/* Image */}
       <div className={`relative aspect-[3/4] ${placeholderBg} overflow-hidden rounded-t-xl`}>
-        {placeholderImg && (
+        {imgSrc && (
           <Image
-            src={placeholderImg}
+            src={imgSrc}
             alt={product.nameFr ?? ''}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
+            unoptimized={imgSrc.startsWith('https://raw.githubusercontent.com')}
           />
         )}
 
