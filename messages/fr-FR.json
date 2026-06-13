@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "shop": "Boutique",
+    "candles": "Bougies",
+    "aromatherapy": "Aromathérapie",
+    "incense": "Encens",
+    "gemstones": "Pierres & Cristaux",
+    "home": "Maison & Déco",
+    "music": "Musique & Sons",
+    "tea": "Thés Artisanaux",
+    "search": "Rechercher",
+    "cart": "Panier",
+    "account": "Mon compte"
+  },
+  "topbar": {
+    "shipping": "Livraison offerte dès 59 €",
+    "offer": "OFFRE -{discount}% — FIN DANS",
+    "ethical": "Sélection éthique · Expédié depuis l'Europe"
+  },
+  "product": {
+    "addToCart": "Ajouter au panier",
+    "buyNow": "Acheter maintenant",
+    "inStock": "En stock",
+    "outOfStock": "Rupture de stock",
+    "delivery": "Livré chez vous dès le {date}",
+    "freeShipping": "Livraison offerte dès 59 €",
+    "returns": "Retours 30 jours",
+    "securePayment": "Paiement sécurisé",
+    "dispatch48": "Expédié sous 48h",
+    "bestSeller": "Best-seller"
+  },
+  "cart": {
+    "title": "Votre panier",
+    "empty": "Votre panier est vide",
+    "total": "Total",
+    "checkout": "Passer la commande",
+    "continue": "Continuer mes achats",
+    "shippingFrom": "Livraison à partir de {price}",
+    "freeShippingFrom": "Plus que {amount} pour la livraison offerte !"
+  },
+  "account": {
+    "orders": "Mes commandes",
+    "vipOffers": "Offres VIP",
+    "addresses": "Mes adresses",
+    "profile": "Mon profil",
+    "logout": "Se déconnecter",
+    "memberSince": "Membre depuis {date}",
+    "loyaltyPoints": "points",
+    "nextLevel": "Prochain palier",
+    "downloadInvoice": "Télécharger ma facture",
+    "reorder": "Recommander"
+  },
+  "checkout": {
+    "title": "Finaliser ma commande",
+    "deliveryAddress": "Adresse de livraison",
+    "paymentMethod": "Mode de paiement",
+    "orderSummary": "Récapitulatif",
+    "subtotal": "Sous-total HT",
+    "vat": "TVA ({rate}%)",
+    "shipping": "Livraison",
+    "total": "Total TTC",
+    "confirm": "Confirmer et payer",
+    "freeShipping": "Offerte"
+  },
+  "categories": {
+    "aromatherapy": "Aromathérapie",
+    "bath-body": "Soin du Corps",
+    "candles": "Bougies",
+    "gemstones": "Pierres & Cristaux",
+    "incense": "Encens",
+    "home-garden": "Maison & Déco",
+    "fragrance": "Parfums",
+    "music": "Musique & Sons",
+    "bags": "Sacs & Accessoires",
+    "jewellery": "Bijoux",
+    "clothing": "Vêtements",
+    "tea": "Thés Artisanaux"
+  }
+}

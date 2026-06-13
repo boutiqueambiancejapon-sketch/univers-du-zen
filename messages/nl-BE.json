@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "shop": "Winkel",
+    "candles": "Kaarsen",
+    "aromatherapy": "Aromatherapie",
+    "incense": "Wierook",
+    "gemstones": "Stenen & Kristallen",
+    "home": "Wonen & Deco",
+    "music": "Muziek & Geluid",
+    "tea": "Artisanale Thee",
+    "search": "Zoeken",
+    "cart": "Winkelwagen",
+    "account": "Mijn account"
+  },
+  "topbar": {
+    "shipping": "Gratis levering vanaf 59 €",
+    "offer": "AANBIEDING -{discount}% — EINDIGT OVER",
+    "ethical": "Ethische selectie · Verzonden vanuit Europa"
+  },
+  "product": {
+    "addToCart": "In winkelwagen",
+    "buyNow": "Nu kopen",
+    "inStock": "Op voorraad",
+    "outOfStock": "Uitverkocht",
+    "delivery": "Bij u thuis op {date}",
+    "freeShipping": "Gratis levering vanaf 59 €",
+    "returns": "30 dagen retour",
+    "securePayment": "Veilig betalen",
+    "dispatch48": "Verzonden binnen 48u",
+    "bestSeller": "Bestseller"
+  },
+  "cart": {
+    "title": "Uw winkelwagen",
+    "empty": "Uw winkelwagen is leeg",
+    "total": "Totaal",
+    "checkout": "Bestelling plaatsen",
+    "continue": "Verder winkelen",
+    "shippingFrom": "Levering vanaf {price}",
+    "freeShippingFrom": "Nog {amount} voor gratis levering!"
+  },
+  "account": {
+    "orders": "Mijn bestellingen",
+    "vipOffers": "VIP aanbiedingen",
+    "addresses": "Mijn adressen",
+    "profile": "Mijn profiel",
+    "logout": "Uitloggen",
+    "memberSince": "Lid sinds {date}",
+    "loyaltyPoints": "punten",
+    "nextLevel": "Volgend niveau",
+    "downloadInvoice": "Factuur downloaden",
+    "reorder": "Opnieuw bestellen"
+  },
+  "checkout": {
+    "title": "Bestelling afronden",
+    "deliveryAddress": "Afleveradres",
+    "paymentMethod": "Betaalmethode",
+    "orderSummary": "Overzicht",
+    "subtotal": "Subtotaal excl. btw",
+    "vat": "BTW ({rate}%)",
+    "shipping": "Verzending",
+    "total": "Totaal incl. btw",
+    "confirm": "Bevestigen en betalen",
+    "freeShipping": "Gratis"
+  },
+  "categories": {
+    "aromatherapy": "Aromatherapie",
+    "bath-body": "Lichaamsverzorging",
+    "candles": "Kaarsen",
+    "gemstones": "Stenen & Kristallen",
+    "incense": "Wierook",
+    "home-garden": "Wonen & Deco",
+    "fragrance": "Geuren",
+    "music": "Muziek & Geluid",
+    "bags": "Tassen & Accessoires",
+    "jewellery": "Sieraden",
+    "clothing": "Kleding",
+    "tea": "Artisanale Thee"
+  }
+}
