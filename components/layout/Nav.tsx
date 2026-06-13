@@ -8,7 +8,7 @@ import { useCartStore } from '@/lib/store/cart';
 import CartDrawer from '@/components/shop/CartDrawer';
 import LiveNotification from '@/components/shop/LiveNotification';
 
-/** Slugs alignés sur lib/demo-products.ts — NE PAS modifier sans mettre à jour generateStaticParams */
+/** Slugs alignés sur lib/demo-products.ts */
 const NAV_CATEGORIES = [
   { slug: 'huiles-fragrance',         label: 'Huiles & Fragrance' },
   { slug: 'aromatherapie',            label: 'Aromathérapie' },
@@ -22,9 +22,7 @@ const NAV_CATEGORIES = [
   { slug: 'bijoux-cristaux',          label: 'Bijoux' },
 ] as const;
 
-/** Affichés directement dans la nav desktop (les + commerciaux) */
 const NAV_MAIN = NAV_CATEGORIES.slice(0, 6);
-/** Cachés dans le dropdown "Plus" */
 const NAV_MORE = NAV_CATEGORIES.slice(6);
 
 export default function Nav() {
@@ -39,7 +37,8 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="bg-zen-cream border-b border-zen-sand sticky top-0 z-40">
+      {/* Nav — pas sticky ici, c'est <header> qui est sticky dans Header.tsx */}
+      <nav className="bg-zen-cream border-b border-zen-sand">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
 
           {/* Logo */}
@@ -67,7 +66,7 @@ export default function Nav() {
               </li>
             ))}
 
-            {/* Dropdown "Plus" pour les 4 dernières catégories */}
+            {/* Dropdown "Plus" */}
             <li className="relative">
               <button
                 onClick={() => setMoreOpen(o => !o)}

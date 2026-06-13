@@ -3,7 +3,7 @@ import Nav from './Nav';
 
 export default function Header() {
   return (
-    <header>
+    <header className="sticky top-0 z-40">
       <TopBar />
       <Nav />
     </header>

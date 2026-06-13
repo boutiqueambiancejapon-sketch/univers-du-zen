@@ -78,10 +78,10 @@ export default async function CategoryPage({
         </div>
       </div>
 
-      {/* Sub-collection pill nav */}
+      {/* Sub-collection nav — flex-wrap bento (pas de scroll horizontal) */}
       {collection && collection.subs.length > 0 && (
         <div className="border-b border-zen-sand bg-white">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-2">
             <Link
               href={`/${locale}/boutique/${params.category}`}
               className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-sans font-medium bg-zen-bark text-white"
