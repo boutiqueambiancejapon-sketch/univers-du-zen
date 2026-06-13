@@ -8,7 +8,7 @@ export default function EthicsSection() {
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-zen-bark leading-tight mb-6">
             Sélectionnés avec soin,
-            <br />livrés depuis l'Europe
+            <br />livrés depuis l&apos;Europe
           </h2>
           <p className="text-zen-muted leading-relaxed mb-6">
             Chaque produit de notre boutique est choisi auprès de producteurs
@@ -20,7 +20,7 @@ export default function EthicsSection() {
               'Aucun produit testé sur les animaux',
               'Fournisseurs audités régulièrement',
               'Emballages eco-responsables',
-              'Expédition depuis l'Europe en 3–5 jours',
+              "Expédition depuis l'Europe en 3–5 jours",
             ].map(item => (
               <li key={item} className="flex items-center gap-3 text-sm text-zen-bark">
                 <span className="w-5 h-5 rounded-full bg-zen-sage/20 flex items-center justify-center text-zen-sage flex-shrink-0">✓</span>
