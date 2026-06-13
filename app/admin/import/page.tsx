@@ -73,7 +73,6 @@ function rowToProduct(row: Record<string, string>) {
     sku,
     name:            row['Unit Name'] ?? row['Product code'],
     department:      dept,
-    subdepartment:   row['Subdepartment']?.trim() ?? '',
     family_code:     row['Family code'] ?? '',
     family:          row['Family'] ?? '',
     barcode:         row['Barcode'] ?? '',
