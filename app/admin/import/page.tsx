@@ -49,12 +49,10 @@ const UDZ_DEPTS: Record<string, string> = {
   'Home & Garden':       'Déco & Maison',
   'Artisan Tea':         'Thé & Tisanes',
   'Musical Instruments': 'Instruments',
+  'Jewellery':           'Bijoux',
 };
 
 /* ---------- convert CSV row → Supabase record ---------- */
-// Actual CSV columns: Status, Product code, Department, Subdepartment, Family code, Family,
-// Barcode, Price, Unit label, Unit price, Unit Name, Unit RRP, Unit net weight,
-// Package weight (shipping), Webpage description (plain text), Stock, Images, Available Quantity
 function rowToProduct(row: Record<string, string>) {
   const dept = UDZ_DEPTS[row['Department']];
   if (!dept) return null;
@@ -75,6 +73,7 @@ function rowToProduct(row: Record<string, string>) {
     sku,
     name:            row['Unit Name'] ?? row['Product code'],
     department:      dept,
+    subdepartment:   row['Subdepartment']?.trim() ?? '',
     family_code:     row['Family code'] ?? '',
     family:          row['Family'] ?? '',
     barcode:         row['Barcode'] ?? '',
@@ -153,7 +152,7 @@ export default function ImportPage() {
       <h1 className="text-2xl font-semibold text-gray-900 mb-1">Import catalogue fournisseur</h1>
       <p className="text-sm text-gray-500 mb-8">
         Le CSV est analysé directement dans le navigateur et envoyé par lots — aucune limite de taille.
-        Seuls les 9 départements UDZ sont importés, les autres sont ignorés.
+        10 départements UDZ sont importés (dont Bijoux), les autres sont ignorés.
       </p>
 
       <div
@@ -220,7 +219,7 @@ export default function ImportPage() {
           const emoji: Record<string, string> = {
             'Aromathérapie':'🌿','Huiles de fragrance':'🧴','Encens & Rituel':'🌸',
             'Cristaux & Pierres':'💎','Bougies & Photophores':'🕯️','Bien-être Corps':'🛁',
-            'Déco & Maison':'🏠','Thé & Tisanes':'🍵','Instruments':'🎵',
+            'Déco & Maison':'🏠','Thé & Tisanes':'🍵','Instruments':'🎵','Bijoux':'📿',
           };
           return (
             <p key={label}>{emoji[label]} <strong>{label}</strong> <span className="text-gray-400">← {src}</span></p>

@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import Link from 'next/link';
 import ShopGrid from '@/components/shop/ShopGrid';
-import { getPublishedProducts, CATEGORIES } from '@/lib/all-products';
+import { getPublishedProducts } from '@/lib/get-products';
+import { CATEGORIES } from '@/lib/demo-products';
 
 export const metadata: Metadata = {
   title: 'Boutique bien-être naturelle | Aromathérapie, Encens, Cristaux — Univers du Zen',

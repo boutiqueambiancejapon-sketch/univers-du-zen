@@ -6,15 +6,12 @@ import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
-import { ALL_PRODUCTS } from '@/lib/all-products';
+
+// Upsells are intentionally disabled: product data is server-only (filesystem).
+// TODO: create /api/featured-products endpoint for client-side upsell recommendations.
+const upsells: any[] = [];
 
 const FREE_THRESHOLD = 59;
-
-function getUpsells(cartIds: string[], count = 3) {
-  return ALL_PRODUCTS
-    .filter(p => p.id != null && p.retailPriceEur != null && !cartIds.includes(p.id!))
-    .slice(0, count);
-}
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, addItem, total } =
@@ -26,8 +23,6 @@ export default function CartDrawer() {
   const remaining   = Math.max(0, FREE_THRESHOLD - subtotal);
   const progressPct = Math.min(100, (subtotal / FREE_THRESHOLD) * 100);
   const itemCount   = items.reduce((n, i) => n + i.quantity, 0);
-  const cartIds     = items.map(i => i.product.id).filter((id): id is string => id != null);
-  const upsells     = getUpsells(cartIds);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') closeCart(); };
@@ -157,14 +152,14 @@ export default function CartDrawer() {
             </div>
           )}
 
-          {/* Upsell */}
+          {/* Upsell — disabled until /api/featured-products is implemented */}
           {items.length > 0 && upsells.length > 0 && (
             <div className="border-t border-gray-100">
               <p className="text-[10px] font-sans tracking-[0.12em] uppercase text-zen-muted px-5 pt-4 pb-2">
                 — Complétez votre rituel
               </p>
               <div className="divide-y divide-gray-50">
-                {upsells.map(product => (
+                {upsells.map((product: any) => (
                   <div key={product.id} className="flex items-center gap-3 px-5 py-3 bg-gray-50/60">
                     <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-white border border-gray-100 relative">
                       {product.images?.[0] ? (
@@ -186,7 +181,7 @@ export default function CartDrawer() {
                       </p>
                     </div>
                     <button
-                      onClick={() => addItem(product as any, 1)}
+                      onClick={() => addItem(product, 1)}
                       className="flex-shrink-0 text-xs font-sans text-zen-bark border border-zen-bark/40 rounded-lg px-3 py-1.5 hover:bg-zen-bark hover:text-white hover:border-zen-bark transition-all"
                     >
                       + Ajouter
