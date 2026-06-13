@@ -6,9 +6,10 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 const nextConfig = {
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'www.aw-dropship.eu' },
-      { protocol: 'https', hostname: '*.aw-dropship.eu' },
+      { protocol: 'https', hostname: 'cdn.aiku.io' },
+      { protocol: 'https', hostname: '*.aiku.io' },
       { protocol: 'https', hostname: 'raw.githubusercontent.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
 };
