@@ -6,7 +6,7 @@ import { useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Lock, ChevronDown, Truck, ArrowLeft } from 'lucide-react';
+import { Lock, ChevronDown, Truck, ArrowLeft, Check } from 'lucide-react';
 import { computeShipping } from '@/lib/shipping';
 import { computeVat } from '@/lib/vat';
 import { PAYMENT_METHODS_BY_LOCALE } from '@/lib/mollie';
@@ -20,10 +20,10 @@ const COUNTRIES = [
 ];
 
 const METHOD_LABELS: Record<string, { label: string; icon: string }> = {
-  bancontact: { label: 'Bancontact',    icon: '🇧🇪' },
+  bancontact: { label: 'Bancontact',     icon: '🇧🇪' },
   creditcard: { label: 'Carte bancaire', icon: '💳' },
-  paypal:     { label: 'PayPal',        icon: '🅿️' },
-  ideal:      { label: 'iDEAL',         icon: '🇳🇱' },
+  paypal:     { label: 'PayPal',         icon: '🅿️' },
+  ideal:      { label: 'iDEAL',          icon: '🇳🇱' },
 };
 
 function localeToCountry(locale: string): string {
@@ -32,6 +32,13 @@ function localeToCountry(locale: string): string {
   if (locale.includes('NL')) return 'NL';
   return 'BE';
 }
+
+const inputCls = `w-full px-4 py-3.5 rounded-xl text-sm font-sans transition-all outline-none`
+  + ` bg-[#FCFAF4] border border-[rgba(44,36,32,.14)] text-[#2C2420] placeholder-[#9a8878]`
+  + ` focus:border-[#C1714A] focus:shadow-[0_0_0_3px_rgba(193,113,74,.12)] focus:bg-white`;
+
+const labelCls = `block text-[10px] font-sans font-semibold uppercase tracking-widest mb-1.5`
+  + ` text-[#9a8878]`;
 
 export default function CheckoutPage() {
   const locale = useLocale();
@@ -114,184 +121,205 @@ export default function CheckoutPage() {
     }
   };
 
-  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-sans text-zen-bark placeholder-gray-300 focus:outline-none focus:border-zen-bark bg-white transition-colors';
-  const labelClass = 'block text-xs font-sans font-medium text-zen-muted mb-1.5 uppercase tracking-wide';
-
   return (
-    <div className="min-h-screen bg-[#FAF8F5]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12">
+    <div className="min-h-screen" style={{ background: '#F5F3EF' }}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
 
-        <Link
-          href={`/${locale}/panier`}
-          className="flex items-center gap-2 text-sm text-zen-muted hover:text-zen-bark font-sans mb-8 transition-colors"
-        >
-          <ArrowLeft size={14} /> Retour au panier
-        </Link>
+        {/* Back + Stepper */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+          <Link href={`/${locale}/panier`}
+            className="flex items-center gap-2 text-sm font-sans transition-colors"
+            style={{ color: '#9a8878' }}>
+            <ArrowLeft size={14} /> Retour au panier
+          </Link>
+          <div className="flex items-center gap-2 text-xs font-sans" style={{ color: '#9a8878' }}>
+            {['Panier', 'Livraison & paiement', 'Confirmation'].map((step, i) => (
+              <div key={step} className="flex items-center gap-2">
+                {i > 0 && <span style={{ color: 'rgba(44,36,32,.2)' }}>—</span>}
+                <span style={i === 1 ? { color: '#2C2420', fontWeight: 600 } : {}}>
+                  {i === 0 && <span className="mr-1">✓</span>}{step}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <h1 className="font-serif text-4xl text-zen-bark mb-10">Finaliser la commande</h1>
+        <h1 className="font-serif mb-10" style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', color: '#2C2420' }}>
+          Finaliser la commande
+        </h1>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12 items-start">
 
-            {/* Left: form */}
-            <div className="lg:col-span-2 space-y-6">
+            {/* ── LEFT: form ── */}
+            <div className="lg:col-span-2 space-y-5">
 
               {/* Contact */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                <h2 className="font-serif text-xl text-zen-bark mb-6">Informations de contact</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="rounded-2xl p-7" style={{ background: '#fff', border: '1px solid rgba(44,36,32,.07)' }}>
+                <h2 className="font-serif text-lg mb-6" style={{ color: '#2C2420' }}>Contact</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
-                    <label className={labelClass}>Email *</label>
-                    <input type="email" required value={form.email} onChange={set('email')} className={inputClass} placeholder="votre@email.com" />
+                    <label className={labelCls}>Email *</label>
+                    <input type="email" required value={form.email} onChange={set('email')}
+                      className={inputCls} placeholder="vous@exemple.com" />
                   </div>
                   <div>
-                    <label className={labelClass}>Téléphone</label>
-                    <input type="tel" value={form.phone} onChange={set('phone')} className={inputClass} placeholder="+32 4xx xx xx xx" />
+                    <label className={labelCls}>Téléphone</label>
+                    <input type="tel" value={form.phone} onChange={set('phone')}
+                      className={inputCls} placeholder="+32 4xx xx xx xx" />
                   </div>
                 </div>
               </div>
 
               {/* Address */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                <h2 className="font-serif text-xl text-zen-bark mb-6">Adresse de livraison</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="rounded-2xl p-7" style={{ background: '#fff', border: '1px solid rgba(44,36,32,.07)' }}>
+                <h2 className="font-serif text-lg mb-6" style={{ color: '#2C2420' }}>Adresse de livraison</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>Prénom *</label>
-                    <input required value={form.firstName} onChange={set('firstName')} className={inputClass} />
+                    <label className={labelCls}>Prénom *</label>
+                    <input required value={form.firstName} onChange={set('firstName')} className={inputCls} />
                   </div>
                   <div>
-                    <label className={labelClass}>Nom *</label>
-                    <input required value={form.lastName} onChange={set('lastName')} className={inputClass} />
+                    <label className={labelCls}>Nom *</label>
+                    <input required value={form.lastName} onChange={set('lastName')} className={inputCls} />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className={labelClass}>Adresse *</label>
-                    <input required value={form.line1} onChange={set('line1')} className={inputClass} placeholder="Rue et numéro" />
+                    <label className={labelCls}>Adresse *</label>
+                    <input required value={form.line1} onChange={set('line1')}
+                      className={inputCls} placeholder="Rue et numéro" />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className={labelClass}>Complément</label>
-                    <input value={form.line2} onChange={set('line2')} className={inputClass} placeholder="Appartement, boîte…" />
+                    <label className={labelCls}>Complément</label>
+                    <input value={form.line2} onChange={set('line2')}
+                      className={inputCls} placeholder="Appartement, boîte…" />
                   </div>
                   <div>
-                    <label className={labelClass}>Code postal *</label>
-                    <input required value={form.postalCode} onChange={set('postalCode')} className={inputClass} />
+                    <label className={labelCls}>Code postal *</label>
+                    <input required value={form.postalCode} onChange={set('postalCode')} className={inputCls} />
                   </div>
                   <div>
-                    <label className={labelClass}>Ville *</label>
-                    <input required value={form.city} onChange={set('city')} className={inputClass} />
+                    <label className={labelCls}>Ville *</label>
+                    <input required value={form.city} onChange={set('city')} className={inputCls} />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className={labelClass}>Pays *</label>
+                    <label className={labelCls}>Pays *</label>
                     <div className="relative">
-                      <select value={form.countryCode} onChange={set('countryCode')} className={`${inputClass} appearance-none pr-10`}>
+                      <select value={form.countryCode} onChange={set('countryCode')}
+                        className={`${inputCls} appearance-none pr-10`}>
                         {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
                       </select>
-                      <ChevronDown size={15} className="absolute right-4 top-1/2 -translate-y-1/2 text-zen-muted pointer-events-none" />
+                      <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                        style={{ color: '#9a8878' }} />
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Payment */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                <h2 className="font-serif text-xl text-zen-bark mb-6">Mode de paiement</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {methods.map(m => (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => setMethod(m)}
-                      className={`border rounded-xl p-4 text-sm font-sans text-left transition-all flex items-center gap-3 ${
-                        method === m
-                          ? 'border-zen-bark bg-zen-bark/5 text-zen-bark font-medium'
-                          : 'border-gray-200 text-zen-muted hover:border-zen-bark/40'
-                      }`}
-                    >
-                      <span className="text-xl">{METHOD_LABELS[m]?.icon}</span>
-                      <span>{METHOD_LABELS[m]?.label ?? m}</span>
-                    </button>
-                  ))}
+              <div className="rounded-2xl p-7" style={{ background: '#fff', border: '1px solid rgba(44,36,32,.07)' }}>
+                <h2 className="font-serif text-lg mb-6" style={{ color: '#2C2420' }}>Mode de paiement</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {methods.map(m => {
+                    const selected = method === m;
+                    return (
+                      <button key={m} type="button" onClick={() => setMethod(m)}
+                        className="relative flex items-center gap-3 rounded-xl p-4 text-sm font-sans text-left transition-all"
+                        style={selected
+                          ? { border: '1.5px solid #2C2420', background: 'rgba(44,36,32,.04)', color: '#2C2420', fontWeight: 600 }
+                          : { border: '1.5px solid rgba(44,36,32,.14)', color: '#9a8878' }}>
+                        {selected && (
+                          <span className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center"
+                            style={{ background: '#2C2420' }}>
+                            <Check size={9} color="#F2ECE0" strokeWidth={3} />
+                          </span>
+                        )}
+                        <span className="text-lg">{METHOD_LABELS[m]?.icon}</span>
+                        <span>{METHOD_LABELS[m]?.label ?? m}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-5 text-sm font-sans text-red-600">
+                <div className="rounded-2xl p-5 text-sm font-sans"
+                  style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C' }}>
                   {error}
                 </div>
               )}
             </div>
 
-            {/* Right: order summary */}
+            {/* ── RIGHT: order summary (dark) ── */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl p-8 border border-gray-100 sticky top-24 space-y-6">
-                <h2 className="font-serif text-xl text-zen-bark">Votre commande</h2>
+              <div className="rounded-2xl p-7 sticky top-24 space-y-6"
+                style={{ background: '#2C2420', color: '#F2ECE0' }}>
+                <h2 className="font-serif text-lg" style={{ color: '#F2ECE0' }}>Votre commande</h2>
 
-                <div className="space-y-4 max-h-64 overflow-y-auto">
+                {/* Items */}
+                <div className="space-y-4 max-h-56 overflow-y-auto pr-1">
                   {items.map(({ product, quantity }) => (
-                    <div key={product.id} className="flex gap-4 items-center">
-                      <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex-shrink-0 relative overflow-hidden">
+                    <div key={product.id} className="flex gap-3 items-center">
+                      <div className="w-12 h-12 rounded-xl flex-shrink-0 relative overflow-hidden"
+                        style={{ background: 'rgba(242,236,224,.08)' }}>
                         {product.images?.[0] && (
-                          <Image
-                            src={product.images[0]}
-                            alt={product.nameFr ?? ''}
-                            fill
-                            className="object-contain p-1"
-                            unoptimized={product.images[0].startsWith('https://raw.githubusercontent.com')}
-                          />
+                          <Image src={product.images[0]} alt={product.nameFr ?? ''} fill
+                            className="object-contain p-1.5"
+                            unoptimized={product.images[0].startsWith('https://raw.githubusercontent.com')} />
                         )}
+                        {/* qty badge */}
+                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center"
+                          style={{ background: '#C1714A', color: '#fff' }}>{quantity}</span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-sans text-zen-bark leading-snug line-clamp-2">{product.nameFr}</p>
-                        <p className="text-xs text-zen-muted mt-0.5">× {quantity}</p>
-                      </div>
-                      <p className="text-sm font-sans font-semibold text-zen-bark flex-shrink-0">
+                      <p className="flex-1 text-xs font-sans leading-snug line-clamp-2"
+                        style={{ color: 'rgba(242,236,224,.8)' }}>{product.nameFr}</p>
+                      <p className="text-sm font-sans font-semibold flex-shrink-0" style={{ color: '#F2ECE0' }}>
                         {((product.retailPriceEur ?? 0) * quantity).toFixed(2).replace('.', ',')} €
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t border-gray-100 pt-4 space-y-3 text-sm font-sans">
-                  <div className="flex justify-between text-zen-muted">
-                    <span>Sous-total</span>
-                    <span>{subtotal.toFixed(2).replace('.', ',')} €</span>
+                {/* Totals */}
+                <div className="space-y-2.5 text-sm font-sans pt-4"
+                  style={{ borderTop: '1px solid rgba(242,236,224,.1)' }}>
+                  <div className="flex justify-between" style={{ color: 'rgba(242,236,224,.55)' }}>
+                    <span>Sous-total</span><span>{subtotal.toFixed(2).replace('.', ',')} €</span>
                   </div>
-                  <div className="flex justify-between text-zen-muted">
+                  <div className="flex justify-between" style={{ color: shipping === 0 ? '#5C9E70' : 'rgba(242,236,224,.55)' }}>
                     <span>Livraison</span>
-                    <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
-                      {shipping === 0 ? 'Offerte' : `${shipping.toFixed(2).replace('.', ',')} €`}
-                    </span>
+                    <span>{shipping === 0 ? 'Offerte ✓' : `${shipping.toFixed(2).replace('.', ',')} €`}</span>
                   </div>
-                  <div className="flex justify-between text-zen-muted text-xs">
+                  <div className="flex justify-between text-xs" style={{ color: 'rgba(242,236,224,.35)' }}>
                     <span>TVA ({(vat.vatRate * 100).toFixed(0)}%)</span>
                     <span>{vat.vatAmount.toFixed(2).replace('.', ',')} €</span>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-100 pt-4 flex justify-between items-baseline">
-                  <span className="font-sans font-medium text-zen-bark">Total TTC</span>
-                  <span className="font-serif font-bold text-zen-bark text-2xl">
+                <div className="flex justify-between items-baseline pt-4"
+                  style={{ borderTop: '1px solid rgba(242,236,224,.1)' }}>
+                  <span className="text-sm font-sans" style={{ color: 'rgba(242,236,224,.7)' }}>Total TTC</span>
+                  <span className="font-serif font-bold text-2xl" style={{ color: '#F2ECE0' }}>
                     {orderTotal.toFixed(2).replace('.', ',')} €
                   </span>
                 </div>
 
                 {shipping > 0 && (
-                  <div className="flex items-center gap-2 text-xs text-zen-muted font-sans bg-gray-50 rounded-xl p-3">
-                    <Truck size={13} />
-                    <span>Livraison offerte dès 59 € d’achat</span>
+                  <div className="flex items-center gap-2 text-xs font-sans rounded-xl p-3"
+                    style={{ background: 'rgba(242,236,224,.06)', color: 'rgba(242,236,224,.5)' }}>
+                    <Truck size={12} />
+                    Livraison offerte dès 59 € d&apos;achat
                   </div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={loading || items.length === 0}
-                  className="w-full bg-zen-terracotta text-white font-sans font-medium py-4 rounded-xl hover:bg-zen-terracotta/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  <Lock size={15} />
+                <button type="submit" disabled={loading || items.length === 0}
+                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-sans font-semibold text-sm transition-all disabled:opacity-50"
+                  style={{ background: '#C1714A', color: '#fff', boxShadow: '0 10px 28px rgba(193,113,74,.3)' }}>
+                  <Lock size={14} />
                   {loading ? 'Redirection…' : 'Payer en sécurité'}
                 </button>
 
-                <p className="text-xs text-zen-muted font-sans text-center">
-                  Paiement sécurisé · SSL 256 bits · Données protégées
+                <p className="text-center text-[10px] font-sans" style={{ color: 'rgba(242,236,224,.35)', letterSpacing: '0.04em' }}>
+                  🔒 SSL 256 bits · Paiement sécurisé · Données protégées
                 </p>
               </div>
             </div>
