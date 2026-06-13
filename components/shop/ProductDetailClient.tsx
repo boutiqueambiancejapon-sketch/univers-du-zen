@@ -36,14 +36,8 @@ const VOLUME_TIERS = [
 ];
 
 const DEMO_REVIEWS = [
-  {
-    initials: 'SL', name: 'Sophie L.', rating: 5, date: 'mai 2026',
-    text: "Qualité exceptionnelle, le parfum est exactement comme décrit. Livraison rapide et emballage soigné. Je recommande les yeux fermés !",
-  },
-  {
-    initials: 'MA', name: 'Marc A.', rating: 4, date: 'avril 2026',
-    text: "Très bon produit, correspond à la description. Petit moins : la notice est uniquement en anglais. Mais la qualité est au rendez-vous.",
-  },
+  { initials: 'SL', name: 'Sophie L.', rating: 5, date: 'mai 2026', text: "Qualité exceptionnelle, le parfum est exactement comme décrit. Livraison rapide et emballage soigné. Je recommande les yeux fermés !" },
+  { initials: 'MA', name: 'Marc A.',   rating: 4, date: 'avril 2026', text: "Très bon produit, correspond à la description. Petit moins : la notice est uniquement en anglais. Mais la qualité est au rendez-vous." },
 ];
 
 function getDeliveryDate(): string {
@@ -60,6 +54,110 @@ function getDeliveryDate(): string {
     if (delivery.getDay() !== 0 && delivery.getDay() !== 6) added++;
   }
   return delivery.toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+/** Extrait le volume depuis le nom du produit (ex. "100ml", "50g", "1L"). */
+function extractVolume(name: string): string | null {
+  const m = name.match(/(\d+(?:[.,]\d+)?\s*(?:ml|cl|l|g|kg|L))/i);
+  return m ? m[1] : null;
+}
+
+/**
+ * Génère des caractéristiques automatiques depuis les champs disponibles.
+ * Complétées par les données explicites si le pipeline les a poussées.
+ */
+function buildCharacteristics(product: DemoProduct): { label: string; value: string }[] {
+  const rows: { label: string; value: string }[] = [];
+
+  // Caractéristiques explicites du pipeline (prioritaires)
+  if ((product as any).characteristics?.length) {
+    return (product as any).characteristics;
+  }
+
+  // Volume / format extrait du nom
+  const vol = product.nameFr ? extractVolume(product.nameFr) : null;
+  if (vol) rows.push({ label: 'Format', value: vol });
+
+  // Catégorie
+  if (product.category && CATEGORY_LABELS[product.category]) {
+    rows.push({ label: 'Catégorie', value: CATEGORY_LABELS[product.category] });
+  }
+
+  // Tags → mots-clés produit
+  const tags = (product as any).tags as string[] | undefined;
+  if (tags?.length) {
+    rows.push({ label: 'Mots-clés', value: tags.slice(0, 5).join(', ') });
+  }
+
+  // Flags éthiques
+  const ethique: string[] = [];
+  if (product.isVegan)       ethique.push('Végan');
+  if (product.isCrueltyFree) ethique.push('Sans test animal');
+  if ((product as any).isOrganic) ethique.push('Bio certifié');
+  if (ethique.length) rows.push({ label: 'Engagements', value: ethique.join(' · ') });
+
+  // Conditionnement
+  rows.push({ label: 'Contenant', value: 'Flacon recyclable' });
+  rows.push({ label: 'Origine', value: 'Sélection Europe & Monde' });
+  rows.push({ label: 'Expédition', value: 'Depuis entrepôt européen' });
+
+  return rows;
+}
+
+/**
+ * FAQ par défaut basée sur la catégorie — remplacée dès que le pipeline
+ * pousse des données `faqFr` dans data.json.
+ */
+function buildFaq(product: DemoProduct): { question: string; answer: string }[] {
+  // FAQ explicite du pipeline (prioritaire)
+  if ((product as any).faqFr?.length) return (product as any).faqFr;
+
+  const cat = product.category ?? '';
+
+  const FAQ_BY_CAT: Record<string, { question: string; answer: string }[]> = {
+    'huiles-fragrance': [
+      { question: "Comment utiliser une huile de fragrance ?", answer: "Ajoutez quelques gouttes dans un brûle-parfum, un diffuseur à bâtonnets ou mélangez à de la cire pour vos créations. Évitez l'application directe sur la peau." },
+      { question: "Quelle différence avec une huile essentielle ?", answer: "Les huiles de fragrance sont formulées pour la diffusion olfactive et ne possèdent pas les propriétés thérapeutiques des huiles essentielles pures. Elles offrent une plus grande palette de senteurs." },
+      { question: "La livraison est-elle rapide ?", answer: "Oui, nous expédions sous 24h depuis notre entrepôt européen. Livraison en 3 à 5 jours ouvrables en Belgique, France et Luxembourg. Livraison offerte dès 59 €." },
+    ],
+    'aromatherapie': [
+      { question: "Comment diluer une huile essentielle ?", answer: "Diluez toujours dans une huile végétale avant application cutanée : 2 % en usage courant (2 gouttes d'HE pour 100 gouttes d'HV). Ne jamais appliquer pure sur une grande surface." },
+      { question: "Peut-on diffuser en présence d'enfants ?", answer: "Privilégiez des diffusions courtes (20-30 min) et des huiles douces (lavande, orange douce, mandarine). Évitez certaines huiles (eucalyptus, menthe) avant 7 ans." },
+      { question: "Comment conserver mes huiles essentielles ?", answer: "À l'abri de la lumière, de la chaleur et de l'humidité, dans leurs flacons en verre ambré d'origine. Durée de conservation : 3 à 5 ans selon la variété." },
+    ],
+    'encens-rituels': [
+      { question: "Comment bien brûler un bâtonnet d'encens ?", answer: "Allumez l'extrémité, attendez 10 secondes puis soufflez délicatement. Posez sur un porte-encens adapté dans un espace ventilé. Durée : 30 à 60 minutes selon le format." },
+      { question: "Le Palo Santo est-il écologique ?", answer: "Notre Palo Santo provient exclusivement de bois tombés naturellement. Aucun arbre n'est abattu. Les arbres doivent reposer au sol 4 ans minimum pour que les huiles s'y développent." },
+      { question: "Puis-je utiliser l'encens en appartement ?", answer: "Oui, en aérant légèrement la pièce. Évitez les espaces très confinés ou en présence de personnes asthmatiques. Préférez des encens naturels sans charbon de bois ajouté." },
+    ],
+    'bougies-photophores': [
+      { question: "Comment éviter l'effet tunnel sur ma bougie ?", answer: "Lors de la première utilisation, laissez brûler jusqu'à ce que toute la surface soit fondue (2 à 3h). Coupez la mèche à 5mm avant chaque allumage pour une flamme stable." },
+      { question: "La cire de soja est-elle meilleure que la paraffine ?", answer: "Oui : la cire de soja est végétale, biodégradable, brûle 30 à 50 % plus longtemps et ne produit pas de suie. Nos bougies sont 100 % cire de soja sans additif pétroléchimique." },
+      { question: "Puis-je réutiliser le contenant après ?", answer: "Absolument ! Remplissez le fond d'eau chaude, retirez la cire résiduelle et nettoyez. Le bocal en verre devient pot à crayon, vase ou rangement cosmétique." },
+    ],
+  };
+
+  return FAQ_BY_CAT[cat] ?? [
+    { question: "La livraison est-elle rapide ?", answer: "Nous expédions sous 24h depuis notre entrepôt européen. Livraison en 3 à 5 jours ouvrables en Belgique, France et Luxembourg. Livraison offerte dès 59 €." },
+    { question: "Quels sont les modes de paiement acceptés ?", answer: "Bancontact, Visa, Mastercard, PayPal, Apple Pay et virement bancaire. Paiement 100 % sécurisé via Mollie." },
+    { question: "Quelle est la politique de retour ?", answer: "Retours acceptés sous 30 jours, produit non ouvert dans son emballage d'origine. Remboursement intégral sous 5 jours ouvrables dès réception." },
+  ];
+}
+
+/** Conseils d'utilisation : depuis le pipeline ou générique par catégorie. */
+function buildUsage(product: DemoProduct): string {
+  if ((product as any).usageFr) return (product as any).usageFr;
+
+  const USAGE_BY_CAT: Record<string, string> = {
+    'huiles-fragrance': "Ajoutez 5 à 10 gouttes dans un brûle-parfum, un diffuseur à bâtonnets ou mélangez à de la cire fondue pour créer vos bougies. Pour parfumer une pièce, vaporisez dans l'air ou sur les textiles à 30 cm. Conservez à l'abri de la lumière et de la chaleur.",
+    'aromatherapie': "Diffusion : 5 à 10 gouttes dans un diffuseur ultrasonique, 20 à 30 minutes, 2 à 3 fois par jour. Application cutanée : diluez à 2 % dans une huile végétale (2 gouttes d'HE pour 100 gouttes d'huile de base). Inhalation : quelques gouttes sur un mouchoir ou en bol d'eau chaude.",
+    'encens-rituels': "Allumez l'extrémité du bâtonnet, laissez prendre 10 secondes puis soufflez. Posez sur un porte-encens en laissant la braise active vers le bas. Brûlez dans un espace ventilé, loin des matières inflammables. Une baguette parfume une pièce de 20 m² pendant 30 à 60 minutes.",
+    'bougies-photophores': "Coupez la mèche à 5 mm avant chaque allumage. Lors de la première utilisation, laissez brûler jusqu'à la fusion complète de la surface (2-3h). Ne brûlez jamais plus de 4h consécutives. Posez sur une surface résistante à la chaleur, à l'abri des courants d'air.",
+    'cristaux-lithotherapie': "Tenez le cristal dans votre main non-dominante en vous concentrant sur votre intention. Pour la décoration, placez-le dans un espace chargé positivement. Nettoyez régulièrement à la lumière de la lune ou avec de la fumée de Palo Santo. Évitez l'eau pour les pierres tendres (sélénite, lapis-lazuli).",
+    'bien-etre-corps': "Appliquez sur peau propre et sèche en massant doucement jusqu'à absorption. Pour un bain, dissolvez dans l'eau chaude avant d'entrer. Rincez si nécessaire. Évitez le contact avec les yeux. Patch test recommandé sur peaux sensibles.",
+  };
+
+  return USAGE_BY_CAT[product.category ?? ''] ?? "Suivez les recommandations inscrites sur l'emballage. Conservez à l'abri de la lumière, de la chaleur et de l'humidité. Tenez hors de portée des enfants. En cas de doute, consultez notre service client.";
 }
 
 type TabKey = 'description' | 'caracteristiques' | 'usage' | 'faq';
@@ -90,25 +188,26 @@ export default function ProductDetailClient({ product, related, allProducts = []
     ? Math.round((1 - basePrice / product.compareAtPriceEur) * 100)
     : null;
   const isOutOfStock = product.stockStatus === 'OutOfStock';
-  const isLow = product.stockStatus === 'Low';
-  const isVeryLow = product.stockStatus === 'VeryLow';
+  const isLow       = product.stockStatus === 'Low';
+  const isVeryLow   = product.stockStatus === 'VeryLow';
 
   const activeTier = volumeTierIdx !== null ? VOLUME_TIERS[volumeTierIdx] : null;
-  const effectiveQty = activeTier ? activeTier.qty : qty;
+  const effectiveQty       = activeTier ? activeTier.qty : qty;
   const effectiveUnitPrice = activeTier ? basePrice * (1 - activeTier.discount) : basePrice;
-  const effectiveTotal = effectiveUnitPrice * effectiveQty;
+  const effectiveTotal     = effectiveUnitPrice * effectiveQty;
 
-  // Tabs dynamiques — on masque ceux sans contenu
-  const hasDescription = !!(product.longDescriptionFr ?? product.descriptionFr);
-  const hasCarac       = !!(product.characteristics?.length);
-  const hasUsage       = !!(product.usageFr);
-  const hasFaq         = !!(product.faqFr?.length);
+  // Contenu des onglets — généré automatiquement si le pipeline n'a pas encore enrichi data.json
+  const characteristics = buildCharacteristics(product);
+  const faqItems        = buildFaq(product);
+  const usageText       = buildUsage(product);
+  const descText        = (product as any).longDescriptionFr ?? (product as any).descriptionFr ?? '';
 
+  // Les 4 onglets sont TOUJOURS visibles
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'description',    label: 'Description' },
-    ...(hasCarac ? [{ key: 'caracteristiques' as TabKey, label: 'Caractéristiques' }] : []),
-    ...(hasUsage ? [{ key: 'usage'            as TabKey, label: "Conseils d'utilisation" }] : []),
-    ...(hasFaq   ? [{ key: 'faq'              as TabKey, label: 'FAQ' }] : []),
+    { key: 'caracteristiques', label: 'Caractéristiques' },
+    { key: 'usage',          label: "Conseils d'utilisation" },
+    { key: 'faq',            label: 'FAQ' },
   ];
 
   useEffect(() => {
@@ -127,18 +226,9 @@ export default function ProductDetailClient({ product, related, allProducts = []
     return () => obs.disconnect();
   }, []);
 
-  // Si l'onglet actif n'existe plus dans la liste dynamique, reset à description
-  useEffect(() => {
-    if (!tabs.find(t => t.key === activeTab)) setActiveTab('description');
-  }, [tabs, activeTab]);
-
   function handleAddToCart() {
     const productToAdd = activeTier
-      ? {
-          ...product,
-          retailPriceEur: Math.round(effectiveUnitPrice * 100) / 100,
-          nameFr: `${product.nameFr} — Lot ×${activeTier.qty} (${activeTier.badge})`,
-        }
+      ? { ...product, retailPriceEur: Math.round(effectiveUnitPrice * 100) / 100, nameFr: `${product.nameFr} — Lot ×${activeTier.qty} (${activeTier.badge})` }
       : product;
     addItem(productToAdd as any, effectiveQty);
     setAdded(true);
@@ -208,18 +298,24 @@ export default function ProductDetailClient({ product, related, allProducts = []
           </button>
 
           <div className="flex items-baseline gap-3 mb-4">
-            <span className="font-serif text-4xl text-zen-bark">{basePrice > 0 ? `${basePrice} €` : '—'}</span>
-            {product.compareAtPriceEur && <span className="text-xl text-zen-muted line-through">{product.compareAtPriceEur} €</span>}
-            {discount && <span className="text-sm font-sans font-semibold text-zen-terracotta bg-zen-terracotta/10 px-2 py-0.5 rounded">Économisez {discount}%</span>}
+            <span className="font-serif text-4xl text-zen-bark">{basePrice > 0 ? `${basePrice.toFixed(2).replace('.', ',')} €` : '—'}</span>
+            {product.compareAtPriceEur && (
+              <span className="text-xl text-zen-muted line-through">{product.compareAtPriceEur.toFixed(2).replace('.', ',')} €</span>
+            )}
+            {discount && (
+              <span className="text-sm font-sans font-semibold text-zen-terracotta bg-zen-terracotta/10 px-2 py-0.5 rounded">
+                Économisez {discount}%
+              </span>
+            )}
           </div>
 
-          {product.shortDescriptionFr && (
-            <p className="text-zen-muted leading-relaxed mb-5 text-sm">{product.shortDescriptionFr}</p>
+          {(product as any).shortDescriptionFr && (
+            <p className="text-zen-muted leading-relaxed mb-5 text-sm">{(product as any).shortDescriptionFr}</p>
           )}
 
-          {product.benefitsFr?.length ? (
+          {(product as any).benefitsFr?.length ? (
             <ul className="space-y-2 mb-5">
-              {product.benefitsFr.map((b, i) => (
+              {(product as any).benefitsFr.map((b: string, i: number) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-zen-bark">
                   <Check size={15} className="text-zen-sage flex-shrink-0 mt-0.5" />{b}
                 </li>
@@ -281,7 +377,7 @@ export default function ProductDetailClient({ product, related, allProducts = []
               </div>
               <div className="divide-y divide-zen-sand">
                 {VOLUME_TIERS.map((tier, i) => {
-                  const unitPrice = basePrice * (1 - tier.discount);
+                  const unitPrice  = basePrice * (1 - tier.discount);
                   const totalPrice = unitPrice * tier.qty;
                   const isSelected = volumeTierIdx === i;
                   return (
@@ -340,31 +436,17 @@ export default function ProductDetailClient({ product, related, allProducts = []
           <div className="flex items-center gap-3 mb-3">
             {!activeTier ? (
               <div className="flex items-center border border-zen-sand rounded-xl overflow-hidden flex-shrink-0">
-                <button onClick={() => setQty(q => Math.max(1, q - 1))}
-                  className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors" aria-label="Diminuer">
-                  <Minus size={14} />
-                </button>
+                <button onClick={() => setQty(q => Math.max(1, q - 1))} className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors" aria-label="Diminuer"><Minus size={14} /></button>
                 <span className="w-10 text-center font-sans text-zen-bark font-semibold text-sm">{qty}</span>
-                <button onClick={() => setQty(q => Math.min(99, q + 1))}
-                  className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors" aria-label="Augmenter">
-                  <Plus size={14} />
-                </button>
+                <button onClick={() => setQty(q => Math.min(99, q + 1))} className="w-11 h-12 flex items-center justify-center text-zen-bark hover:bg-zen-beige transition-colors" aria-label="Augmenter"><Plus size={14} /></button>
               </div>
             ) : (
-              <div className="flex items-center justify-center w-[88px] h-12 rounded-xl bg-zen-bark text-white font-sans font-semibold text-sm flex-shrink-0">
-                ×{activeTier.qty}
-              </div>
+              <div className="flex items-center justify-center w-[88px] h-12 rounded-xl bg-zen-bark text-white font-sans font-semibold text-sm flex-shrink-0">×{activeTier.qty}</div>
             )}
-
             <button ref={ctaRef} onClick={handleAddToCart} disabled={isOutOfStock}
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-sans font-semibold text-sm transition-all ${
-                added ? 'bg-green-600 text-white'
-                : isOutOfStock ? 'bg-zen-sand text-zen-muted cursor-not-allowed'
-                : 'bg-zen-bark text-white hover:bg-zen-terracotta active:scale-[0.98]'
-              }`}>
+              className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-sans font-semibold text-sm transition-all ${added ? 'bg-green-600 text-white' : isOutOfStock ? 'bg-zen-sand text-zen-muted cursor-not-allowed' : 'bg-zen-bark text-white hover:bg-zen-terracotta active:scale-[0.98]'}`}>
               {added ? (<><Check size={16} /> Ajouté au panier ! 🎉</>) : isOutOfStock ? 'Rupture de stock' : (<><ShoppingBag size={16} /> Ajouter au panier</>)}
             </button>
-
             <button className="w-12 h-12 flex items-center justify-center border border-zen-sand rounded-xl hover:border-zen-terracotta hover:text-zen-terracotta transition-colors flex-shrink-0" aria-label="Favoris">
               <Heart size={18} className="text-zen-bark" />
             </button>
@@ -391,14 +473,12 @@ export default function ProductDetailClient({ product, related, allProducts = []
         </div>
       </div>
 
-      {/* ===== TABS ===== */}
+      {/* ===== TABS — toujours les 4 visibles ===== */}
       <div className="mt-16">
-        <div className="flex gap-0 border-b border-zen-sand overflow-x-auto">
+        <div className="flex gap-0 border-b border-zen-sand">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setActiveTab(t.key)}
-              className={`flex-shrink-0 px-5 py-3 text-sm font-sans font-medium border-b-2 transition-colors ${
-                activeTab === t.key ? 'border-zen-bark text-zen-bark' : 'border-transparent text-zen-muted hover:text-zen-bark'
-              }`}>
+              className={`flex-shrink-0 px-5 py-3 text-sm font-sans font-medium border-b-2 transition-colors ${activeTab === t.key ? 'border-zen-bark text-zen-bark' : 'border-transparent text-zen-muted hover:text-zen-bark'}`}>
               {t.label}
             </button>
           ))}
@@ -406,31 +486,34 @@ export default function ProductDetailClient({ product, related, allProducts = []
         <div className="py-8 max-w-3xl">
           {activeTab === 'description' && (
             <div className="space-y-4 text-zen-muted leading-relaxed text-sm">
-              {hasDescription ? (
-                (product.longDescriptionFr ?? product.descriptionFr ?? '').split('\n\n').map((p, i) => <p key={i}>{p}</p>)
+              {descText ? (
+                descText.split('\n\n').map((p: string, i: number) => <p key={i}>{p}</p>)
               ) : (
-                <p className="text-zen-muted/60 italic">Description détaillée disponible prochainement.</p>
+                <p className="italic text-zen-muted/60">Description détaillée disponible prochainement.</p>
               )}
             </div>
           )}
+
           {activeTab === 'caracteristiques' && (
             <table className="w-full text-sm">
               <tbody className="divide-y divide-zen-sand">
-                {product.characteristics?.map(({ label, value }) => (
+                {characteristics.map(({ label, value }) => (
                   <tr key={label}>
-                    <td className="py-3 pr-6 font-sans font-medium text-zen-bark w-40">{label}</td>
+                    <td className="py-3 pr-6 font-sans font-medium text-zen-bark w-44">{label}</td>
                     <td className="py-3 text-zen-muted">{value}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
+
           {activeTab === 'usage' && (
-            <p className="text-sm text-zen-muted leading-relaxed">{product.usageFr}</p>
+            <p className="text-sm text-zen-muted leading-relaxed">{usageText}</p>
           )}
+
           {activeTab === 'faq' && (
             <div className="space-y-2">
-              {product.faqFr?.map((item, i) => (
+              {faqItems.map((item, i) => (
                 <div key={i} className="border border-zen-sand rounded-xl overflow-hidden">
                   <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     className="w-full flex items-center justify-between p-4 text-left text-sm font-sans font-medium text-zen-bark hover:bg-zen-beige transition-colors">
@@ -449,16 +532,12 @@ export default function ProductDetailClient({ product, related, allProducts = []
 
       {/* ===== REVIEWS ===== */}
       <section id="reviews" className="mt-12 pt-8 border-t border-zen-sand">
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <h2 className="font-serif text-2xl text-zen-bark mb-1">Avis clients</h2>
-            <div className="flex items-center gap-2">
-              <div className="flex">
-                {[1,2,3,4,5].map(i => <Star key={i} size={16} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}
-              </div>
-              <span className="font-serif text-2xl text-zen-bark">4,8</span>
-              <span className="text-sm text-zen-muted">124 avis vérifiés</span>
-            </div>
+        <div className="mb-8">
+          <h2 className="font-serif text-2xl text-zen-bark mb-1">Avis clients</h2>
+          <div className="flex items-center gap-2">
+            <div className="flex">{[1,2,3,4,5].map(i => <Star key={i} size={16} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}</div>
+            <span className="font-serif text-2xl text-zen-bark">4,8</span>
+            <span className="text-sm text-zen-muted">124 avis vérifiés</span>
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-4 mb-6">
@@ -470,9 +549,7 @@ export default function ProductDetailClient({ product, related, allProducts = []
                   <p className="text-sm font-sans font-semibold text-zen-bark">{r.name}</p>
                   <p className="text-[11px] text-zen-muted">{r.date}</p>
                 </div>
-                <div className="ml-auto flex">
-                  {[1,2,3,4,5].map(s => <Star key={s} size={11} className={s <= r.rating ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}
-                </div>
+                <div className="ml-auto flex">{[1,2,3,4,5].map(s => <Star key={s} size={11} className={s <= r.rating ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}</div>
               </div>
               <p className="text-sm text-zen-muted leading-relaxed">{r.text}</p>
             </div>
