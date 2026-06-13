@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import Link from 'next/link';
 import ShopGrid from '@/components/shop/ShopGrid';
+import CollectionGrid from '@/components/shop/CollectionGrid';
 import { getPublishedProducts } from '@/lib/get-products';
 import { CATEGORIES } from '@/lib/demo-products';
 
@@ -15,9 +16,17 @@ export default async function BoutiquePage() {
   const locale   = await getLocale();
   const products = getPublishedProducts();
 
+  /* ── Première image par collection (pour CollectionGrid) ── */
+  const categoryImages: Record<string, string> = {};
+  for (const p of products) {
+    if (p.category && p.images?.[0] && !categoryImages[p.category]) {
+      categoryImages[p.category] = p.images[0];
+    }
+  }
+
   return (
     <>
-      {/* Hero header */}
+      {/* ── Hero header ──────────────────────────────────────────────── */}
       <div style={{ background: '#F5F3EF', borderBottom: '1px solid rgba(44,36,32,.08)' }}>
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12">
           <nav className="flex items-center gap-1.5 mb-6"
@@ -33,7 +42,8 @@ export default async function BoutiquePage() {
                 style={{ color: '#C1714A', letterSpacing: '0.1em' }}>
                 Toute la collection
               </p>
-              <h1 className="font-serif" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#2C2420', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
+              <h1 className="font-serif"
+                style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#2C2420', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
                 Boutique Bien-être
               </h1>
               <p className="mt-3 text-sm font-sans leading-relaxed" style={{ color: '#6B5C55', maxWidth: 480 }}>
@@ -43,9 +53,9 @@ export default async function BoutiquePage() {
 
             <div className="flex gap-6 flex-shrink-0">
               {[
-                { v: `${products.length}`,  l: 'produits' },
-                { v: '100%',  l: 'cruelty-free' },
-                { v: '3–5j',  l: 'livraison' },
+                { v: `${products.length}`, l: 'produits' },
+                { v: '100%',              l: 'cruelty-free' },
+                { v: '3–5j',             l: 'livraison' },
               ].map(({ v, l }) => (
                 <div key={l} className="text-center">
                   <p className="font-serif font-bold" style={{ fontSize: 22, color: '#2C2420' }}>{v}</p>
@@ -57,6 +67,15 @@ export default async function BoutiquePage() {
         </div>
       </div>
 
+      {/* ── Collection cards visuelles ───────────────────────────────── */}
+      <CollectionGrid
+        categories={CATEGORIES}
+        categoryImages={categoryImages}
+        locale={locale}
+        activeCategory={null}
+      />
+
+      {/* ── Grille produits ──────────────────────────────────────────── */}
       <ShopGrid
         products={products as any}
         categories={CATEGORIES}
