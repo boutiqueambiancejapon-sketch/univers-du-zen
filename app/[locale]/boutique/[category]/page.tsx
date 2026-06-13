@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { getLocale } from 'next-intl/server';
 import ShopGrid from '@/components/shop/ShopGrid';
-import { DEMO_PRODUCTS, CATEGORIES } from '@/lib/demo-products';
+import { ALL_PRODUCTS, CATEGORIES } from '@/lib/all-products';
 import { CATEGORY_SEO } from '@/lib/category-seo';
 
 export async function generateMetadata({
@@ -36,7 +36,7 @@ export default async function CategoryPage({
   if (!cat) notFound();
 
   const locale = await getLocale();
-  const products = DEMO_PRODUCTS.filter(p => p.category === params.category);
+  const products = ALL_PRODUCTS.filter(p => p.category === params.category);
   const seo = CATEGORY_SEO[params.category];
 
   const breadcrumbSchema = {
@@ -51,13 +51,8 @@ export default async function CategoryPage({
 
   return (
     <>
-      <Script
-        id="breadcrumb-jsonld"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <Script id="breadcrumb-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      {/* Collection hero */}
       <div className="bg-zen-beige border-b border-zen-sand">
         <div className="max-w-7xl mx-auto px-4 py-10">
           <nav className="text-xs font-sans text-zen-muted mb-4 flex gap-1.5">
@@ -76,19 +71,16 @@ export default async function CategoryPage({
         </div>
       </div>
 
-      {/* Product grid */}
       <ShopGrid
         products={products as any}
         categories={CATEGORIES}
         activeCategory={params.category}
       />
 
-      {/* SEO long description + FAQ */}
       {seo && (
         <div className="bg-zen-beige border-t border-zen-sand mt-8">
           <div className="max-w-4xl mx-auto px-4 py-14">
-            {/* Long description */}
-            <div className="prose prose-sm max-w-none mb-12">
+            <div className="mb-12">
               <h2 className="font-serif text-2xl text-zen-bark mb-4">
                 Tout savoir sur {cat.label.toLowerCase()}
               </h2>
@@ -97,23 +89,15 @@ export default async function CategoryPage({
               ))}
             </div>
 
-            {/* FAQ */}
             {seo.faq.length > 0 && (
               <div>
-                <h2 className="font-serif text-2xl text-zen-bark mb-6">
-                  Questions fréquentes
-                </h2>
+                <h2 className="font-serif text-2xl text-zen-bark mb-6">Questions fréquentes</h2>
                 <div className="space-y-3">
                   {seo.faq.map((item, i) => (
-                    <details
-                      key={i}
-                      className="group border border-zen-sand rounded-xl overflow-hidden"
-                    >
+                    <details key={i} className="group border border-zen-sand rounded-xl overflow-hidden">
                       <summary className="flex items-center justify-between p-4 cursor-pointer text-sm font-sans font-medium text-zen-bark hover:bg-white/60 transition-colors list-none">
                         {item.question}
-                        <span className="ml-3 flex-shrink-0 text-zen-muted group-open:rotate-180 transition-transform">
-                          ▾
-                        </span>
+                        <span className="ml-3 flex-shrink-0 text-zen-muted group-open:rotate-180 transition-transform">▾</span>
                       </summary>
                       <div className="px-4 pb-4 text-sm text-zen-muted leading-relaxed border-t border-zen-sand pt-3">
                         {item.answer}

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import ShopGrid from '@/components/shop/ShopGrid';
-import { DEMO_PRODUCTS, CATEGORIES } from '@/lib/demo-products';
+import { ALL_PRODUCTS, CATEGORIES } from '@/lib/all-products';
 
 export const metadata: Metadata = {
   title: 'Boutique bien-être | Univers du Zen',
@@ -14,7 +14,6 @@ export default async function BoutiquePage() {
 
   return (
     <>
-      {/* Hero SEO */}
       <div className="bg-zen-beige border-b border-zen-sand">
         <div className="max-w-7xl mx-auto px-4 py-10">
           <nav className="text-xs font-sans text-zen-muted mb-4 flex gap-1.5">
@@ -34,7 +33,7 @@ export default async function BoutiquePage() {
       </div>
 
       <ShopGrid
-        products={DEMO_PRODUCTS as any}
+        products={ALL_PRODUCTS as any}
         categories={CATEGORIES}
         activeCategory={null}
       />
