@@ -4,11 +4,32 @@
   "name": "Huile Parfumée Concentrée Lilas 10ml",
   "original_name": "10 ml Lilac Fragrance Oil - UNLABELLED",
   "short_description": "Plongez au cœur d'un jardin printanier avec notre huile parfumée concentrée au lilas. Idéale pour vos créations DIY, elle diffuse une fragrance florale enivrante et apaisante, parfaite pour bougies, savons ou diffuseurs.",
-  "description": "Imaginez le doux parfum du lilas en pleine floraison, caressant l'air frais du printemps. Notre huile parfumée concentrée au lilas capture cette essence délicate et enivrante, vous transportant instantanément dans un jardin secret où le temps suspend son vol. C'est l'invitation à une évasion sensorielle, une touche de poésie florale à portée de main.\n\nConçue pour les créateurs et les amoureux des senteurs, cette fragrance intense de 10ml est votre alliée pour personnaliser un éventail de produits. Sa formule hautement concentrée garantit une diffusion remarquable et durable, transformant vos bougies artisanales en œuvres d'art olfactives, vos savons en douceurs parfumées, ou vos diffuseurs en portails vers des paysages printaniers. Elle est également parfaite pour la confection de cosmétiques maison ou de produits d'entretien.\n\nChaque goutte de cette huile de lilas est une promesse de pureté et d'authenticité, fidèle à la richesse naturelle de cette fleur emblématique. Sans étiquette, elle vous offre une liberté totale pour l'intégrer à votre marque ou à vos projets personnels, vous permettant de laisser libre cours à votre créativité sans contraintes. Sa qualité supérieure assure une tenue exceptionnelle et un rendu olfactif fidèle, faisant de chaque création une expérience mémorable.\n\nLaissez-vous inspirer par la magie du lilas et donnez vie à des créations uniques qui éveilleront les sens et embelliront chaque instant. Que vous cherchiez à créer une ambiance relaxante chez vous ou à offrir un cadeau parfumé inoubliable, notre huile concentrée au lilas est la clé pour transformer vos idées en réalité parfumée.",
+  "description": "Imaginez le doux parfum du lilas en pleine floraison, caressant l'air frais du printemps. Notre huile parfumée concentrée au lilas capture cette essence délicate et enivrante, vous transportant instantanément dans un jardin secret où le temps suspend son vol. C'est l'invitation à une évasion sensorielle, une touche de poésie florale à portée de main.\n\nConçue pour les créateurs et les amoureux des senteurs, cette fragrance intense de 10ml est votre alliée pour personnaliser un éventail de produits. Sa formule hautement concentrée garantit une diffusion remarquable et durable, transformant vos bougies artisanales en œuvres d'art olfactives, vos savons en douceurs parfumées, ou vos diffuseurs en portails vers des paysages printaniers. Elle est également parfaite pour la confection de cosmétiques maison ou de produits d'entretien.\n\nChaque goutte de cette huile de lilas est une promesse de pureté et d'authenticité, fidèle à la richesse naturelle de cette fleur emblématique. Sans étiquette, elle vous offre une liberté totale pour l'intégrer à votre marque ou à vos projets personnels, vous permettant de laisser libre cours à votre créativité sans contraintes.",
   "meta_description": "Découvrez notre huile parfumée concentrée au lilas (10ml). Créez bougies, savons et diffuseurs avec cette fragrance florale enivrante. Laissez-vous transporter par le printemps !",
   "tags": "huile parfumée, lilas, fragrance florale, DIY, bougies, savons, diffuseur, parfum maison",
-  "images": [
-    "image-1.jpg"
+  "images": ["image-1.jpg"],
+  "pushed_at": "2026-06-13T22:26:09.394Z",
+  "category": "Huiles de fragrance",
+  "faqFr": [
+    {"question": "Comment utiliser l'huile parfumée au lilas dans un diffuseur ?", "answer": "Ajoutez 5 à 8 gouttes dans la coupelle de votre diffuseur électrique ou brûle-parfum. Pour un diffuseur à bâtonnets, versez 15 à 20 gouttes dans le flacon avec une huile végétale neutre. Le lilas embaumera votre pièce d'une douceur florale printanière."},
+    {"question": "Peut-on utiliser cette fragrance lilas pour des savons à froid ?", "answer": "Oui, elle est compatible avec la méthode savon à froid. Incorporez la fragrance à la trace légère, à raison de 3% du poids des huiles. Le parfum lilas résiste bien à la saponification et reste perceptible dans le savon final."},
+    {"question": "Le lilas est-il une odeur douce ou intense ?", "answer": "Le lilas est une senteur florale délicate et enveloppante, ni trop lourde ni trop légère. Elle est à la fois printanière et sophistiquée — idéale pour ceux qui préfèrent les parfums floraux élégants sans excès."},
+    {"question": "Avec quelles autres fragrances le lilas se marie-t-il bien ?", "answer": "Le lilas s'harmonise magnifiquement avec le muguet, la pivoine, la rose légère ou même une touche de poudre. Pour une création plus originale, essayez 80% lilas + 20% mûre pour un accord floral-fruité très agréable."}
   ],
-  "pushed_at": "2026-06-13T22:26:09.394Z"
+  "characteristics": [
+    {"label": "Contenance", "value": "10 ml"},
+    {"label": "Famille olfactive", "value": "Florale & printanière"},
+    {"label": "Notes principales", "value": "Lilas en fleur, délicate poudre florale, fraîcheur verte"},
+    {"label": "Usages", "value": "Diffuseur, bougie, savon, cosmétique, linge"},
+    {"label": "Vegan & Cruelty-free", "value": "Oui"},
+    {"label": "Concentration", "value": "Haute concentration — 5 à 8 gouttes suffisent"}
+  ],
+  "usageFr": "Ajoutez 5 à 8 gouttes dans votre diffuseur pour envelopper votre espace d'une douceur florale printanière. En bougie, incorporez à la cire fondue à 60°C à raison de 8% du poids. Pour parfumer votre linge, déposez 2 à 3 gouttes sur un coton placé dans votre armoire — vos vêtements prendront une délicate senteur de lilas en fleur.",
+  "benefitsFr": [
+    "Fragrance florale élégante et apaisante aux notes de lilas",
+    "Hautement concentrée pour une tenue longue durée",
+    "Idéale pour bougies, savons, diffuseurs et linge parfumé",
+    "Évoque la douceur du printemps toute l'année"
+  ],
+  "enriched_at": "2026-06-14"
 }
