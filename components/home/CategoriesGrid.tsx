@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { getLocale } from 'next-intl/server';
 
 const CATEGORIES = [
   {
@@ -47,8 +47,8 @@ const CATEGORIES = [
   },
 ];
 
-export default function CategoriesGrid() {
-  const locale = useLocale();
+export default async function CategoriesGrid() {
+  const locale = await getLocale();
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-16">
@@ -74,9 +74,6 @@ export default function CategoriesGrid() {
             <div className="absolute bottom-0 left-0 p-5">
               <p className="text-white font-serif text-xl leading-tight">{label}</p>
               <p className="text-white/70 text-xs mt-1 font-sans">{desc}</p>
-            </div>
-            <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/0 group-hover:bg-white/20 flex items-center justify-center transition-all duration-300">
-              <span className="text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
             </div>
           </Link>
         ))}

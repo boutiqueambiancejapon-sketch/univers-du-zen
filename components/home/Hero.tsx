@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { getLocale } from 'next-intl/server';
 
-export default function Hero() {
-  const locale = useLocale();
+export default async function Hero() {
+  const locale = await getLocale();
 
   return (
     <section className="relative h-[85vh] min-h-[560px] overflow-hidden">

@@ -23,15 +23,18 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-zen-terracotta text-white font-sans font-medium px-6 py-3 rounded hover:bg-zen-terra-dark transition-colors duration-150;
+    @apply bg-zen-terracotta text-white font-sans font-medium px-6 py-3 rounded transition-colors duration-150;
+  }
+  .btn-primary:hover {
+    background-color: #A85A35;
   }
 
   .btn-secondary {
-    @apply bg-zen-bark text-white font-sans font-medium px-6 py-3 rounded hover:bg-zen-bark/80 transition-colors duration-150;
+    @apply bg-zen-bark text-white font-sans font-medium px-6 py-3 rounded transition-colors duration-150;
   }
 
   .btn-outline {
-    @apply border border-zen-bark text-zen-bark font-sans font-medium px-6 py-3 rounded hover:bg-zen-bark hover:text-white transition-colors duration-150;
+    @apply border border-zen-bark text-zen-bark font-sans font-medium px-6 py-3 rounded transition-colors duration-150;
   }
 
   .badge {
@@ -39,28 +42,28 @@
   }
 
   .badge-bestseller {
-    @apply badge bg-zen-bark text-white;
+    @apply text-xs font-sans font-medium px-2 py-1 rounded bg-zen-bark text-white;
   }
 
   .badge-discount {
-    @apply badge bg-zen-terracotta text-white;
+    @apply text-xs font-sans font-medium px-2 py-1 rounded bg-zen-terracotta text-white;
   }
 
   .badge-new {
-    @apply badge bg-zen-sage text-white;
+    @apply text-xs font-sans font-medium px-2 py-1 rounded bg-zen-sage text-white;
   }
 
   .trust-badge {
     @apply flex flex-col items-center gap-1 text-xs text-zen-muted;
   }
 
-  /* group ne peut pas s'utiliser avec @apply — appliquer group directement dans le HTML */
+  /* NOTE: do not @apply group/peer — they are marker-only classes.
+     Always add `group` directly in JSX className. */
   .card-product {
     @apply bg-white rounded-lg overflow-hidden cursor-pointer;
   }
 }
 
-/* Countdown animation */
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
