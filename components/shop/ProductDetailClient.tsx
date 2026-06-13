@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
 import ProductCard from './ProductCard';
+import BundleBuilder from './BundleBuilder';
 import type { DemoProduct } from '@/lib/demo-products';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -35,24 +36,19 @@ const DEMO_REVIEWS = [
     name: 'Marc A.',
     rating: 4,
     date: 'avril 2026',
-    text: "Très bon produit, correspond à la description. Petit moins : la notice est uniquement en anglais. Mais la qualité est au rendez-vous.",
+    text: "Très bon produit, correspond à la description. Petit moins : la notice est uniquement en anglais. Mais la qualité est au rendez-vous.",
   },
 ];
 
-/** Calcule la date de livraison estimée (J+3 ouvrables, cutoff 14h) */
 function getDeliveryDate(): string {
   const now = new Date();
   const cutoff = new Date(now);
   cutoff.setHours(14, 0, 0, 0);
 
-  // Si après 14h, on part de demain
   const start = new Date(now);
   if (now >= cutoff) start.setDate(start.getDate() + 1);
-
-  // Skip weekends sur le départ
   while (start.getDay() === 0 || start.getDay() === 6) start.setDate(start.getDate() + 1);
 
-  // Ajouter 3 jours ouvrés
   const delivery = new Date(start);
   let added = 0;
   while (added < 3) {
@@ -89,12 +85,10 @@ export default function ProductDetailClient({ product, related }: Props) {
   const isOutOfStock = product.stockStatus === 'OutOfStock';
   const isLow = product.stockStatus === 'Low' || product.stockStatus === 'VeryLow';
 
-  // Calcul côté client pour éviter l'hydration mismatch
   useEffect(() => {
     setDeliveryDate(getDeliveryDate());
   }, []);
 
-  // Sticky CTA bar
   useEffect(() => {
     const el = ctaRef.current;
     if (!el) return;
@@ -115,12 +109,12 @@ export default function ProductDetailClient({ product, related }: Props) {
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'description', label: 'Description' },
     { key: 'caracteristiques', label: 'Caractéristiques' },
-    { key: 'usage', label: "Conseils d’utilisation" },
+    { key: 'usage', label: "Conseils d'utilisation" },
     { key: 'faq', label: 'FAQ' },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
       {/* Breadcrumb */}
       <nav className="text-xs font-sans text-zen-muted mb-8 flex flex-wrap gap-1.5 items-center">
         <Link href={`/${locale}`} className="hover:text-zen-bark">Accueil</Link>
@@ -247,7 +241,6 @@ export default function ProductDetailClient({ product, related }: Props) {
             )}
           </div>
 
-          {/* ===== DELIVERY ESTIMATE ===== */}
           {!isOutOfStock && deliveryDate && (
             <div className="border border-zen-sand rounded-xl p-4 mb-5 flex items-center gap-4 bg-white hover:border-zen-bark/30 transition-colors cursor-default">
               <div className="w-10 h-10 rounded-lg bg-zen-beige flex items-center justify-center flex-shrink-0">
@@ -285,13 +278,11 @@ export default function ProductDetailClient({ product, related }: Props) {
             </div>
           )}
 
-          {/* Social proof nudge */}
           <p className="text-xs text-zen-muted mb-5 flex items-center gap-1.5">
             <Eye size={12} className="text-zen-terracotta flex-shrink-0" />
             42 personnes regardent ce produit en ce moment
           </p>
 
-          {/* Quantity + Add to cart */}
           <div className="flex items-center gap-3 mb-3">
             <div className="flex items-center border border-zen-sand rounded-xl overflow-hidden flex-shrink-0">
               <button
@@ -324,7 +315,7 @@ export default function ProductDetailClient({ product, related }: Props) {
               }`}
             >
               {added ? (
-                <><Check size={16} /> Ajouté au panier ! 🎉</>
+                <><Check size={16} /> Ajouté au panier ! 🎉</>
               ) : isOutOfStock ? (
                 'Rupture de stock'
               ) : (
@@ -341,12 +332,11 @@ export default function ProductDetailClient({ product, related }: Props) {
           </div>
 
           <p className="text-xs text-zen-muted text-center mb-6">
-            Total : <strong className="text-zen-bark">
+            Total : <strong className="text-zen-bark">
               {((product.retailPriceEur ?? 0) * qty).toFixed(2).replace('.', ',')} €
             </strong> TVA incluse
           </p>
 
-          {/* Trust strip */}
           <div className="border-t border-zen-sand pt-5 grid grid-cols-3 gap-3">
             {[
               { icon: Truck, label: 'Livraison offerte', sub: 'dès 59 €' },
@@ -364,7 +354,7 @@ export default function ProductDetailClient({ product, related }: Props) {
       </div>
 
       {/* ===== TABS ===== */}
-      <div className="mt-14">
+      <div className="mt-16">
         <div className="flex gap-0 border-b border-zen-sand overflow-x-auto">
           {tabs.map(t => (
             <button
@@ -472,11 +462,24 @@ export default function ProductDetailClient({ product, related }: Props) {
         </div>
       </section>
 
+      {/* ===== BUNDLE BUILDER ===== */}
+      <section className="mt-16 pt-12 border-t border-zen-sand">
+        <div className="flex items-baseline justify-between mb-3">
+          <h2 className="font-serif text-3xl lg:text-4xl text-zen-bark">Composez votre coffret</h2>
+          <span className="text-sm font-sans text-zen-terracotta font-medium">-15% par coffret</span>
+        </div>
+        <p className="text-sm font-sans text-zen-muted mb-10 max-w-xl">
+          Associez ce produit à d'autres favoris. Décochez ce que vous ne voulez pas,
+          cliquez sur ↻ pour de nouvelles suggestions.
+        </p>
+        <BundleBuilder />
+      </section>
+
       {/* ===== RELATED PRODUCTS ===== */}
       {related.length > 0 && (
-        <section className="mt-14">
-          <h2 className="font-serif text-2xl text-zen-bark mb-6">Vous aimerez aussi</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <section className="mt-16 pt-12 border-t border-zen-sand">
+          <h2 className="font-serif text-3xl text-zen-bark mb-8">Vous aimerez aussi</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
             {related.map(p => (
               <ProductCard key={p.id} product={p as any} />
             ))}
@@ -501,7 +504,7 @@ export default function ProductDetailClient({ product, related }: Props) {
             className="flex items-center gap-2 bg-zen-bark text-white text-sm font-sans font-semibold px-5 py-3 rounded-xl hover:bg-zen-terracotta transition-colors disabled:opacity-50"
           >
             {added ? <Check size={15} /> : <ShoppingBag size={15} />}
-            {added ? 'Ajouté !' : 'Ajouter'}
+            {added ? 'Ajouté !' : 'Ajouter'}
           </button>
         </div>
       </div>
