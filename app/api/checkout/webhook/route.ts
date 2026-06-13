@@ -3,7 +3,6 @@ import { mollie } from '@/lib/mollie';
 import { createAdminClient } from '@/lib/supabase/server';
 import { placeOrder } from '@/lib/retina';
 
-// Mollie envoie le payment ID en POST form-data
 export async function POST(req: NextRequest) {
   try {
     const body      = await req.formData();
@@ -26,13 +25,12 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient();
 
-    // Mise à jour statut
     await supabase
       .from('orders')
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq('id', orderId);
 
-    // Si paiement confirmé → passer commande fournisseur automatiquement
+    // Paiement confirmé → passer commande fournisseur automatiquement
     if (newStatus === 'paid') {
       const { data: order } = await supabase
         .from('orders')
@@ -40,23 +38,23 @@ export async function POST(req: NextRequest) {
         .eq('id', orderId)
         .single();
 
-      // Éviter double-commande si déjà passée
       if (order && !order.supplier_order_id) {
         try {
           const addr = order.shipping_address ?? {};
+
           const retinaOrder = await placeOrder(
             (order.items ?? []).map((i: any) => ({
-              product_id: i.productId,
+              product_id: parseInt(String(i.productId), 10), // Retina attend un entier
               quantity:   i.quantity,
             })),
             {
-              first_name: addr.firstName ?? '',
-              last_name:  addr.lastName  ?? '',
-              email:      order.email    ?? '',
+              first_name: addr.firstName  ?? '',
+              last_name:  addr.lastName   ?? '',
+              email:      order.email     ?? '',
               phone:      addr.phone,
-              address1:   addr.line1     ?? '',
+              address1:   addr.line1      ?? '',
               address2:   addr.line2,
-              city:       addr.city      ?? '',
+              city:       addr.city       ?? '',
               zip:        addr.postalCode ?? '',
               country:    addr.countryCode ?? 'BE',
             },
@@ -65,14 +63,10 @@ export async function POST(req: NextRequest) {
 
           await supabase
             .from('orders')
-            .update({
-              supplier_order_id: retinaOrder.id,
-              status: 'processing',
-            })
+            .update({ supplier_order_id: retinaOrder.id, status: 'processing' })
             .eq('id', orderId);
 
         } catch (retinaErr) {
-          // Logguer sans bloquer — l'ordre sera repassé manuellement si besoin
           console.error('[webhook] Retina order failed:', retinaErr);
           await supabase
             .from('orders')
