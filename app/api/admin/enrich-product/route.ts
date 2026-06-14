@@ -1,64 +1,81 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'boutiqueambiancejapon@gmail.com';
+const ADMIN_EMAIL  = process.env.ADMIN_EMAIL   ?? 'boutiqueambiancejapon@gmail.com';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY ?? '';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? '';
-const REPO = 'boutiqueambiancejapon-sketch/univers-du-zen';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN  ?? '';
+const REPO         = 'boutiqueambiancejapon-sketch/univers-du-zen';
 
-/* ── Anthropic ──────────────────────────────────────────────────────────── */
-
-interface Enrichment {
-  faqFr: { question: string; answer: string }[];
-  characteristics: { label: string; value: string }[];
-  usageFr: string;
-  benefitsFr: string[];
+/* ── GitHub helpers ─────────────────────────────────────────────────────── */
+async function ghRead(path: string): Promise<{ content: string; sha: string }> {
+  const res = await fetch(
+    `https://api.github.com/repos/${REPO}/contents/${path}`,
+    { headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+  );
+  if (!res.ok) throw new Error(`GitHub read 404: ${path}`);
+  const json = await res.json();
+  return { content: Buffer.from(json.content as string, 'base64').toString('utf-8'), sha: json.sha };
 }
 
+async function ghWrite(path: string, content: string, sha: string | undefined, message: string) {
+  const res = await fetch(
+    `https://api.github.com/repos/${REPO}/contents/${path}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        content: Buffer.from(content).toString('base64'),
+        ...(sha ? { sha } : {}),
+      }),
+    }
+  );
+  if (!res.ok) throw new Error(`GitHub write error ${res.status}: ${path}`);
+}
+
+/* ── Anthropic ──────────────────────────────────────────────────────────── */
 async function generateEnrichment(product: {
-  name: string;
-  description: string;
-  category: string;
-  originalName: string;
-}): Promise<Enrichment> {
+  name: string; description: string; category: string;
+  originalName: string; targetKeyword: string;
+}) {
   if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY manquant');
 
-  const prompt = `Tu es un expert en bien-être, aromathérapie et produits zen pour la boutique "Univers du Zen" (universduzen.com).
+  const prompt = `Tu es expert SEO et bien-être pour la boutique "Univers du Zen" (universduzen.com).
 
-Voici les informations sur un produit :
-- Nom : ${product.name}
-- Nom original (anglais, du fournisseur) : ${product.originalName}
-- Description : ${product.description}
+Produit :
+- Nom FR : ${product.name}
+- Nom original fournisseur : ${product.originalName}
+- Description brute : ${product.description}
 - Catégorie : ${product.category}
+- Mot-clé longue traîne cible : "${product.targetKeyword}"
 
-Génère du contenu marketing enrichi en français. RÈGLES STRICTES :
-• Ne mentionne JAMAIS le fournisseur, la marque source, ni aucun nom de distributeur
-• Ton chaleureux, expert, bienveillant — boutique de bien-être haut de gamme
-• Contenu utile, précis, basé sur les caractéristiques réelles du produit
-• Output : JSON strict UNIQUEMENT, aucun texte avant ou après
+Génère le contenu marketing en français. RÈGLES STRICTES :
+• Ne jamais mentionner le fournisseur (AW Artisan, Ancient Wisdom, Retina)
+• La description doit contenir un <h2> avec le mot-clé longue traîne "${product.targetKeyword}"
+• Ton chaleureux, expert, boutique bien-être premium
+• JSON strict uniquement, aucun texte avant ou après
 
-Format exact :
 {
+  "description": "Paragraphe intro...\\n\\n<h2>${product.targetKeyword}</h2>\\n\\nContenu riche...",
   "faqFr": [
-    {"question": "Question fréquente 1 ?", "answer": "Réponse détaillée."},
-    {"question": "Question fréquente 2 ?", "answer": "Réponse détaillée."},
-    {"question": "Question fréquente 3 ?", "answer": "Réponse détaillée."},
-    {"question": "Question fréquente 4 ?", "answer": "Réponse détaillée."}
+    {"question": "...", "answer": "..."},
+    {"question": "...", "answer": "..."},
+    {"question": "...", "answer": "..."},
+    {"question": "...", "answer": "..."}
   ],
   "characteristics": [
-    {"label": "Contenance", "value": "100 ml"},
-    {"label": "Famille olfactive", "value": "..."},
+    {"label": "Contenance", "value": "..."},
+    {"label": "Famille", "value": "..."},
     {"label": "Utilisation", "value": "..."},
     {"label": "Convient à", "value": "..."},
     {"label": "Vegan & Cruelty-free", "value": "Oui"}
   ],
-  "usageFr": "Instructions d'utilisation complètes, 2 à 3 phrases pratiques.",
-  "benefitsFr": [
-    "Bénéfice concret 1",
-    "Bénéfice concret 2",
-    "Bénéfice concret 3",
-    "Bénéfice concret 4"
-  ]
+  "usageFr": "2-3 phrases d'utilisation concrètes.",
+  "benefitsFr": ["Bénéfice 1", "Bénéfice 2", "Bénéfice 3", "Bénéfice 4"]
 }`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -70,127 +87,158 @@ Format exact :
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1200,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Anthropic error ${res.status}: ${err.slice(0, 200)}`);
-  }
-
+  if (!res.ok) throw new Error(`Anthropic ${res.status}`);
   const data = await res.json();
   const text: string = data.content?.[0]?.text ?? '';
-
-  // Extract JSON block
   const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error(`Pas de JSON dans la réponse Anthropic: ${text.slice(0, 200)}`);
-
-  return JSON.parse(match[0]) as Enrichment;
+  if (!match) throw new Error('Pas de JSON dans la réponse Anthropic');
+  return JSON.parse(match[0]);
 }
 
-/* ── GitHub helpers ─────────────────────────────────────────────────────── */
-
-async function ghRead(filePath: string): Promise<{ content: string; sha: string }> {
-  if (!GITHUB_TOKEN) throw new Error('GITHUB_TOKEN manquant');
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO}/contents/${filePath}`,
-    { headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+/* ── Validation publication ─────────────────────────────────────────────── */
+function isPublishable(data: Record<string, unknown>): boolean {
+  return !!(
+    data.name &&
+    data.description &&
+    data.short_description &&
+    data.meta_description &&
+    data.price &&
+    data.category &&
+    data.target_keyword &&
+    Array.isArray(data.faqFr) && (data.faqFr as unknown[]).length > 0 &&
+    Array.isArray(data.characteristics) && (data.characteristics as unknown[]).length > 0 &&
+    data.usageFr &&
+    Array.isArray(data.benefitsFr) && (data.benefitsFr as unknown[]).length > 0 &&
+    Array.isArray(data.images) && (data.images as unknown[]).length > 0
   );
-  if (!res.ok) throw new Error(`GitHub read ${res.status}: ${filePath}`);
-  const json = await res.json();
-  return {
-    content: Buffer.from(json.content as string, 'base64').toString('utf-8'),
-    sha: json.sha as string,
-  };
-}
-
-async function ghWrite(filePath: string, content: string, sha: string, message: string) {
-  if (!GITHUB_TOKEN) throw new Error('GITHUB_TOKEN manquant');
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO}/contents/${filePath}`,
-    {
-      method: 'PUT',
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-        Accept: 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message,
-        content: Buffer.from(content).toString('base64'),
-        sha,
-      }),
-    }
-  );
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`GitHub write ${res.status}: ${err.slice(0, 200)}`);
-  }
 }
 
 /* ── Route ──────────────────────────────────────────────────────────────── */
-
 export async function POST(request: Request) {
-  // Auth
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || user.email !== ADMIN_EMAIL) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
   }
 
-  const body = await request.json() as { slug?: string };
-  const { slug } = body;
+  const { slug, targetKeyword } = await request.json() as { slug: string; targetKeyword?: string };
   if (!slug) return NextResponse.json({ error: 'slug requis' }, { status: 400 });
 
-  // Read existing data.json
-  const filePath = `products/${slug}/data.json`;
+  // 1. Read existing data.json
   let existing: Record<string, unknown>;
-  let sha: string;
-
+  let dataSha: string;
   try {
-    const file = await ghRead(filePath);
+    const file = await ghRead(`products/${slug}/data.json`);
     existing = JSON.parse(file.content);
-    sha = file.sha;
-  } catch (e) {
-    return NextResponse.json({ error: `Produit introuvable: ${String(e)}` }, { status: 404 });
+    dataSha = file.sha;
+  } catch {
+    return NextResponse.json({ error: 'Produit introuvable sur GitHub' }, { status: 404 });
   }
 
-  // Generate enrichment via Anthropic
-  let enrichment: Enrichment;
+  // 2. Fetch wholesale price from Supabase by SKU
+  const admin = createAdminClient();
+  const sku = String(existing.id ?? slug);
+  const { data: catalogRow } = await admin
+    .from('supplier_catalog')
+    .select('wholesale_price, department')
+    .eq('sku', sku)
+    .single();
+
+  const wholesalePrice = catalogRow?.wholesale_price ?? existing.price ?? null;
+  const category = catalogRow?.department ?? existing.category ?? '';
+
+  // 3. Check keywords-index for uniqueness
+  let keywordsIndex: Record<string, string> = {};
+  let keywordsSha: string | undefined;
+  try {
+    const kf = await ghRead('data/keywords-index.json');
+    keywordsIndex = JSON.parse(kf.content);
+    keywordsSha = kf.sha;
+  } catch { /* first time */ }
+
+  const usedKeywords = Object.values(keywordsIndex).map(k => k.toLowerCase());
+  const keyword = targetKeyword ?? String(existing.target_keyword ?? '');
+  if (!keyword) {
+    return NextResponse.json({ error: 'targetKeyword requis pour éviter la cannibalisation' }, { status: 400 });
+  }
+  if (usedKeywords.includes(keyword.toLowerCase()) && keywordsIndex[slug] !== keyword) {
+    return NextResponse.json({ error: `Mot-clé déjà utilisé : "${keyword}"` }, { status: 409 });
+  }
+
+  // 4. Generate enrichment
+  let enrichment: Record<string, unknown>;
   try {
     enrichment = await generateEnrichment({
-      name:         String(existing.name ?? slug),
-      description:  String(existing.description ?? existing.short_description ?? ''),
-      category:     String(existing.category ?? ''),
-      originalName: String(existing.original_name ?? ''),
+      name:          String(existing.name ?? slug),
+      description:   String(existing.description ?? existing.short_description ?? ''),
+      category,
+      originalName:  String(existing.original_name ?? ''),
+      targetKeyword: keyword,
     });
   } catch (e) {
-    return NextResponse.json({ error: `Erreur Anthropic: ${String(e)}` }, { status: 500 });
+    return NextResponse.json({ error: `Anthropic: ${String(e)}` }, { status: 500 });
   }
 
-  // Merge enrichment into existing data
-  const enriched = {
+  // 5. Build enriched data.json
+  const enriched: Record<string, unknown> = {
     ...existing,
-    faqFr:           enrichment.faqFr,
-    characteristics: enrichment.characteristics,
-    usageFr:         enrichment.usageFr,
-    benefitsFr:      enrichment.benefitsFr,
-    enriched_at:     new Date().toISOString(),
+    ...enrichment,
+    price:          wholesalePrice,
+    category,
+    target_keyword: keyword,
+    enriched_at:    new Date().toISOString(),
   };
 
-  // Write back to GitHub
+  // 6. Write data.json
   try {
     await ghWrite(
-      filePath,
+      `products/${slug}/data.json`,
       JSON.stringify(enriched, null, 2),
-      sha,
-      `feat(seo): enrich ${slug} — FAQ, caractéristiques, usage, bénéfices`
+      dataSha,
+      `feat(seo): enrich ${slug} — ${keyword}`
     );
   } catch (e) {
-    return NextResponse.json({ error: `Erreur GitHub: ${String(e)}` }, { status: 500 });
+    return NextResponse.json({ error: `GitHub write data: ${String(e)}` }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, slug, enriched_at: enriched.enriched_at });
+  // 7. Update keywords-index
+  keywordsIndex[slug] = keyword;
+  try {
+    await ghWrite(
+      'data/keywords-index.json',
+      JSON.stringify(keywordsIndex, null, 2),
+      keywordsSha,
+      `chore: register keyword "${keyword}" → ${slug}`
+    );
+  } catch (e) {
+    return NextResponse.json({ error: `GitHub write keywords: ${String(e)}` }, { status: 500 });
+  }
+
+  // 8. Add to catalog.json if publishable
+  let addedToCatalog = false;
+  if (isPublishable(enriched)) {
+    try {
+      const cf = await ghRead('products/catalog.json');
+      const catalog: { slug: string; pushed_at: string }[] = JSON.parse(cf.content);
+      if (!catalog.find(e => e.slug === slug)) {
+        catalog.push({ slug, pushed_at: new Date().toISOString() });
+        await ghWrite(
+          'products/catalog.json',
+          JSON.stringify(catalog, null, 2),
+          cf.sha,
+          `feat: publish ${slug}`
+        );
+        addedToCatalog = true;
+      }
+    } catch (e) {
+      return NextResponse.json({ error: `GitHub write catalog: ${String(e)}` }, { status: 500 });
+    }
+  }
+
+  return NextResponse.json({ ok: true, slug, keyword, published: addedToCatalog });
 }
