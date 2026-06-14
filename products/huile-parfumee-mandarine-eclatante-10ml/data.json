@@ -4,11 +4,32 @@
   "name": "Huile Parfumée Mandarine Éclatante 10ml",
   "original_name": "10 ml Mandarin Fragrance Oil - UNLABELLED",
   "short_description": "Découvrez notre Huile Parfumée Mandarine Éclatante de 10ml, conçue pour infuser votre espace d'une énergie joyeuse et d'une fraîcheur pétillante. Son parfum d'agrumes vif et ensoleillé est parfait pour égayer l'ambiance et apporter une touche de bonne humeur à votre quotidien.",
-  "description": "Plongez au cœur d'une explosion de fraîcheur et de vitalité avec notre Huile Parfumée Mandarine Éclatante. Inspirée par la douceur des vergers gorgés de soleil, cette fragrance capture l'essence même de la mandarine, offrant un arôme doux, sucré et légèrement acidulé qui réveille les sens et invite à la joie. Idéale pour créer une atmosphère accueillante et dynamique, elle transforme instantanément n'importe quel espace en un havre de paix ensoleillé.\n\nLa mandarine est réputée pour ses propriétés uplifting et apaisantes, capable de dissiper le stress et de stimuler une sensation de bien-être général. Notre huile parfumée est le compagnon idéal pour vos diffuseurs électriques, brûle-parfums ou même quelques gouttes sur un pot-pourri, libérant son sillage enivrant qui dure des heures. Que ce soit pour commencer la journée avec entrain, revitaliser votre esprit après une longue journée, ou simplement pour parfumer délicatement votre intérieur, la mandarine est une promesse de bonheur olfactif.\n\nSoigneusement élaborée pour offrir une expérience olfactive riche et authentique, cette huile parfumée de 10ml est une invitation à l'évasion. Elle s'intègre parfaitement à votre routine de bien-être, vous permettant de personnaliser l'ambiance de votre maison ou de votre bureau. Son format pratique et son absence d'étiquetage vous offrent la liberté de l'incorporer dans vos propres créations ou de la savourer pour sa pureté aromatique.\n\nOffrez-vous ce moment de pure évasion. Laissez l'Huile Parfumée Mandarine Éclatante envelopper votre intérieur d'une aura de positivité et de fraîcheur. C'est le secret pour une maison qui respire la joie et la sérénité.",
+  "description": "Plongez au cœur d'une explosion de fraîcheur et de vitalité avec notre Huile Parfumée Mandarine Éclatante. Inspirée par la douceur des vergers gorgés de soleil, cette fragrance capture l'essence même de la mandarine, offrant un arôme doux, sucré et légèrement acidulé qui réveille les sens et invite à la joie. Idéale pour créer une atmosphère accueillante et dynamique, elle transforme instantanément n'importe quel espace en un havre de paix ensoleillé.\n\nLa mandarine est réputée pour ses propriétés uplifting et apaisantes, capable de dissiper le stress et de stimuler une sensation de bien-être général. Notre huile parfumée est le compagnon idéal pour vos diffuseurs électriques, brûle-parfums ou même quelques gouttes sur un pot-pourri, libérant son sillage enivrant qui dure des heures. Que ce soit pour commencer la journée avec entrain, revitaliser votre esprit après une longue journée, ou simplement pour parfumer délicatement votre intérieur, la mandarine est une promesse de bonheur olfactif.\n\nSoigneusement élaborée pour offrir une expérience olfactive riche et authentique, cette huile parfumée de 10ml est une invitation à l'évasion. Elle s'intègre parfaitement à votre routine de bien-être, vous permettant de personnaliser l'ambiance de votre maison ou de votre bureau. Son format pratique et sa formule concentrée vous offrent la liberté de l'incorporer dans vos propres créations ou de la savourer pour sa pureté aromatique.\n\nOffrez-vous ce moment de pure évasion. Laissez l'Huile Parfumée Mandarine Éclatante envelopper votre intérieur d'une aura de positivité et de fraîcheur. C'est le secret pour une maison qui respire la joie et la sérénité.",
   "meta_description": "Créez une ambiance pétillante avec notre Huile Parfumée Mandarine Éclatante 10ml. Fraîcheur agrumes, énergie positive. Idéale pour diffuseur. Achetez maintenant !",
   "tags": "mandarine, huile parfumée, parfum d'ambiance, agrume, fraîcheur, bien-être, diffuseur, arôme",
-  "images": [
-    "image-1.jpg"
+  "images": ["image-1.jpg"],
+  "pushed_at": "2026-06-14T10:01:16.003Z",
+  "category": "Aromathérapie",
+  "faqFr": [
+    {"question": "Quels sont les effets bien-être du parfum de mandarine ?", "answer": "Le parfum de mandarine est reconnu pour ses vertus dynamisantes et apaisantes. Il aide à dissiper la fatigue mentale, stimule une humeur positive et favorise un état de légèreté et de bien-être général, parfait pour commencer la journée ou traverser un après-midi."},
+    {"question": "Peut-on associer cette huile à d'autres fragrances en diffusion ?", "answer": "Oui, la mandarine se marie très bien avec les notes florales (muguet, géranium), boisées légères (cèdre, pin) ou épicées douces (vanille). Expérimentez des mélanges à raison de 2 à 3 fragrances pour créer votre signature olfactive unique."},
+    {"question": "Cette huile convient-elle à la fabrication de savons maison ?", "answer": "Absolument. Intégrez-la à raison de 1 à 3 % dans votre base savonnière. Les notes d'agrumes apportent une fraîcheur revigorante au savon et s'associent parfaitement à une base neutre ou à une base miel."},
+    {"question": "La fragrance mandarine est-elle adaptée aux espaces professionnels ?", "answer": "Oui, c'est un excellent choix pour les bureaux, salles de réunion ou espaces d'accueil. Son arôme frais et non envahissant crée une atmosphère dynamique et accueillante qui favorise la concentration sans distraire."}
   ],
-  "pushed_at": "2026-06-14T10:01:16.003Z"
+  "characteristics": [
+    {"label": "Contenance", "value": "10 ml"},
+    {"label": "Famille olfactive", "value": "Agrumée & Fruitée — vive et ensoleillée"},
+    {"label": "Notes dominantes", "value": "Mandarine fraîche, zeste acidulé, touche sucrée"},
+    {"label": "Utilisation", "value": "Diffuseur, brûle-parfum, savons DIY, pot-pourri"},
+    {"label": "Convient à", "value": "Aromathérapie, ambiance dynamisante, bien-être au quotidien"},
+    {"label": "Vegan & Cruelty-free", "value": "Oui"}
+  ],
+  "usageFr": "Versez 4 à 6 gouttes dans votre diffuseur pour envelopper la pièce d'une fraîcheur d'agrumes dynamisante. Pour vos créations DIY, intégrez-la dans des savons maison (1 à 3 %) ou associez-la à d'autres huiles florales pour des mélanges personnalisés. Conservez le flacon à l'abri de la lumière directe pour préserver toute la vivacité de son arôme.",
+  "benefitsFr": [
+    "Dynamise l'humeur et dissipe la fatigue mentale",
+    "Parfum d'agrumes frais, joyeux et ensoleillé",
+    "Favorise un état de légèreté et de bien-être",
+    "Polyvalente et facile à associer à d'autres fragrances"
+  ],
+  "enriched_at": "2026-06-14"
 }

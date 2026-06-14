@@ -4,13 +4,32 @@
   "name": "Huile Parfumée Concentrée 10ml - Violette & Coton",
   "original_name": "10 ml Parma Violet Fragrance Oil10 ml Fresh Cotton Oil - UNLABELLED",
   "short_description": "Découvrez nos huiles parfumées concentrées de 10ml, idéales pour créer une atmosphère unique chez vous. Choisissez entre la douceur florale de la Violette de Parme ou la pureté réconfortante du Coton Frais pour parfumer diffuseurs, bougies ou savons artisanaux et apporter une touche personnelle à votre intérieur.",
-  "description": "Plongez dans un univers sensoriel unique avec nos huiles parfumées concentrées de 10ml, conçues pour transformer votre intérieur en un havre de paix. Chaque goutte est une invitation à l'évasion, capable de redéfinir l'ambiance d'une pièce et d'éveiller vos sens. Que vous recherchiez une touche florale délicate ou une sensation de fraîcheur pure, nos huiles sont le secret pour une atmosphère personnalisée et enveloppante, offrant une expérience olfactive riche et mémorable.\n\nLaissez-vous charmer par la délicatesse intemporelle de notre parfum 'Violette de Parme'. Cette essence capturera l'élégance poudrée et la douceur nostalgique des violettes fraîchement écloses. Idéale pour créer une ambiance romantique et apaisante, elle évoque les jardins printaniers et les souvenirs d'enfance, apportant une note florale subtile et sophistiquée à votre espace. Parfaite pour les moments de détente et de contemplation, elle enveloppe la pièce d'une douceur veloutée.\n\nOu optez pour la pureté vivifiante de notre senteur 'Coton Frais'. Imaginez le linge propre séchant au soleil, une brise légère portant avec elle une sensation de propreté immaculée et de bien-être. Cette fragrance apporte une clarté revigorante et une fraîcheur aérée à n'importe quelle pièce, créant une atmosphère de sérénité et de propreté. C'est le choix parfait pour dynamiser votre intérieur et y insuffler une sensation de renouveau quotidien, pour une maison toujours accueillante.\n\nNos huiles parfumées de 10ml sont d'une grande polyvalence. Utilisez-les avec un diffuseur d'arômes, ajoutez quelques gouttes à vos bougies faites maison, vos fondants parfumés, vos savons ou même vos produits de nettoyage écologiques pour une touche personnalisée. Leur formule concentrée assure une diffusion durable et une intensité olfactive remarquable. Faites l'expérience d'une qualité supérieure et choisissez la fragrance qui résonne le plus avec votre humeur et votre style de vie pour une ambiance unique.",
+  "description": "Plongez dans un univers sensoriel unique avec nos huiles parfumées concentrées de 10ml, conçues pour transformer votre intérieur en un havre de paix. Chaque goutte est une invitation à l'évasion, capable de redéfinir l'ambiance d'une pièce et d'éveiller vos sens. Que vous recherchiez une touche florale délicate ou une sensation de fraîcheur pure, nos huiles sont le secret pour une atmosphère personnalisée et enveloppante, offrant une expérience olfactive riche et mémorable.\n\nLaissez-vous charmer par la délicatesse intemporelle de notre parfum 'Violette de Parme'. Cette essence capture l'élégance poudrée et la douceur nostalgique des violettes fraîchement écloses. Idéale pour créer une ambiance romantique et apaisante, elle évoque les jardins printaniers et les souvenirs d'enfance, apportant une note florale subtile et sophistiquée à votre espace.\n\nOu optez pour la pureté vivifiante de notre senteur 'Coton Frais'. Imaginez le linge propre séchant au soleil, une brise légère portant avec elle une sensation de propreté immaculée et de bien-être. Cette fragrance apporte une clarté revigorante et une fraîcheur aérée à n'importe quelle pièce, créant une atmosphère de sérénité et de propreté. C'est le choix parfait pour dynamiser votre intérieur et y insuffler une sensation de renouveau quotidien.\n\nNos huiles de 10ml sont d'une grande polyvalence. Utilisez-les avec un diffuseur d'arômes, ajoutez quelques gouttes à vos bougies faites maison, vos fondants parfumés, vos savons ou même vos produits de nettoyage pour une touche personnalisée.",
   "meta_description": "Créez une ambiance unique avec nos huiles parfumées 10ml. Choisissez entre la douceur florale Violette de Parme ou la fraîcheur pure Coton Frais. Idéales pour diffuseurs, bougies. Achetez maintenant !",
   "tags": "huile parfumée, violette de Parme, coton frais, parfum d'ambiance, diffuseur, bougie, senteur florale, senteur fraîche",
-  "images": [
-    "image-1.jpg",
-    "image-2.jpg",
-    "image-3.jpg"
+  "images": ["image-1.jpg", "image-2.jpg", "image-3.jpg"],
+  "pushed_at": "2026-06-14T10:01:56.288Z",
+  "category": "Huiles de fragrance",
+  "faqFr": [
+    {"question": "Quel parfum choisir entre Violette de Parme et Coton Frais ?", "answer": "La Violette de Parme convient aux amateurs de fragrances florales douces et poudrées, idéale pour les chambres et espaces romantiques. Le Coton Frais est parfait pour ceux qui préfèrent une sensation de propreté et de légèreté, idéal pour les pièces de vie et bureaux."},
+    {"question": "Ces huiles peuvent-elles être utilisées ensemble en mélange ?", "answer": "Oui, en les mélangeant à parts égales, vous obtenez une fragrance unique : la douceur poudrée de la violette rencontre la légèreté aérée du coton, pour un résultat floral-frais très équilibré et intemporel."},
+    {"question": "Comment utiliser ces huiles pour parfumer le linge ?", "answer": "Ajoutez 2 à 3 gouttes sur une boule de séchage en laine ou un carré de tissu placé dans le sèche-linge (cycle froid recommandé). Vous pouvez aussi déposer quelques gouttes dans un sachet organza à glisser dans vos armoires."},
+    {"question": "Ces fragrances conviennent-elles aux savons faits maison ?", "answer": "Oui, elles s'intègrent parfaitement dans les savons à froid ou à chaud à raison de 1 à 3 % du poids total. La Violette apporte une note florale douce et la Coton Frais donne une impression de linge propre très appréciée dans les savons pour le corps."}
   ],
-  "pushed_at": "2026-06-14T10:01:56.288Z"
+  "characteristics": [
+    {"label": "Contenance", "value": "10 ml"},
+    {"label": "Parfum 1", "value": "Violette de Parme — florale, poudrée et nostalgique"},
+    {"label": "Parfum 2", "value": "Coton Frais — pur, aéré et réconfortant"},
+    {"label": "Utilisation", "value": "Diffuseur, brûle-parfum, bougies, savons, linge"},
+    {"label": "Convient à", "value": "Ambiance florale ou fraîche, créations artisanales, linge"},
+    {"label": "Vegan & Cruelty-free", "value": "Oui"}
+  ],
+  "usageFr": "Versez 3 à 5 gouttes dans votre diffuseur à ultrasons pour une fragrance florale-poudrée (Violette) ou fraîche-aérée (Coton). Pour les bougies et savons, intégrez à 2 à 3 % du poids total. Pour un usage linge, quelques gouttes sur un carré de coton dans l'armoire suffisent pour parfumer délicatement vos vêtements.",
+  "benefitsFr": [
+    "Deux ambiances en un flacon : florale romantique ou fraîcheur pure",
+    "Parfum délicat et non envahissant, agréable au quotidien",
+    "Formule concentrée pour une utilisation économique et durable",
+    "Polyvalente : diffusion, linge, bougies, savons artisanaux"
+  ],
+  "enriched_at": "2026-06-14"
 }

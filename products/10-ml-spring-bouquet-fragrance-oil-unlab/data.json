@@ -1,14 +1,35 @@
 {
   "id": "187425",
   "slug": "10-ml-spring-bouquet-fragrance-oil-unlab",
-  "name": "10 ml Spring Bouquet Fragrance Oil - UNLABELLED",
+  "name": "Huile Parfumée Bouquet de Printemps 10ml",
   "original_name": "10 ml Spring Bouquet Fragrance Oil - UNLABELLED",
-  "short_description": "",
-  "description": "",
-  "meta_description": "",
-  "tags": "",
-  "images": [
-    "image-1.jpg"
+  "short_description": "Faites entrer le printemps chez vous avec notre Huile Parfumée Bouquet de Printemps 10ml. Cette essence florale lumineuse et multi-notes capture la légèreté d'un jardin en fleurs, idéale pour créer une atmosphère fraîche et joyeuse en diffusion, ou pour sublimer vos bougies et savons artisanaux d'un parfum de saison irrésistible.",
+  "description": "Fermez les yeux et imaginez un bouquet fraîchement cueilli au cœur d'un jardin de printemps, composé de fleurs délicates aux couleurs vives et aux senteurs entremêlées. C'est exactement cette sensation que capture notre Huile Parfumée Bouquet de Printemps 10ml. Un mélange floral harmonieux et enivrant, où les notes légères et lumineuses se succèdent comme les pétales d'un bouquet soigneusement composé. Elle apporte instantanément une touche de renouveau et de gaieté à votre intérieur, effaçant la grisaille quotidienne pour laisser place à la douceur de la belle saison.\n\nCette huile parfumée concentrée est conçue pour éveiller les sens et insuffler une énergie positive. Son bouquet floral printanier — à la fois frais, légèrement sucré et délicatement herbacé — est parfait pour créer une ambiance accueillante et sereine dans votre salon, votre chambre ou votre espace de travail. En diffusion continue, elle aide à dissiper le stress et à favoriser une humeur légère et apaisée, au rythme doux de la nature qui s'éveille.\n\nParfaitement polyvalente, cette essence s'intègre à toutes vos créations aromatiques. Incorporez-la dans des bougies artisanales pour un sillage printanier, dans des fondants parfumés, des sachets pour vos armoires, ou encore dans des savons maison aux notes fleuries. Sa formule concentrée garantit une diffusion longue durée et une fidélité olfactive remarquable, pour que chaque utilisation soit aussi fraîche et vivifiante que la première.",
+  "meta_description": "Accueillez le printemps chez vous avec l'Huile Parfumée Bouquet de Printemps 10ml. Fragrance florale lumineuse pour diffuseur, bougies et créations DIY. Achetez maintenant !",
+  "tags": "huile parfumée, bouquet de printemps, parfum floral, diffuseur, bougies, DIY, aromathérapie, ambiance maison",
+  "images": ["image-1.jpg"],
+  "pushed_at": "2026-06-14T10:01:05.919Z",
+  "category": "Aromathérapie",
+  "faqFr": [
+    {"question": "Quelles fleurs compose le parfum Bouquet de Printemps ?", "answer": "Le Bouquet de Printemps est une composition florale multi-notes inspirée des jardins en fleurs. On y retrouve des accords de fleurs blanches, de vert frais et de légères notes sucrées, évoquant pétunias, glycines et fleurs de cerisier réunis dans un seul bouquet."},
+    {"question": "Comment utiliser cette huile pour parfumer une pièce rapidement ?", "answer": "Versez 4 à 6 gouttes dans votre diffuseur à ultrasons avec de l'eau. En quelques minutes, la pièce est enveloppée d'une fragrance printanière lumineuse. Vous pouvez aussi déposer 1 à 2 gouttes sur un coton placé près d'un radiateur pour un effet rapide."},
+    {"question": "Peut-on créer des sachets parfumés pour les vêtements avec cette huile ?", "answer": "Oui, c'est une utilisation idéale. Imbibez quelques gouttes sur des billes de céramique poreuses ou un carré de coton, placez dans un sachet organza et glissez dans vos armoires ou tiroirs. Votre linge prendra une douce fragrance florale printanière."},
+    {"question": "Cette essence est-elle recommandée pour la fabrication de bougies ?", "answer": "Absolument. Incorporez-la à raison de 3 à 5 % du poids de cire en phase liquide. Elle offre un sillage floral agréable à la combustion et une bonne tenue. Idéale pour des bougies-cadeaux de saison."}
   ],
-  "pushed_at": "2026-06-14T10:01:05.919Z"
+  "characteristics": [
+    {"label": "Contenance", "value": "10 ml"},
+    {"label": "Famille olfactive", "value": "Florale & Fraîche — lumineuse et légère"},
+    {"label": "Notes dominantes", "value": "Fleurs blanches, verdure fraîche, touche sucrée printanière"},
+    {"label": "Utilisation", "value": "Diffuseur, brûle-parfum, bougies, sachets parfumés"},
+    {"label": "Convient à", "value": "Aromathérapie, ambiance printanière, créations artisanales"},
+    {"label": "Vegan & Cruelty-free", "value": "Oui"}
+  ],
+  "usageFr": "Versez 4 à 6 gouttes dans votre diffuseur à ultrasons pour envelopper la pièce d'une fraîcheur florale printanière. Pour vos créations DIY, intégrez-la dans des bougies artisanales (3 à 5 % du poids de cire) ou des sachets parfumés. Conservez le flacon fermé, à l'abri de la lumière, pour préserver toute la fraîcheur de son arôme floral.",
+  "benefitsFr": [
+    "Fragrance florale lumineuse qui invite à la légèreté et à la joie",
+    "Apaise l'esprit et crée une ambiance printanière revigorante",
+    "Formule concentrée pour une diffusion longue durée",
+    "Polyvalente : diffuseur, bougies artisanales, sachets parfumés"
+  ],
+  "enriched_at": "2026-06-14"
 }

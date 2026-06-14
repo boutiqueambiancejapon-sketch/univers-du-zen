@@ -1,16 +1,35 @@
 {
   "id": "217809",
   "slug": "1-litre-beard-oil-roman-gladiator-enhanc",
-  "name": "1 Litre Beard Oil - Roman Gladiator - Enhance!",
+  "name": "Huile à Barbe Gladiateur Romain 1L Amplifiante",
   "original_name": "1 Litre Beard Oil - Roman Gladiator - Enhance!",
-  "short_description": "",
-  "description": "",
-  "meta_description": "",
-  "tags": "",
-  "images": [
-    "image-1.jpg",
-    "image-2.jpg",
-    "image-3.jpg"
+  "short_description": "Révélez le caractère d'un guerrier légendaire avec notre Huile à Barbe Gladiateur Romain 1L Amplifiante. Sa formule généreuse et puissante nourrit intensément les poils et la peau, amplifie l'éclat naturel de la barbe et dépose un sillage viril et envoûtant, digne des arènes de Rome.",
+  "description": "Entrez dans l'arène et révélez votre puissance intérieure avec notre Huile à Barbe Gladiateur Romain 1L Amplifiante. Inspirée de la rigueur et du prestige des combattants de l'Antiquité, cette huile premium est formulée pour sublimer chaque barbe en la dotant d'une force et d'un éclat remarquables. Son parfum charismatique aux accents chauds, épicés et légèrement musqués évoque la grandeur des cités romaines et confère une aura de distinction naturelle à celui qui la porte.\n\nLa formule amplifiante agit à plusieurs niveaux : elle pénètre en profondeur dans la fibre capillaire pour nourrir et renforcer le poil, réduit l'effet barbe qui gratte et apaise la peau sous-jacente souvent sujette aux irritations. Résultat : une barbe plus dense en apparence, plus brillante, plus souple et parfaitement domptée. Que votre barbe soit courte et taillée ou longue et majestueuse, quelques gouttes suffisent pour transformer votre rituel du matin en une expérience sensoriellement puissante.\n\nGrâce à son format économique d'un litre, cette huile est conçue pour un usage intensif au quotidien. Idéale aussi bien pour une utilisation personnelle sur plusieurs mois que pour les barbiers professionnels souhaitant proposer à leur clientèle un soin de qualité supérieure. Chaque application est un hommage à l'excellence romaine — une façon de cultiver, au fil des jours, une barbe à la hauteur de votre ambition.",
+  "meta_description": "Huile à Barbe Gladiateur Romain 1L Amplifiante. Nourrit, fortifie et amplifie l'éclat de votre barbe avec un sillage viril et puissant. Format généreux pour un soin quotidien premium. Achetez !",
+  "tags": "huile à barbe, gladiateur, barbe amplifiante, soin barbe 1L, barbe virile, entretien barbe, huile nourrissante, barbier",
+  "images": ["image-1.jpg", "image-2.jpg", "image-3.jpg"],
+  "pushed_at": "2026-06-14T10:00:41.418Z",
+  "category": "Bien-être Corps",
+  "faqFr": [
+    {"question": "Comment utiliser l'huile à barbe Gladiateur Romain ?", "answer": "Versez 4 à 8 gouttes dans le creux de la main, frottez les paumes pour réchauffer légèrement l'huile, puis massez de la racine aux pointes sur une barbe propre et légèrement humide. Utilisez chaque matin après la douche pour des résultats optimaux."},
+    {"question": "Le format 1L est-il adapté à un usage professionnel en salon ?", "answer": "Absolument. Le grand format 1L est idéal pour les salons de barbier qui souhaitent offrir un soin premium à leur clientèle. Il représente un excellent rapport qualité-prix pour une utilisation intensive et quotidienne."},
+    {"question": "Cette huile aide-t-elle à améliorer la densité de la barbe ?", "answer": "L'huile nourrit la peau et favorise une microcirculation saine, créant les conditions idéales pour une pousse régulière et des poils plus forts. Résultat visible : une barbe d'apparence plus dense et plus résistante à la casse."},
+    {"question": "Peut-on l'utiliser sur une barbe très courte ou en phase de pousse initiale ?", "answer": "Oui, c'est même recommandé dès les premiers millimètres. L'huile prévient les démangeaisons caractéristiques de la pousse initiale et prépare le terrain pour une barbe future douce, saine et bien hydratée."}
   ],
-  "pushed_at": "2026-06-14T10:00:41.418Z"
+  "characteristics": [
+    {"label": "Contenance", "value": "1 litre"},
+    {"label": "Parfum", "value": "Viril et chaleureux — notes épicées et musquées"},
+    {"label": "Action principale", "value": "Amplifiante — nourrit, fortifie et fait briller"},
+    {"label": "Format", "value": "Usage professionnel ou personnel longue durée"},
+    {"label": "Vegan & Cruelty-free", "value": "Oui"},
+    {"label": "Fréquence d'application", "value": "Quotidienne, de préférence après la douche"}
+  ],
+  "usageFr": "Après la douche, versez quelques gouttes dans le creux de la main et frottez les paumes ensemble pour tiédir l'huile. Appliquez sur la barbe encore légèrement humide en massant de la racine aux pointes pour nourrir à la fois le poil et la peau. Coiffez ensuite votre barbe à votre guise — l'huile facilite la mise en forme et laisse un fini brillant aux notes viriles et épicées.",
+  "benefitsFr": [
+    "Amplifie l'éclat et la vitalité de la barbe dès la première application",
+    "Nourrit intensément le poil et apaise la peau sous la barbe",
+    "Parfum viril et chaud aux accents épicés et musqués",
+    "Format 1L économique pour plusieurs mois de soin quotidien"
+  ],
+  "enriched_at": "2026-06-14"
 }
