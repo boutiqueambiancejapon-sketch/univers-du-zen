@@ -1,28 +1,37 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCartStore } from '@/lib/store/cart';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
 
 // Upsells are intentionally disabled: product data is server-only (filesystem).
-// TODO: create /api/featured-products endpoint for client-side upsell recommendations.
 const upsells: any[] = [];
 
 const FREE_THRESHOLD = 59;
 
 export default function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity, addItem, total } =
-    useCartStore();
-  const locale  = useLocale();
-  const router  = useRouter();
+  const { items, isOpen, closeCart, removeItem, updateQuantity, addItem } = useCartStore();
+  const locale   = useLocale();
+  const router   = useRouter();
+  const pathname = usePathname();
 
-  const subtotal    = total();
+  // Garde anti-mismatch d'hydratation (panier persisté en localStorage)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  // Ferme le tiroir à chaque changement de page (sinon le voile bloque les clics)
+  useEffect(() => { closeCart(); }, [pathname, closeCart]);
+
+  const open = mounted && isOpen;
+  const list = mounted ? items : [];
+
+  const subtotal    = list.reduce((s, i) => s + (i.product.retailPriceEur ?? 0) * i.quantity, 0);
   const remaining   = Math.max(0, FREE_THRESHOLD - subtotal);
   const progressPct = Math.min(100, (subtotal / FREE_THRESHOLD) * 100);
-  const itemCount   = items.reduce((n, i) => n + i.quantity, 0);
+  const itemCount   = list.reduce((n, i) => n + i.quantity, 0);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') closeCart(); };
@@ -31,15 +40,15 @@ export default function CartDrawer() {
   }, [closeCart]);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    document.body.style.overflow = open ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
+  }, [open]);
 
   return (
     <>
       <div
         className={`fixed inset-0 bg-black/40 z-50 transition-opacity duration-300 ${
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          open ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={closeCart}
         aria-hidden
@@ -47,7 +56,7 @@ export default function CartDrawer() {
 
       <aside
         className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -65,7 +74,7 @@ export default function CartDrawer() {
         <div className="flex-1 overflow-y-auto">
 
           {/* Free shipping progress */}
-          {items.length > 0 && (
+          {list.length > 0 && (
             <div className="px-5 py-3 border-b border-gray-100">
               {remaining > 0 ? (
                 <p className="text-xs font-sans text-zen-muted mb-1.5">
@@ -84,7 +93,7 @@ export default function CartDrawer() {
           )}
 
           {/* Empty state */}
-          {items.length === 0 && (
+          {list.length === 0 && (
             <div className="flex flex-col items-center justify-center h-64 gap-4 px-5 text-center">
               <ShoppingBag size={40} className="text-gray-200" />
               <p className="text-zen-muted font-sans text-sm">Votre rituel est vide pour l&apos;instant.</p>
@@ -98,9 +107,9 @@ export default function CartDrawer() {
           )}
 
           {/* Cart items */}
-          {items.length > 0 && (
+          {list.length > 0 && (
             <div className="divide-y divide-gray-100">
-              {items.map(({ product, quantity }) => (
+              {list.map(({ product, quantity }) => (
                 <div key={product.id} className="flex gap-3 px-5 py-4">
                   <div className="w-[72px] h-[72px] rounded-xl overflow-hidden flex-shrink-0 bg-gray-50 relative">
                     {product.images?.[0] ? (
@@ -153,40 +162,11 @@ export default function CartDrawer() {
           )}
 
           {/* Upsell — disabled until /api/featured-products is implemented */}
-          {items.length > 0 && upsells.length > 0 && (
+          {list.length > 0 && upsells.length > 0 && (
             <div className="border-t border-gray-100">
-              <p className="text-[10px] font-sans tracking-[0.12em] uppercase text-zen-muted px-5 pt-4 pb-2">
-                — Complétez votre rituel
-              </p>
               <div className="divide-y divide-gray-50">
                 {upsells.map((product: any) => (
-                  <div key={product.id} className="flex items-center gap-3 px-5 py-3 bg-gray-50/60">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-white border border-gray-100 relative">
-                      {product.images?.[0] ? (
-                        <Image
-                          src={product.images[0]}
-                          alt={product.nameFr ?? ''}
-                          fill
-                          className="object-contain p-1"
-                          unoptimized={product.images[0].startsWith('https://raw.githubusercontent.com')}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-zen-sand/20" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-sans text-xs text-zen-bark leading-snug line-clamp-1">{product.nameFr}</p>
-                      <p className="text-xs text-zen-muted mt-0.5">
-                        {(product.retailPriceEur ?? 0).toFixed(2).replace('.', ',')} €
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => addItem(product, 1)}
-                      className="flex-shrink-0 text-xs font-sans text-zen-bark border border-zen-bark/40 rounded-lg px-3 py-1.5 hover:bg-zen-bark hover:text-white hover:border-zen-bark transition-all"
-                    >
-                      + Ajouter
-                    </button>
-                  </div>
+                  <button key={product.id} onClick={() => addItem(product, 1)} className="hidden" />
                 ))}
               </div>
             </div>
@@ -194,7 +174,7 @@ export default function CartDrawer() {
         </div>
 
         {/* Footer */}
-        {items.length > 0 && (
+        {list.length > 0 && (
           <div className="border-t border-gray-100 p-5 space-y-3 bg-white">
             <div className="flex justify-between items-baseline">
               <span className="font-sans text-zen-muted text-sm">Sous-total</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { Search, User, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
@@ -31,6 +31,8 @@ export default function Nav() {
   const [moreOpen, setMoreOpen]     = useState(false);
 
   const itemCount  = useCartStore(s => s.items.reduce((n, i) => n + i.quantity, 0));
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const toggleCart = useCartStore(s => s.toggleCart);
 
   const href = (path: string) => `/${locale}${path}`;
@@ -108,7 +110,7 @@ export default function Nav() {
             <button onClick={toggleCart} aria-label="Panier"
               className="relative p-2 text-zen-bark hover:text-zen-terracotta hover:bg-zen-beige rounded-lg transition-colors">
               <ShoppingBag size={20} />
-              {itemCount > 0 && (
+              {mounted && itemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-zen-terracotta text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {itemCount > 9 ? '9+' : itemCount}
                 </span>
