@@ -12,7 +12,7 @@ import { familiesForSub } from '@/lib/collections-helpers';
 export async function generateMetadata({
   params,
 }: {
-  params: { category: string; sub: string };
+  params: { locale: string; category: string; sub: string };
 }): Promise<Metadata> {
   const collection = getCollection(params.category);
   const sub        = getSubCollection(params.category, params.sub);
@@ -23,6 +23,7 @@ export async function generateMetadata({
     title,
     description,
     openGraph: { title, description, type: 'website' },
+    alternates: { canonical: `https://universduzen.com/${params.locale}/boutique/${params.category}/${params.sub}` },
   };
 }
 

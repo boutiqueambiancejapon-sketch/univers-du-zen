@@ -12,7 +12,7 @@ import { CATEGORY_SEO } from '@/lib/category-seo';
 export async function generateMetadata({
   params,
 }: {
-  params: { category: string };
+  params: { locale: string; category: string };
 }): Promise<Metadata> {
   const seo        = CATEGORY_SEO[params.category];
   const collection = getCollection(params.category);
@@ -25,6 +25,7 @@ export async function generateMetadata({
     title,
     description,
     openGraph: { title, description, type: 'website' },
+    alternates: { canonical: `https://universduzen.com/${params.locale}/boutique/${params.category}` },
   };
 }
 

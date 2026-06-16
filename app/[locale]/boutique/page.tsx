@@ -6,11 +6,15 @@ import CollectionGrid from '@/components/shop/CollectionGrid';
 import { getPublishedProducts } from '@/lib/get-products';
 import { CATEGORIES } from '@/lib/demo-products';
 
-export const metadata: Metadata = {
-  title: 'Boutique bien-être naturelle | Aromathérapie, Encens, Cristaux',
-  description:
-    'Découvrez notre sélection de produits bien-être éthiques : aromathérapie, bougies naturelles, encens, cristaux et déco zen. Livraison rapide en Belgique, France et Luxembourg.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title: 'Boutique bien-être naturelle | Aromathérapie, Encens, Cristaux',
+    description:
+      'Découvrez notre sélection de produits bien-être éthiques : aromathérapie, bougies naturelles, encens, cristaux et déco zen. Livraison rapide en Belgique, France et Luxembourg.',
+    alternates: { canonical: `https://universduzen.com/${locale}/boutique` },
+  };
+}
 
 export default async function BoutiquePage() {
   const locale   = await getLocale();

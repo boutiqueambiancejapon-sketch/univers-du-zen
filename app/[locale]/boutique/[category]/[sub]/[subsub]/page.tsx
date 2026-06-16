@@ -12,7 +12,7 @@ import { getSubSubCollection, familiesForSubSub } from '@/lib/collections-helper
 export async function generateMetadata({
   params,
 }: {
-  params: { category: string; sub: string; subsub: string };
+  params: { locale: string; category: string; sub: string; subsub: string };
 }): Promise<Metadata> {
   const collection = getCollection(params.category);
   const sub        = getSubCollection(params.category, params.sub);
@@ -20,7 +20,12 @@ export async function generateMetadata({
   if (!collection || !sub || !subsub) return {};
   const title       = `${subsub.label} — ${sub.label}`;
   const description = `Notre sélection ${subsub.label.toLowerCase()} (${sub.label}, ${collection.label}). Produits éthiques et naturels, livrés en Belgique, France et Luxembourg.`;
-  return { title, description, openGraph: { title, description, type: 'website' } };
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: 'website' },
+    alternates: { canonical: `https://universduzen.com/${params.locale}/boutique/${params.category}/${params.sub}/${params.subsub}` },
+  };
 }
 
 export function generateStaticParams() {
