@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useCartStore } from '@/lib/store/cart';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
@@ -21,6 +22,10 @@ function localeToCountry(l: string) {
 
 export default function PanierPage() {
   const { items, removeItem, updateQuantity, total } = useCartStore();
+
+  // Garde anti-mismatch d'hydratation (panier persisté en localStorage)
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
   const locale  = useLocale();
   const router  = useRouter();
 
@@ -32,6 +37,10 @@ export default function PanierPage() {
   const remaining   = Math.max(0, FREE_THRESHOLD - subtotal);
   const progressPct = Math.min(100, (subtotal / FREE_THRESHOLD) * 100);
   const freeShip    = remaining === 0;
+
+  if (!hydrated) {
+    return <div className="min-h-screen" style={{ background: '#F5F3EF' }} />;
+  }
 
   if (items.length === 0) {
     return (
