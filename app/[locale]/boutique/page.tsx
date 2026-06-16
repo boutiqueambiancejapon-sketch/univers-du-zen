@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function BoutiquePage() {
   const locale   = await getLocale();
-  const products = getPublishedProducts();
+  const products = await getPublishedProducts();
 
   /* ── Première image par collection (pour CollectionGrid) ── */
   const categoryImages: Record<string, string> = {};
@@ -84,3 +84,5 @@ export default async function BoutiquePage() {
     </>
   );
 }
+
+export const revalidate = 300;

@@ -45,7 +45,7 @@ export default async function SubCategoryPage({
   const locale   = await getLocale();
   // Filter by top-level category. When subcategory field is added to data.json,
   // narrow further: p.subcategory === params.sub
-  const products = getPublishedProducts().filter(p => p.category === params.category);
+  const products = (await getPublishedProducts()).filter(p => p.category === params.category);
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -160,3 +160,5 @@ export default async function SubCategoryPage({
     </>
   );
 }
+
+export const revalidate = 300;

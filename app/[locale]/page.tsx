@@ -8,8 +8,8 @@ import StatsBar from '@/components/home/StatsBar';
 import ReviewsSection from '@/components/home/ReviewsSection';
 import { getPublishedProducts } from '@/lib/get-products';
 
-export default function HomePage() {
-  const products = getPublishedProducts();
+export default async function HomePage() {
+  const products = await getPublishedProducts();
 
   // Huiles de fragrance en vedette (collection principale actuelle)
   const huilesFeatured = products.slice(0, 4);
@@ -45,3 +45,5 @@ export default function HomePage() {
     </>
   );
 }
+
+export const revalidate = 300;

@@ -9,7 +9,7 @@ export async function generateMetadata({
 }: {
   params: { locale: string; slug: string };
 }): Promise<Metadata> {
-  const p = getProductBySlug(params.slug);
+  const p = await getProductBySlug(params.slug);
   if (!p) return {};
   const title       = `${p.nameFr} | Univers du Zen`;
   const description = (p as any).meta_description ?? p.descriptionFr?.slice(0, 155) ?? '';
@@ -31,22 +31,22 @@ export async function generateMetadata({
   };
 }
 
-export function generateStaticParams() {
-  const products = getPublishedProducts();
+export async function generateStaticParams() {
+  const products = await getPublishedProducts();
   return products.flatMap(p =>
     ['fr-BE', 'fr-FR', 'nl-BE', 'nl-NL'].map(locale => ({ locale, slug: p.slug }))
   );
 }
 
-export default function ProductPage({
+export default async function ProductPage({
   params,
 }: {
   params: { locale: string; slug: string };
 }) {
-  const product = getProductBySlug(params.slug);
+  const product = await getProductBySlug(params.slug);
   if (!product) notFound();
 
-  const allProducts = getPublishedProducts();
+  const allProducts = await getPublishedProducts();
   const related = allProducts
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
@@ -99,3 +99,5 @@ export default function ProductPage({
     </>
   );
 }
+
+export const revalidate = 300;

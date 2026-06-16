@@ -42,7 +42,7 @@ export default async function CategoryPage({
 
   const locale     = await getLocale();
   const collection = getCollection(params.category);
-  const products   = getPublishedProducts().filter(p => p.category === params.category);
+  const products   = (await getPublishedProducts()).filter(p => p.category === params.category);
   const seo        = CATEGORY_SEO[params.category];
 
   const breadcrumbSchema = {
@@ -144,3 +144,5 @@ export default async function CategoryPage({
     </>
   );
 }
+
+export const revalidate = 300;

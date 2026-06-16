@@ -1,15 +1,20 @@
 /**
- * Source de vérité produits publiés.
- * Utilisable uniquement côté serveur (Server Components).
+ * Source de vérité produits publiés — lecture Supabase (server-only).
  *
  * STRATÉGIE PRIX :
- *  - Prix fournisseur (brut)  × 3   → prix de vente arrondi à .99
- *  - Prix fournisseur (brut)  × 4.5 → compareAt (barré) arrondi à .99
- *  → Affiche ~33 % de remise, marge nette ≥ 66 %.
+ *  - retail_eur = prix normal, toujours affiché (pas de prix barré par défaut).
+ *  - Promo réelle et temporaire (conforme Omnibus) : si promo_price_eur est défini
+ *    et que la date courante est dans [promo_starts_at, promo_ends_at], on affiche
+ *    promo_price_eur et on barre retail_eur (prix réellement pratiqué auparavant).
+ *
+ * STOCK : temps quasi-réel depuis supplier_catalog (mis à jour par le cron),
+ * joint sur le SKU. Le statut est recalculé à partir du stock fournisseur réel.
+ *
+ * NB : ce module est server-only (clé service-role). Ne jamais l'importer dans un
+ * composant client — passer par '@/lib/all-products' côté client.
  */
 
-import fs from 'fs';
-import path from 'path';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export interface PublishedProduct {
   id: string;
@@ -30,7 +35,6 @@ export interface PublishedProduct {
   is_vegan?: boolean;
   is_cruelty_free?: boolean;
   pushed_at?: string;
-  // Champs camelCase attendus par ProductCard / ProductDetailClient
   nameFr?: string;
   descriptionFr?: string;
   shortDescriptionFr?: string;
@@ -49,146 +53,146 @@ export interface PublishedProduct {
   isOrganic?: boolean;
 }
 
-const PRODUCTS_DIR = path.join(process.cwd(), 'products');
-const REPO_RAW = 'https://raw.githubusercontent.com/boutiqueambiancejapon-sketch/univers-du-zen/main';
+type StockStatus = 'Normal' | 'Low' | 'VeryLow' | 'OutOfStock';
+type StockRow = { sku: string; stock_qty: number | null; in_stock: boolean | null };
 
-/* ── Constantes de marge ────────────────────────────────────────────────────
-   Modifier ici pour ajuster la politique tarifaire globale.
-   MARKUP       = coefficient appliqué au coût fournisseur → prix affiché
-   COMPARE_MULT = coefficient pour le prix barré (> MARKUP pour afficher remise)
-   Remise visible ≈ 1 - MARKUP / COMPARE_MULT  (actuellement ~33 %)
-─────────────────────────────────────────────────────────────────────────── */
-const MARKUP       = 3;
-const COMPARE_MULT = 4.5;
-
-/* ── Helpers ─────────────────────────────────────────────────────────────── */
-
-/**
- * Arrondit vers le haut au prochain entier puis soustrait 0,01.
- * Ex : 11,10 → 11,99 | 15,00 → 14,99 | 4,50 → 4,99
- */
-function psychPrice(raw: number): number {
-  return Math.ceil(raw) - 0.01;
+let _client: SupabaseClient | null = null;
+function getClient(): SupabaseClient | null {
+  if (_client) return _client;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  _client = createClient(url, key, { auth: { persistSession: false } });
+  return _client;
 }
 
-/** Extrait un nombre depuis "€3.70", 3.70 ou undefined. */
-function parseRawPrice(raw: unknown): number | undefined {
-  if (typeof raw === 'number') return raw > 0 ? raw : undefined;
-  if (typeof raw === 'string') {
-    const n = parseFloat(raw.replace(/[^0-9.]/g, ''));
-    return isNaN(n) || n <= 0 ? undefined : n;
+function statusFromQty(qty: number): StockStatus {
+  if (qty > 10) return 'Normal';
+  if (qty > 2) return 'Low';
+  if (qty > 0) return 'VeryLow';
+  return 'OutOfStock';
+}
+
+function toNum(v: unknown): number | undefined {
+  if (v === null || v === undefined) return undefined;
+  const n = typeof v === 'number' ? v : parseFloat(String(v));
+  return Number.isNaN(n) ? undefined : n;
+}
+
+function asArray<T>(v: unknown): T[] {
+  if (Array.isArray(v)) return v as T[];
+  if (typeof v === 'string') {
+    try {
+      const p = JSON.parse(v);
+      return Array.isArray(p) ? (p as T[]) : [];
+    } catch {
+      return [];
+    }
   }
-  return undefined;
-}
-
-function parseTags(raw: unknown): string[] {
-  if (!raw) return [];
-  if (Array.isArray(raw)) return raw.map(String).filter(Boolean);
-  if (typeof raw === 'string') return raw.split(',').map(t => t.trim()).filter(Boolean);
   return [];
 }
 
-function parseImages(raw: unknown[], slug: string): string[] {
-  return (raw ?? []).map((img: unknown) => {
-    const s = String(img);
-    return s.startsWith('http') ? s : `${REPO_RAW}/products/${slug}/${s}`;
-  });
-}
+function mapRow(row: Record<string, any>, stock?: StockRow): PublishedProduct {
+  // Stock temps réel depuis supplier_catalog (fallback : valeurs stockées sur le produit)
+  const liveQty = stock
+    ? stock.in_stock === false
+      ? 0
+      : stock.stock_qty ?? 0
+    : toNum(row.stock_qty) ?? 0;
+  const stockStatus = statusFromQty(liveQty);
 
-function mapProduct(raw: Record<string, unknown>, slug: string): PublishedProduct {
-  const images = parseImages((raw.images as unknown[]) ?? [], slug);
+  // Prix + promo réelle/temporaire
+  const retailNormal = toNum(row.retail_eur) ?? 0;
+  const promoPrice = toNum(row.promo_price_eur);
+  const now = Date.now();
+  const starts = row.promo_starts_at ? new Date(row.promo_starts_at).getTime() : null;
+  const ends = row.promo_ends_at ? new Date(row.promo_ends_at).getTime() : null;
+  const promoActive =
+    promoPrice != null && starts != null && ends != null && starts <= now && now <= ends;
 
-  // Coût fournisseur brut (le champ "price" du pipeline vaut ex. "€3.70")
-  const supplierCost =
-    parseRawPrice(raw.retail_price_eur) ??
-    parseRawPrice(raw.retailPriceEur)   ??
-    parseRawPrice(raw.price);
+  const retailPriceEur = promoActive ? promoPrice : retailNormal;
+  const compareAtPriceEur = promoActive ? retailNormal : undefined;
 
-  // Prix de vente : coût × MARKUP arrondi à .99
-  const retailPriceEur   = supplierCost ? psychPrice(supplierCost * MARKUP)       : undefined;
-  // Prix barré : coût × COMPARE_MULT arrondi à .99 (affiche une remise ~33 %)
-  const compareAtPriceEur = supplierCost ? psychPrice(supplierCost * COMPARE_MULT) : undefined;
-
-  const stockStatus =
-    (raw.stock_status as PublishedProduct['stockStatus']) ??
-    (raw.stockStatus  as PublishedProduct['stockStatus']) ??
-    'Normal';
-
-  const nameFr = String(raw.name ?? raw.nameFr ?? slug);
+  const images = asArray<string>(row.images);
+  const nameFr = String(row.name_fr ?? row.slug ?? '');
 
   return {
-    id:    String(raw.id ?? slug),
-    slug,
-    name:  nameFr,
+    id: String(row.id ?? row.sku ?? row.slug),
+    slug: String(row.slug),
+    name: nameFr,
     images,
-    tags:  parseTags(raw.tags),
+    tags: asArray<string>(row.tags),
 
     nameFr,
-    shortDescriptionFr: (raw.short_description ?? raw.shortDescriptionFr ?? undefined) as string | undefined,
-    descriptionFr:      (raw.description        ?? raw.descriptionFr      ?? undefined) as string | undefined,
-    longDescriptionFr:  (raw.long_description   ?? raw.longDescriptionFr  ?? undefined) as string | undefined,
-    usageFr:            (raw.usage              ?? raw.usageFr            ?? undefined) as string | undefined,
-    meta_description:   (raw.meta_description ?? undefined) as string | undefined,
-    original_name:      (raw.original_name    ?? undefined) as string | undefined,
+    shortDescriptionFr: row.short_description_fr ?? undefined,
+    descriptionFr: row.description_fr ?? undefined,
+    longDescriptionFr: row.long_description_fr ?? undefined,
+    usageFr: row.usage_fr ?? undefined,
+    meta_description: row.meta_desc_fr ?? undefined,
+    short_description: row.short_description_fr ?? undefined,
+    description: row.description_fr ?? undefined,
 
-    benefitsFr:     Array.isArray(raw.benefitsFr)      ? raw.benefitsFr      as string[] : undefined,
-    faqFr:          Array.isArray(raw.faqFr)           ? raw.faqFr           as PublishedProduct['faqFr'] : undefined,
-    characteristics:Array.isArray(raw.characteristics) ? raw.characteristics as PublishedProduct['characteristics'] : undefined,
+    benefitsFr: asArray<string>(row.benefits_fr),
+    faqFr: asArray<{ question: string; answer: string }>(row.faq_fr),
+    characteristics: asArray<{ label: string; value: string }>(row.characteristics),
 
-    // Prix calculés (jamais le prix brut fournisseur)
     retailPriceEur,
     compareAtPriceEur,
-    retail_price_eur:     retailPriceEur,
+    retail_price_eur: retailPriceEur,
     compare_at_price_eur: compareAtPriceEur,
 
     stockStatus,
     stock_status: stockStatus,
-    stockQty:     (raw.stock_qty ?? raw.stockQty ?? 0) as number,
-    stock_qty:    (raw.stock_qty ?? raw.stockQty ?? 0) as number,
+    stockQty: liveQty,
+    stock_qty: liveQty,
 
-    isBestSeller:  Boolean(raw.is_best_seller  ?? raw.isBestSeller  ?? false),
-    isVegan:       Boolean(raw.is_vegan        ?? raw.isVegan        ?? true),
-    isCrueltyFree: Boolean(raw.is_cruelty_free ?? raw.isCrueltyFree ?? true),
-    isOrganic:     Boolean(raw.is_organic      ?? raw.isOrganic      ?? false),
+    isBestSeller: Boolean(row.is_best_seller),
+    isVegan: Boolean(row.is_vegan),
+    isCrueltyFree: Boolean(row.is_cruelty_free),
+    isOrganic: Boolean(row.is_organic),
 
-    category: String(raw.category ?? raw.dept ?? 'huiles-fragrance'),
-
-    pushed_at: (raw.pushed_at ?? undefined) as string | undefined,
+    category: row.category ? String(row.category) : undefined,
   };
 }
 
-/* ── API publique ─────────────────────────────────────────────────────────── */
-
-export function getPublishedProducts(): PublishedProduct[] {
-  try {
-    const catalogPath = path.join(PRODUCTS_DIR, 'catalog.json');
-    if (!fs.existsSync(catalogPath)) return [];
-    const catalog: { slug: string }[] = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
-
-    return catalog
-      .map(({ slug }) => {
-        try {
-          const dataPath = path.join(PRODUCTS_DIR, slug, 'data.json');
-          if (!fs.existsSync(dataPath)) return null;
-          const raw = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-          return mapProduct(raw, slug);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean) as PublishedProduct[];
-  } catch {
-    return [];
+async function attachStock(
+  client: SupabaseClient,
+  rows: Record<string, any>[],
+): Promise<PublishedProduct[]> {
+  const skus = rows.map((r) => r.sku).filter(Boolean);
+  const stockMap = new Map<string, StockRow>();
+  if (skus.length) {
+    const { data: stock } = await client
+      .from('supplier_catalog')
+      .select('sku, stock_qty, in_stock')
+      .in('sku', skus);
+    for (const s of (stock ?? []) as StockRow[]) stockMap.set(s.sku, s);
   }
+  return rows.map((r) => mapRow(r, stockMap.get(r.sku)));
 }
 
-export function getProductBySlug(slug: string): PublishedProduct | null {
-  try {
-    const dataPath = path.join(PRODUCTS_DIR, slug, 'data.json');
-    if (!fs.existsSync(dataPath)) return null;
-    const raw = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    return mapProduct(raw, slug);
-  } catch {
-    return null;
-  }
+export async function getPublishedProducts(): Promise<PublishedProduct[]> {
+  const client = getClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from('products')
+    .select('*')
+    .eq('is_published', true)
+    .order('updated_at', { ascending: false });
+  if (error || !data) return [];
+  return attachStock(client, data as Record<string, any>[]);
+}
+
+export async function getProductBySlug(slug: string): Promise<PublishedProduct | null> {
+  const client = getClient();
+  if (!client) return null;
+  const { data, error } = await client
+    .from('products')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .maybeSingle();
+  if (error || !data) return null;
+  const [mapped] = await attachStock(client, [data as Record<string, any>]);
+  return mapped ?? null;
 }
