@@ -7,7 +7,7 @@ import { getPublishedProducts } from '@/lib/get-products';
 import { CATEGORIES } from '@/lib/demo-products';
 
 export const metadata: Metadata = {
-  title: 'Boutique bien-être naturelle | Aromathérapie, Encens, Cristaux — Univers du Zen',
+  title: 'Boutique bien-être naturelle | Aromathérapie, Encens, Cristaux',
   description:
     'Découvrez notre sélection de produits bien-être éthiques : aromathérapie, bougies naturelles, encens, cristaux et déco zen. Livraison rapide en Belgique, France et Luxembourg.',
 };

@@ -19,7 +19,7 @@ export async function generateMetadata({
   const cat        = CATEGORIES.find(c => c.slug === params.category);
   if (!cat && !collection) return {};
   const label       = collection?.label ?? cat?.label ?? params.category;
-  const title       = `${seo?.title ?? label} | Univers du Zen`;
+  const title       = seo?.title ?? label;
   const description = seo?.shortDesc ?? collection?.description ?? `Découvrez notre sélection ${label.toLowerCase()} — produits éthiques livrés en Belgique.`;
   return {
     title,

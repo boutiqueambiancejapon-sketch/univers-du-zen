@@ -17,7 +17,7 @@ export async function generateMetadata({
   const collection = getCollection(params.category);
   const sub        = getSubCollection(params.category, params.sub);
   if (!collection || !sub) return {};
-  const title       = `${sub.label} — ${collection.label} | Univers du Zen`;
+  const title       = `${sub.label} — ${collection.label}`;
   const description = `Découvrez notre sélection ${sub.label.toLowerCase()} dans la collection ${collection.label}. Produits éthiques et naturels, livrés en Belgique, France et Luxembourg.`;
   return {
     title,

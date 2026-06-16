@@ -27,11 +27,11 @@ export default async function Footer() {
           <ul className="space-y-2 text-sm">
             {([
               ['Aromathérapie', '/boutique/aromatherapie'],
-              ['Bougies', '/boutique/bougies'],
-              ['Encens', '/boutique/encens'],
-              ['Pierres & Cristaux', '/boutique/pierres-cristaux'],
-              ['Maison & Déco', '/boutique/maison-deco'],
-              ['Thés Artisanaux', '/boutique/thes-artisanaux'],
+              ['Bougies', '/boutique/bougies-photophores'],
+              ['Encens', '/boutique/encens-rituels'],
+              ['Pierres & Cristaux', '/boutique/cristaux-lithotherapie'],
+              ['Maison & Déco', '/boutique/deco-maison-zen'],
+              ['Thés Artisanaux', '/boutique/the-tisanes'],
             ] as [string, string][]).map(([label, href]) => (
               <li key={href}>
                 <Link href={p(href)} className="hover:text-white transition-colors">{label}</Link>

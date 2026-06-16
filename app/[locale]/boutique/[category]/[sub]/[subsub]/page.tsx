@@ -18,7 +18,7 @@ export async function generateMetadata({
   const sub        = getSubCollection(params.category, params.sub);
   const subsub     = getSubSubCollection(params.category, params.sub, params.subsub);
   if (!collection || !sub || !subsub) return {};
-  const title       = `${subsub.label} — ${sub.label} | Univers du Zen`;
+  const title       = `${subsub.label} — ${sub.label}`;
   const description = `Notre sélection ${subsub.label.toLowerCase()} (${sub.label}, ${collection.label}). Produits éthiques et naturels, livrés en Belgique, France et Luxembourg.`;
   return { title, description, openGraph: { title, description, type: 'website' } };
 }

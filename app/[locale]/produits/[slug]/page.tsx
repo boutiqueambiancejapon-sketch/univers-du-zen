@@ -11,7 +11,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const p = await getProductBySlug(params.slug);
   if (!p) return {};
-  const title       = `${p.nameFr} | Univers du Zen`;
+  const title       = `${p.nameFr}`;
   const description = (p as any).meta_description ?? p.descriptionFr?.slice(0, 155) ?? '';
   const image       = p.images?.[0];
   return {
