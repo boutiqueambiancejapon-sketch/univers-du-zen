@@ -7,6 +7,7 @@ import ShopGrid from '@/components/shop/ShopGrid';
 import { getPublishedProducts } from '@/lib/get-products';
 import { CATEGORIES } from '@/lib/demo-products';
 import { COLLECTIONS, getCollection, getSubCollection } from '@/lib/collections';
+import { familiesForSub } from '@/lib/collections-helpers';
 
 export async function generateMetadata({
   params,
@@ -43,9 +44,12 @@ export default async function SubCategoryPage({
   if (!collection || !subCol) notFound();
 
   const locale   = await getLocale();
-  // Filter by top-level category. When subcategory field is added to data.json,
-  // narrow further: p.subcategory === params.sub
-  const products = (await getPublishedProducts()).filter(p => p.category === params.category);
+  // Filtrage des produits par familles de la sous-collection (sinon tout le hub)
+  const subFamilies = familiesForSub(params.category, params.sub);
+  const hubProducts = (await getPublishedProducts()).filter(p => p.category === params.category);
+  const products = subFamilies.length
+    ? hubProducts.filter(p => p.family && subFamilies.includes(p.family))
+    : hubProducts;
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -108,17 +112,18 @@ export default async function SubCategoryPage({
         </div>
       </div>
 
-      {/* Sub-sub-collection pills (tags only, no routing yet) */}
+      {/* Sous-sous-collections cliquables */}
       {subCol.subs && subCol.subs.length > 0 && (
         <div className="border-b border-zen-sand bg-zen-beige/50">
           <div className="max-w-7xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto">
             {subCol.subs.map(s => (
-              <span
+              <Link
                 key={s.slug}
-                className="flex-shrink-0 px-2.5 py-1 rounded-full text-[11px] font-sans text-zen-muted border border-zen-sand/60 bg-white whitespace-nowrap"
+                href={`/${locale}/boutique/${params.category}/${params.sub}/${s.slug}`}
+                className="flex-shrink-0 px-2.5 py-1 rounded-full text-[11px] font-sans text-zen-muted border border-zen-sand/60 bg-white whitespace-nowrap hover:border-zen-bark hover:text-zen-bark transition-colors"
               >
                 {s.label}
-              </span>
+              </Link>
             ))}
           </div>
         </div>

@@ -29,6 +29,7 @@ export interface PublishedProduct {
   retail_price_eur?: number;
   compare_at_price_eur?: number;
   category?: string;
+  family?: string;
   stock_status?: 'Normal' | 'Low' | 'VeryLow' | 'OutOfStock';
   stock_qty?: number;
   is_best_seller?: boolean;
@@ -152,6 +153,7 @@ function mapRow(row: Record<string, any>, stock?: StockRow): PublishedProduct {
     isOrganic: Boolean(row.is_organic),
 
     category: row.category ? String(row.category) : undefined,
+    family: row.family ? String(row.family) : undefined,
   };
 }
 
