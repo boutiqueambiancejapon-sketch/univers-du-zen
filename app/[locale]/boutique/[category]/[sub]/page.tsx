@@ -8,6 +8,7 @@ import { getPublishedProducts } from '@/lib/get-products';
 import { CATEGORIES } from '@/lib/demo-products';
 import { COLLECTIONS, getCollection, getSubCollection } from '@/lib/collections';
 import { familiesForSub } from '@/lib/collections-helpers';
+import CollectionSeoBlock from '@/components/shop/CollectionSeoBlock';
 
 export async function generateMetadata({
   params,
@@ -163,6 +164,8 @@ export default async function SubCategoryPage({
           )}
         </div>
       </div>
+
+      <CollectionSeoBlock path={`${params.category}/${params.sub}`} />
     </>
   );
 }
