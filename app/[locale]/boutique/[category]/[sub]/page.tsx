@@ -122,7 +122,7 @@ export default async function SubCategoryPage({
               <Link
                 key={s.slug}
                 href={`/${locale}/boutique/${params.category}/${params.sub}/${s.slug}`}
-                className="flex-shrink-0 px-2.5 py-1 rounded-full text-[11px] font-sans text-zen-muted border border-zen-sand/60 bg-white whitespace-nowrap hover:border-zen-bark hover:text-zen-bark transition-colors"
+                className="flex-shrink-0 px-2.5 py-1 rounded-full text-[12px] font-sans text-zen-muted border border-zen-sand/60 bg-white whitespace-nowrap hover:border-zen-bark hover:text-zen-bark transition-colors"
               >
                 {s.label}
               </Link>

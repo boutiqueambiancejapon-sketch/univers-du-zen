@@ -16,7 +16,7 @@ export default async function ConfirmationPage({
   if (!orderId) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#F5F3EF' }}>
-        <p className="font-sans text-sm" style={{ color: '#9a8878' }}>Commande introuvable.</p>
+        <p className="font-sans text-sm" style={{ color: '#675A4E' }}>Commande introuvable.</p>
       </div>
     );
   }
@@ -43,9 +43,9 @@ export default async function ConfirmationPage({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h1 className="font-serif mb-2" style={{ fontSize: 28, color: '#2C2420' }}>Commande confirmée !</h1>
-              <p className="text-sm font-sans leading-relaxed" style={{ color: '#9a8878' }}>
-                Votre commande <strong style={{ color: '#2C2420' }}>{order?.reference}</strong> a bien été reçue.
+              <h1 className="font-serif mb-2" style={{ fontSize: 28, color: '#3B2A1F' }}>Commande confirmée !</h1>
+              <p className="text-sm font-sans leading-relaxed" style={{ color: '#675A4E' }}>
+                Votre commande <strong style={{ color: '#3B2A1F' }}>{order?.reference}</strong> a bien été reçue.
                 Un email de confirmation vous sera envoyé sous peu.
               </p>
             </>
@@ -56,8 +56,8 @@ export default async function ConfirmationPage({
                 style={{ background: '#FFFBEB' }}>
                 <Clock size={32} style={{ color: '#D97706' }} />
               </div>
-              <h1 className="font-serif mb-2" style={{ fontSize: 28, color: '#2C2420' }}>Paiement en cours…</h1>
-              <p className="text-sm font-sans" style={{ color: '#9a8878' }}>
+              <h1 className="font-serif mb-2" style={{ fontSize: 28, color: '#3B2A1F' }}>Paiement en cours…</h1>
+              <p className="text-sm font-sans" style={{ color: '#675A4E' }}>
                 Votre paiement est en cours de traitement. Vous serez notifié par email dès confirmation.
               </p>
             </>
@@ -68,8 +68,8 @@ export default async function ConfirmationPage({
                 style={{ background: '#FEF2F2' }}>
                 <XCircle size={32} style={{ color: '#DC2626' }} />
               </div>
-              <h1 className="font-serif mb-2" style={{ fontSize: 28, color: '#2C2420' }}>Paiement non abouti</h1>
-              <p className="text-sm font-sans" style={{ color: '#9a8878' }}>
+              <h1 className="font-serif mb-2" style={{ fontSize: 28, color: '#3B2A1F' }}>Paiement non abouti</h1>
+              <p className="text-sm font-sans" style={{ color: '#675A4E' }}>
                 Le paiement n&apos;a pas pu être finalisé. Votre panier a été conservé — vous pouvez réessayer.
               </p>
             </>
@@ -78,8 +78,8 @@ export default async function ConfirmationPage({
 
         {/* Order details — dark card (paid only) */}
         {isPaid && order && (
-          <div className="rounded-2xl p-7" style={{ background: '#2C2420', color: '#F2ECE0' }}>
-            <p className="font-sans font-semibold uppercase text-[10px] mb-5"
+          <div className="rounded-2xl p-7" style={{ background: '#3B2A1F', color: '#F2ECE0' }}>
+            <p className="font-sans font-semibold uppercase text-[12px] mb-5"
               style={{ color: 'rgba(242,236,224,.45)', letterSpacing: '0.1em' }}>
               Détails de la commande
             </p>
@@ -133,25 +133,25 @@ export default async function ConfirmationPage({
           {isPaid && (
             <Link href={`/${locale}/compte/commandes`}
               className="flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-sans font-semibold transition-all"
-              style={{ background: '#2C2420', color: '#F2ECE0' }}>
+              style={{ background: '#3B2A1F', color: '#F2ECE0' }}>
               <Package size={15} /> Suivre ma commande <ArrowRight size={14} />
             </Link>
           )}
           <Link href={`/${locale}/boutique`}
             className="flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-sans font-semibold transition-all"
-            style={{ background: isPaid ? '#F5F3EF' : '#C1714A', color: isPaid ? '#2C2420' : '#fff', border: isPaid ? '1px solid rgba(44,36,32,.12)' : 'none' }}>
+            style={{ background: isPaid ? '#F5F3EF' : '#C4714A', color: isPaid ? '#3B2A1F' : '#fff', border: isPaid ? '1px solid rgba(44,36,32,.12)' : 'none' }}>
             {isPaid ? 'Retourner à la boutique' : 'Aller à la boutique'}
           </Link>
           {isFailed && (
             <Link href={`/${locale}/checkout`}
               className="text-center text-sm font-sans transition-colors py-2"
-              style={{ color: '#9a8878' }}>
+              style={{ color: '#675A4E' }}>
               ↩ Réessayer le paiement
             </Link>
           )}
         </div>
 
-        <p className="text-center text-[10px] font-sans" style={{ color: 'rgba(44,36,32,.3)', letterSpacing: '0.04em' }}>
+        <p className="text-center text-[12px] font-sans" style={{ color: 'rgba(44,36,32,.3)', letterSpacing: '0.04em' }}>
           🔒 Paiement sécurisé · Univers du Zen © 2026
         </p>
       </div>
