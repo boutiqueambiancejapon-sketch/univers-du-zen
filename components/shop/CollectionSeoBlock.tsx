@@ -10,9 +10,13 @@ export default async function CollectionSeoBlock({ path }: { path: string }) {
       <div className="max-w-4xl mx-auto px-4 py-14">
         {seo.long_description && (
           <div className="mb-10">
-            {seo.long_description.split('\n\n').map((para, i) => (
-              <p key={i} className="text-zen-muted leading-relaxed mb-4 text-sm">{para}</p>
-            ))}
+            {seo.long_description.split('\n\n').map((block, i) =>
+              block.startsWith('## ') ? (
+                <h2 key={i} className="font-serif text-xl text-zen-bark mt-6 mb-2">{block.slice(3)}</h2>
+              ) : (
+                <p key={i} className="text-zen-muted leading-relaxed mb-4 text-sm">{block}</p>
+              )
+            )}
           </div>
         )}
 
