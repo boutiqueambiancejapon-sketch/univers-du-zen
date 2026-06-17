@@ -30,24 +30,24 @@ export default async function BoutiquePage() {
 
   return (
     <>
-      {/* ── Hero header ──────────────────────────────────────────────── */}
+      {/* ── Hero header ─────────────────────────────────── */}
       <div style={{ background: '#F5F3EF', borderBottom: '1px solid rgba(44,36,32,.08)' }}>
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12">
           <nav className="flex items-center gap-1.5 mb-6"
             style={{ fontFamily: 'var(--font-sans)', fontSize: 11, letterSpacing: '0.06em', color: 'rgba(44,36,32,.45)' }}>
             <Link href={`/${locale}`} className="hover:opacity-100 transition-opacity">Accueil</Link>
             <span>/</span>
-            <span style={{ color: '#2C2420' }}>Boutique</span>
+            <span style={{ color: '#3B2A1F' }}>Boutique</span>
           </nav>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <p className="text-xs font-sans uppercase tracking-widest mb-3"
-                style={{ color: '#C1714A', letterSpacing: '0.1em' }}>
+                style={{ color: '#C4714A', letterSpacing: '0.1em' }}>
                 Toute la collection
               </p>
               <h1 className="font-serif"
-                style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#2C2420', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
+                style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#3B2A1F', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
                 Boutique Bien-être
               </h1>
               <p className="mt-3 text-sm font-sans leading-relaxed" style={{ color: '#6B5C55', maxWidth: 480 }}>
@@ -62,8 +62,8 @@ export default async function BoutiquePage() {
                 { v: '3–5j',             l: 'livraison' },
               ].map(({ v, l }) => (
                 <div key={l} className="text-center">
-                  <p className="font-serif font-bold" style={{ fontSize: 22, color: '#2C2420' }}>{v}</p>
-                  <p className="text-xs font-sans" style={{ color: '#9a8878' }}>{l}</p>
+                  <p className="font-serif font-bold" style={{ fontSize: 22, color: '#3B2A1F' }}>{v}</p>
+                  <p className="text-xs font-sans" style={{ color: '#675A4E' }}>{l}</p>
                 </div>
               ))}
             </div>
@@ -71,7 +71,7 @@ export default async function BoutiquePage() {
         </div>
       </div>
 
-      {/* ── Collection cards visuelles ───────────────────────────────── */}
+      {/* ── Collection cards visuelles ──────────────────────── */}
       <CollectionGrid
         categories={CATEGORIES}
         categoryImages={categoryImages}
@@ -79,7 +79,7 @@ export default async function BoutiquePage() {
         activeCategory={null}
       />
 
-      {/* ── Grille produits ──────────────────────────────────────────── */}
+      {/* ── Grille produits ─────────────────────────────── */}
       <ShopGrid
         products={products as any}
         categories={CATEGORIES}

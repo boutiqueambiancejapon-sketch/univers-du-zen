@@ -34,7 +34,7 @@ export default function CheckoutSuccessPage({
             Votre paiement a bien été reçu. Vous recevrez un email de confirmation sous peu avec le récapitulatif et les informations de suivi.
           </p>
           {paymentId && (
-            <p className="mt-3 text-[11px] font-sans text-zen-muted/60">
+            <p className="mt-3 text-[12px] font-sans text-zen-muted/60">
               Référence : <span className="font-mono">{paymentId}</span>
             </p>
           )}
