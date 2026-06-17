@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Plus, Star, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Check } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { useCartStore } from '@/lib/store/cart';
 import type { Product } from '@/lib/types';
@@ -94,10 +94,6 @@ function MiniProductCard({ product }: { product: Partial<Product> }) {
             {product.nameFr}
           </p>
         </Link>
-        <div className="flex items-center gap-1 mt-1">
-          <Star size={9} className="fill-zen-gold text-zen-gold" />
-          <span className="text-[9px] text-zen-muted">4.8 &middot; 124 avis</span>
-        </div>
         <div className="flex items-baseline gap-1.5 mt-1.5">
           <span className="font-sans font-semibold text-zen-bark text-sm">{product.retailPriceEur} €</span>
           {product.compareAtPriceEur && (
@@ -145,7 +141,7 @@ export default function FeaturedSection({
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div className="max-w-md">
-          <p className="text-[11px] font-sans tracking-widest uppercase text-zen-terracotta mb-2">
+          <p className="text-[12px] font-sans tracking-widest uppercase text-zen-terracotta mb-2">
             &mdash; {sectionLabel}
           </p>
           <h2 className="font-serif text-3xl text-zen-bark leading-tight">{title}</h2>
@@ -182,7 +178,7 @@ export default function FeaturedSection({
         >
           <div>
             {(pieceCount || discount) && (
-              <p className="text-white/50 text-[10px] font-sans tracking-widest uppercase mb-4">
+              <p className="text-white/50 text-[12px] font-sans tracking-widest uppercase mb-4">
                 {pieceCount ? `${String(pieceCount).padStart(2, '0')} pièces` : ''}
                 {pieceCount && discount ? ' · ' : ''}
                 {discount ? `-${discount}%` : ''}

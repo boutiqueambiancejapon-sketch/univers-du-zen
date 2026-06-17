@@ -34,8 +34,8 @@ function BentoCard({ cat, locale, className }: { cat: Cat; locale: string; class
       {/* Badge top-left */}
       {cat.badge && (
         <div className="absolute top-3 left-3">
-          <span className="text-[10px] font-sans font-semibold px-2.5 py-1 rounded-full"
-            style={{ background: '#C1714A', color: '#fff', letterSpacing: '0.04em' }}>
+          <span className="text-[12px] font-sans font-semibold px-2.5 py-1 rounded-full"
+            style={{ background: '#C4714A', color: '#fff', letterSpacing: '0.04em' }}>
             {cat.badge}
           </span>
         </div>
@@ -43,8 +43,8 @@ function BentoCard({ cat, locale, className }: { cat: Cat; locale: string; class
 
       {/* CTA chip — appears on hover */}
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <span className="text-[10px] font-sans font-medium px-2.5 py-1 rounded-full"
-          style={{ background: 'rgba(252,250,244,.9)', color: '#2C2420' }}>
+        <span className="text-[12px] font-sans font-medium px-2.5 py-1 rounded-full"
+          style={{ background: 'rgba(252,250,244,.9)', color: '#3B2A1F' }}>
           Découvrir →
         </span>
       </div>
@@ -66,10 +66,10 @@ export default async function CategoriesGrid() {
   return (
     <section className="sr max-w-7xl mx-auto px-6 lg:px-10 py-14 space-y-3">
       <div className="mb-10">
-        <p className="text-xs font-sans uppercase tracking-widest mb-2" style={{ color: '#C1714A', letterSpacing: '0.1em' }}>
+        <p className="text-xs font-sans uppercase tracking-widest mb-2" style={{ color: '#C4714A', letterSpacing: '0.1em' }}>
           Nos univers
         </p>
-        <h2 className="font-serif text-3xl md:text-4xl" style={{ color: '#2C2420', lineHeight: 1.05 }}>
+        <h2 className="font-serif text-3xl md:text-4xl" style={{ color: '#3B2A1F', lineHeight: 1.05 }}>
           Explorez la collection
         </h2>
       </div>

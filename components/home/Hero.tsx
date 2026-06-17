@@ -55,7 +55,7 @@ export default async function Hero() {
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
             <Link href={`/${locale}/boutique`}
               className="text-center font-sans font-semibold px-7 py-4 rounded-xl transition-all text-sm"
-              style={{ background: '#C1714A', color: '#fff', boxShadow: '0 10px 28px rgba(193,113,74,.35)' }}>
+              style={{ background: '#C4714A', color: '#fff', boxShadow: '0 10px 28px rgba(193,113,74,.35)' }}>
               Découvrir la boutique
             </Link>
             <Link href={`/${locale}/boutique/bougies`}
@@ -104,8 +104,8 @@ export default async function Hero() {
             </svg>
           </div>
           <div>
-            <p className="text-xs font-sans font-semibold" style={{ color: '#2C2420' }}>Livraison offerte</p>
-            <p className="text-xs font-sans" style={{ color: '#9a8878' }}>dès 59 € · expédié sous 48h</p>
+            <p className="text-xs font-sans font-semibold" style={{ color: '#3B2A1F' }}>Livraison offerte</p>
+            <p className="text-xs font-sans" style={{ color: '#675A4E' }}>dès 59 € · expédié sous 48h</p>
           </div>
         </div>
       </div>
