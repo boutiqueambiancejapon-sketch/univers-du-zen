@@ -68,13 +68,6 @@ export default async function ProductPage({
           : 'https://schema.org/InStock',
       seller: { '@type': 'Organization', name: 'Univers du Zen' },
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      reviewCount: '124',
-      bestRating: '5',
-      worstRating: '1',
-    },
   };
 
   const breadcrumbSchema = {

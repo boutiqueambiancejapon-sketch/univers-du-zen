@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
-import { Search, User, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
+import { User, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
 import CartDrawer from '@/components/shop/CartDrawer';
-import LiveNotification from '@/components/shop/LiveNotification';
 
 /** Slugs alignés sur lib/demo-products.ts */
 const NAV_CATEGORIES = [
@@ -97,11 +96,6 @@ export default function Nav() {
 
           {/* Icons */}
           <div className="flex items-center gap-1">
-            <button aria-label="Rechercher"
-              className="p-2 text-zen-bark hover:text-zen-terracotta hover:bg-zen-beige rounded-lg transition-colors">
-              <Search size={20} />
-            </button>
-
             <Link href={href('/compte')} aria-label="Mon compte"
               className="p-2 text-zen-bark hover:text-zen-terracotta hover:bg-zen-beige rounded-lg transition-colors">
               <User size={20} />
@@ -111,7 +105,7 @@ export default function Nav() {
               className="relative p-2 text-zen-bark hover:text-zen-terracotta hover:bg-zen-beige rounded-lg transition-colors">
               <ShoppingBag size={20} />
               {mounted && itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-zen-terracotta text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-zen-terracotta text-white text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {itemCount > 9 ? '9+' : itemCount}
                 </span>
               )}
@@ -150,7 +144,6 @@ export default function Nav() {
       </nav>
 
       <CartDrawer />
-      <LiveNotification />
     </>
   );
 }

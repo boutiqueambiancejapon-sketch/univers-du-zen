@@ -18,9 +18,14 @@ const config: Config = {
           sage:         '#7A9E7E',
           'sage-dark':  '#5C7F60',
           bark:         '#3B2A1F',
-          muted:        '#8C7B6E',
-          gold:         '#C9A96E',
+          muted:        '#675A4E',
+          gold:         '#A8842E',
         },
+      },
+      fontSize: {
+        xs:   ['0.8125rem', { lineHeight: '1.15rem' }], // 13px (au lieu de 12)
+        sm:   ['0.9375rem', { lineHeight: '1.45rem' }], // 15px (au lieu de 14)
+        base: ['1.0625rem', { lineHeight: '1.75rem' }], // 17px (au lieu de 16)
       },
       fontFamily: {
         serif: ['var(--font-serif)', 'Georgia', 'serif'],
