@@ -11,11 +11,11 @@ import {
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
 
-/* ─── Seuil livraison gratuite ───────────────────────────────────────────── */
+/* ─── Seuil livraison gratuite ───────────────────────────────── */
 const FREE_SHIPPING_THRESHOLD = 59;
 const SHIPPING_COST = 4.95;
 
-/* ─── Méthodes de paiement (marché belge + FR) ───────────────────────────── */
+/* ─── Méthodes de paiement (marché belge + FR) ─────────────────── */
 const PAYMENT_METHODS = [
   {
     id: 'bancontact',
@@ -72,7 +72,7 @@ const PAYMENT_METHODS = [
   },
 ];
 
-/* ─── Types ───────────────────────────────────────────────────────────────── */
+/* ─── Types ──────────────────────────────────────────── */
 interface Field {
   email: string;
   firstName: string;
@@ -95,12 +95,12 @@ const INITIAL_FORM: Field = {
   country: 'BE',
 };
 
-/* ─── Helpers ─────────────────────────────────────────────────────────────── */
+/* ─── Helpers ──────────────────────────────────────── */
 function fmt(n: number) {
   return n.toFixed(2).replace('.', ',');
 }
 
-/* ─── Composant principal ─────────────────────────────────────────────────── */
+/* ─── Composant principal ──────────────────────────────── */
 export default function CheckoutClient() {
   const locale    = useLocale();
   const items     = useCartStore(s => s.items);
@@ -374,7 +374,7 @@ export default function CheckoutClient() {
                       ) : (
                         <div className="w-full h-full bg-zen-sand/60" />
                       )}
-                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-zen-bark text-white text-[10px] font-bold flex items-center justify-center">
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-zen-bark text-white text-[12px] font-bold flex items-center justify-center">
                         {quantity}
                       </span>
                     </div>
@@ -398,7 +398,7 @@ export default function CheckoutClient() {
                   : <span className="text-zen-bark font-sans text-sm">{fmt(SHIPPING_COST)} €</span>}
               </div>
               {!shippingFree && (
-                <p className="text-[11px] font-sans text-zen-muted bg-zen-beige rounded-lg px-3 py-2">
+                <p className="text-[12px] font-sans text-zen-muted bg-zen-beige rounded-lg px-3 py-2">
                   Plus que <strong className="text-zen-terracotta">{fmt(FREE_SHIPPING_THRESHOLD - subtotal)} €</strong> pour la livraison gratuite
                 </p>
               )}
@@ -408,7 +408,7 @@ export default function CheckoutClient() {
               <span className="font-serif text-lg text-zen-bark">Total</span>
               <span className="font-serif text-2xl font-bold text-zen-bark">{fmt(total)} €</span>
             </div>
-            <p className="text-[11px] font-sans text-zen-muted text-center mt-1">TVA incluse</p>
+            <p className="text-[12px] font-sans text-zen-muted text-center mt-1">TVA incluse</p>
           </div>
 
           {/* Badges confiance */}
@@ -424,7 +424,7 @@ export default function CheckoutClient() {
             ))}
           </div>
 
-          <div className="flex items-center justify-center gap-2 text-[11px] font-sans text-zen-muted">
+          <div className="flex items-center justify-center gap-2 text-[12px] font-sans text-zen-muted">
             <Lock size={10} className="text-zen-sage" />
             Paiement sécurisé et fourni par Mollie
           </div>
@@ -434,7 +434,7 @@ export default function CheckoutClient() {
   );
 }
 
-/* ─── InputField ──────────────────────────────────────────────────────────── */
+/* ─── InputField ─────────────────────────────────────── */
 function InputField({
   label, value, onChange, placeholder = '', type = 'text',
 }: {

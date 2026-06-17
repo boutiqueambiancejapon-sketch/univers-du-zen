@@ -106,7 +106,7 @@ export default function CollectionGrid({
                 {/* ── Pill "Tout voir" au hover ── */}
                 {!isActive && (
                   <div className="absolute top-2.5 left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <span className="text-[10px] font-sans font-semibold text-white bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <span className="text-[12px] font-sans font-semibold text-white bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
                       Voir →
                     </span>
                   </div>

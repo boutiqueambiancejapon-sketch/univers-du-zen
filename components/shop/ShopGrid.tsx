@@ -45,13 +45,13 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
       return 0;
     });
 
-  /* ── Sidebar ──────────────────────────────────────────────────────── */
+  /* ── Sidebar ────────────────────────────────────── */
   const SidebarContent = (
     <div className="space-y-8">
       {/* Navigation collections via <Link> */}
       <div>
         <p className="font-sans font-semibold uppercase mb-4"
-          style={{ fontSize: 10, letterSpacing: '0.1em', color: '#C1714A' }}>
+          style={{ fontSize: 10, letterSpacing: '0.1em', color: '#C4714A' }}>
           Univers
         </p>
         <ul className="space-y-0.5">
@@ -59,8 +59,8 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
             <Link href={`/${locale}/boutique`}
               className="w-full text-left text-sm px-3 py-2.5 rounded-xl transition-all font-sans block"
               style={!activeCategory
-                ? { background: '#2C2420', color: '#F2ECE0', fontWeight: 600 }
-                : { color: '#2C2420' }}>
+                ? { background: '#3B2A1F', color: '#F2ECE0', fontWeight: 600 }
+                : { color: '#3B2A1F' }}>
               Tous les produits
             </Link>
           </li>
@@ -69,8 +69,8 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
               <Link href={`/${locale}/boutique/${c.slug}`}
                 className="w-full text-left text-sm px-3 py-2.5 rounded-xl transition-all font-sans block"
                 style={activeCategory === c.slug
-                  ? { background: '#2C2420', color: '#F2ECE0', fontWeight: 600 }
-                  : { color: '#2C2420' }}>
+                  ? { background: '#3B2A1F', color: '#F2ECE0', fontWeight: 600 }
+                  : { color: '#3B2A1F' }}>
                 {c.label}
               </Link>
             </li>
@@ -81,25 +81,25 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
       {/* Filtres auxiliaires */}
       <div>
         <p className="font-sans font-semibold uppercase mb-4"
-          style={{ fontSize: 10, letterSpacing: '0.1em', color: '#C1714A' }}>
+          style={{ fontSize: 10, letterSpacing: '0.1em', color: '#C4714A' }}>
           Filtres
         </p>
         <div className="space-y-3">
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={showInStock} onChange={e => setShowInStock(e.target.checked)}
-              className="rounded" style={{ accentColor: '#C1714A' }} />
-            <span className="text-sm font-sans" style={{ color: '#2C2420' }}>En stock uniquement</span>
+              className="rounded" style={{ accentColor: '#C4714A' }} />
+            <span className="text-sm font-sans" style={{ color: '#3B2A1F' }}>En stock uniquement</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={showEco} onChange={e => setShowEco(e.target.checked)}
-              className="rounded" style={{ accentColor: '#C1714A' }} />
-            <span className="text-sm font-sans" style={{ color: '#2C2420' }}>Sans test sur animaux</span>
+              className="rounded" style={{ accentColor: '#C4714A' }} />
+            <span className="text-sm font-sans" style={{ color: '#3B2A1F' }}>Sans test sur animaux</span>
           </label>
         </div>
       </div>
 
       {/* Encart coffret */}
-      <div className="rounded-2xl p-5" style={{ background: '#2C2420', color: '#F2ECE0' }}>
+      <div className="rounded-2xl p-5" style={{ background: '#3B2A1F', color: '#F2ECE0' }}>
         <p className="font-sans font-semibold text-xs uppercase tracking-wider mb-2"
           style={{ color: '#E8C5A0', letterSpacing: '0.08em' }}>
           Coffret sur mesure
@@ -109,14 +109,14 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
         </p>
         <Link href={`/${locale}/boutique`}
           className="block text-center text-xs font-sans font-semibold py-2.5 rounded-xl transition-colors"
-          style={{ background: '#C1714A', color: '#fff' }}>
+          style={{ background: '#C4714A', color: '#fff' }}>
           Créer mon coffret
         </Link>
       </div>
     </div>
   );
 
-  /* ── Render ───────────────────────────────────────────────────────── */
+  /* ── Render ─────────────────────────────────────── */
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
       <div className="flex gap-14">
@@ -130,20 +130,20 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
         <div className="flex-1 min-w-0">
           {/* Barre de tri */}
           <div className="flex items-center justify-between mb-8">
-            <p className="text-sm font-sans" style={{ color: '#9a8878' }}>
-              <strong style={{ color: '#2C2420' }}>{visible.length}</strong>{' '}
+            <p className="text-sm font-sans" style={{ color: '#675A4E' }}>
+              <strong style={{ color: '#3B2A1F' }}>{visible.length}</strong>{' '}
               produit{visible.length !== 1 ? 's' : ''}
             </p>
             <div className="flex items-center gap-3">
               <button
                 className="md:hidden flex items-center gap-1.5 text-sm font-sans rounded-xl px-4 py-2.5"
-                style={{ border: '1px solid rgba(44,36,32,.18)', color: '#2C2420' }}
+                style={{ border: '1px solid rgba(44,36,32,.18)', color: '#3B2A1F' }}
                 onClick={() => setMobileFiltersOpen(true)}>
                 <SlidersHorizontal size={14} /> Filtres
               </button>
               <select value={sort} onChange={e => setSort(e.target.value as SortOption)}
                 className="text-sm font-sans rounded-xl px-4 py-2.5 bg-white focus:outline-none"
-                style={{ border: '1px solid rgba(44,36,32,.18)', color: '#2C2420' }}>
+                style={{ border: '1px solid rgba(44,36,32,.18)', color: '#3B2A1F' }}>
                 {(Object.keys(SORT_LABELS) as SortOption[]).map(k => (
                   <option key={k} value={k}>{SORT_LABELS[k]}</option>
                 ))}
@@ -153,14 +153,14 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
 
           {/* Grille */}
           {visible.length === 0 ? (
-            <div className="text-center py-24" style={{ color: '#9a8878' }}>
-              <p className="font-serif text-xl mb-2" style={{ color: '#2C2420' }}>
+            <div className="text-center py-24" style={{ color: '#675A4E' }}>
+              <p className="font-serif text-xl mb-2" style={{ color: '#3B2A1F' }}>
                 Aucun produit dans cette collection
               </p>
               <p className="text-sm mb-6">Les produits arrivent bientôt — revenez nous voir !</p>
               <Link href={`/${locale}/boutique`}
                 className="inline-flex items-center gap-2 text-sm font-sans font-medium px-5 py-2.5 rounded-xl"
-                style={{ background: '#2C2420', color: '#F2ECE0' }}>
+                style={{ background: '#3B2A1F', color: '#F2ECE0' }}>
                 ← Voir toute la boutique
               </Link>
             </div>
@@ -180,9 +180,9 @@ export default function ShopGrid({ products, categories, activeCategory }: Props
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
           <div className="relative ml-auto w-72 bg-white h-full p-8 shadow-xl overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
-              <p className="font-serif text-xl" style={{ color: '#2C2420' }}>Filtres</p>
+              <p className="font-serif text-xl" style={{ color: '#3B2A1F' }}>Filtres</p>
               <button onClick={() => setMobileFiltersOpen(false)}>
-                <X size={20} style={{ color: '#2C2420' }} />
+                <X size={20} style={{ color: '#3B2A1F' }} />
               </button>
             </div>
             {SidebarContent}
