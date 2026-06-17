@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <aside className="w-56 min-h-screen bg-[#1C1917] fixed top-0 left-0 z-40 flex flex-col">
           <div className="px-5 py-6 border-b border-white/10">
             <p className="text-white font-serif text-base tracking-widest">UNIVERS DU ZEN</p>
-            <p className="text-white/40 text-[10px] font-sans mt-0.5">Administration</p>
+            <p className="text-white/40 text-[12px] font-sans mt-0.5">Administration</p>
           </div>
           <AdminNav />
         </aside>

@@ -218,19 +218,19 @@ export default function CataloguePage() {
 
                   <div className="p-2.5 flex flex-col flex-1">
                     <p className="text-[9px] text-gray-400 mb-0.5">{emoji} {p.department}</p>
-                    <p className="text-[11px] font-semibold text-gray-900 leading-snug mb-1.5 flex-1 line-clamp-2">{p.name}</p>
+                    <p className="text-[12px] font-semibold text-gray-900 leading-snug mb-1.5 flex-1 line-clamp-2">{p.name}</p>
                     <div className="flex justify-between text-[9px] text-gray-500 mb-2">
                       <span>{p.wholesale_price?.toFixed(2)}€</span>
                       <span className="text-emerald-600 font-semibold">{margin}%</span>
                       <span className="text-gray-400 truncate max-w-12">{p.sku}</span>
                     </div>
                     {isPub ? (
-                      <div className="text-center text-[10px] font-semibold py-1.5 rounded-lg bg-emerald-50 text-emerald-700">En ligne ✓</div>
+                      <div className="text-center text-[12px] font-semibold py-1.5 rounded-lg bg-emerald-50 text-emerald-700">En ligne ✓</div>
                     ) : isReq ? (
-                      <div className="text-center text-[10px] font-semibold py-1.5 rounded-lg bg-amber-50 text-amber-600">Demandé ✓</div>
+                      <div className="text-center text-[12px] font-semibold py-1.5 rounded-lg bg-amber-50 text-amber-600">Demandé ✓</div>
                     ) : (
                       <button onClick={() => requestPublication(p)} disabled={isReqg || !p.in_stock}
-                        className="text-[10px] font-semibold py-1.5 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition-colors disabled:opacity-40">
+                        className="text-[12px] font-semibold py-1.5 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition-colors disabled:opacity-40">
                         {isReqg ? '…' : !p.in_stock ? 'Rupture' : '+ Publier'}
                       </button>
                     )}
