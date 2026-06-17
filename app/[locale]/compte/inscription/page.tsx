@@ -49,7 +49,7 @@ export default function InscriptionPage() {
   }
 
   const inputCls = 'w-full rounded-xl px-4 py-3.5 text-sm font-sans focus:outline-none transition-colors';
-  const inputSty = { background: '#FCFAF4', border: '1px solid rgba(44,36,32,.14)', color: '#2C2420' };
+  const inputSty = { background: '#FCFAF4', border: '1px solid rgba(44,36,32,.14)', color: '#3B2A1F' };
 
   return (
     <div className="min-h-screen flex" style={{ background: '#F5F3EF' }}>
@@ -59,14 +59,14 @@ export default function InscriptionPage() {
         <div className="w-full max-w-md">
 
           <div className="flex items-center gap-2 mb-10">
-            <Leaf size={18} style={{ color: '#C1714A' }} />
-            <span className="font-serif tracking-widest text-sm" style={{ color: '#2C2420' }}>UNIVERS DU ZEN</span>
+            <Leaf size={18} style={{ color: '#C4714A' }} />
+            <span className="font-serif tracking-widest text-sm" style={{ color: '#3B2A1F' }}>UNIVERS DU ZEN</span>
           </div>
 
-          <h1 className="font-serif mb-2" style={{ fontSize: 'clamp(28px,3vw,38px)', color: '#2C2420' }}>
+          <h1 className="font-serif mb-2" style={{ fontSize: 'clamp(28px,3vw,38px)', color: '#3B2A1F' }}>
             Creer un compte
           </h1>
-          <p className="text-sm font-sans mb-8" style={{ color: '#9a8878' }}>
+          <p className="text-sm font-sans mb-8" style={{ color: '#675A4E' }}>
             Rejoignez la communaute Univers du Zen
           </p>
 
@@ -74,7 +74,7 @@ export default function InscriptionPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#9a8878' }}>
+                <label className="block text-[12px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#675A4E' }}>
                   Prenom *
                 </label>
                 <div className="relative">
@@ -89,7 +89,7 @@ export default function InscriptionPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#9a8878' }}>
+                <label className="block text-[12px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#675A4E' }}>
                   Nom *
                 </label>
                 <input
@@ -103,7 +103,7 @@ export default function InscriptionPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#9a8878' }}>
+              <label className="block text-[12px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#675A4E' }}>
                 Adresse e-mail *
               </label>
               <div className="relative">
@@ -121,7 +121,7 @@ export default function InscriptionPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#9a8878' }}>
+              <label className="block text-[12px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#675A4E' }}>
                 Mot de passe *
               </label>
               <div className="relative">
@@ -139,7 +139,7 @@ export default function InscriptionPage() {
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
                   className="absolute right-4 top-1/2 -translate-y-1/2"
-                  style={{ color: '#9a8878' }}
+                  style={{ color: '#675A4E' }}
                 >
                   {showPwd ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
@@ -147,7 +147,7 @@ export default function InscriptionPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#9a8878' }}>
+              <label className="block text-[12px] font-sans font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#675A4E' }}>
                 Confirmer *
               </label>
               <input
@@ -168,13 +168,13 @@ export default function InscriptionPage() {
                 onChange={e => setCgv(e.target.checked)}
                 className="mt-0.5 flex-shrink-0"
               />
-              <span className="text-xs font-sans leading-relaxed" style={{ color: '#9a8878' }}>
+              <span className="text-xs font-sans leading-relaxed" style={{ color: '#675A4E' }}>
                 {'J\'accepte les '}
-                <Link href={'/' + locale + '/cgv'} style={{ color: '#2C2420' }} className="underline underline-offset-2">
+                <Link href={'/' + locale + '/cgv'} style={{ color: '#3B2A1F' }} className="underline underline-offset-2">
                   conditions generales
                 </Link>
                 {' et la '}
-                <Link href={'/' + locale + '/confidentialite'} style={{ color: '#2C2420' }} className="underline underline-offset-2">
+                <Link href={'/' + locale + '/confidentialite'} style={{ color: '#3B2A1F' }} className="underline underline-offset-2">
                   politique de confidentialite
                 </Link>.
               </span>
@@ -190,15 +190,15 @@ export default function InscriptionPage() {
               type="submit"
               disabled={loading}
               className="w-full py-4 rounded-xl text-sm font-sans font-semibold text-white transition-all mt-2"
-              style={{ background: '#C1714A', boxShadow: '0 10px 24px rgba(193,113,74,.25)', opacity: loading ? 0.7 : 1 }}
+              style={{ background: '#C4714A', boxShadow: '0 10px 24px rgba(193,113,74,.25)', opacity: loading ? 0.7 : 1 }}
             >
               {loading ? 'Creation...' : 'Creer mon compte'}
             </button>
           </form>
 
-          <p className="text-center text-sm font-sans mt-6" style={{ color: '#9a8878' }}>
+          <p className="text-center text-sm font-sans mt-6" style={{ color: '#675A4E' }}>
             {'Deja un compte ? '}
-            <Link href={'/' + locale + '/compte/connexion'} className="font-medium" style={{ color: '#2C2420' }}>
+            <Link href={'/' + locale + '/compte/connexion'} className="font-medium" style={{ color: '#3B2A1F' }}>
               Se connecter
             </Link>
           </p>
@@ -226,7 +226,7 @@ export default function InscriptionPage() {
             { icon: '◈', title: 'Offres membres', desc: 'Acces prioritaire aux nouvelles collections et promotions exclusives.' },
           ].map(({ icon, title, desc }) => (
             <div key={title} className="flex gap-4 mb-7">
-              <span className="text-lg mt-0.5 flex-shrink-0" style={{ color: '#C1714A' }}>{icon}</span>
+              <span className="text-lg mt-0.5 flex-shrink-0" style={{ color: '#C4714A' }}>{icon}</span>
               <div>
                 <p className="font-serif text-base mb-1" style={{ color: '#F2ECE0' }}>{title}</p>
                 <p className="text-xs font-sans leading-relaxed" style={{ color: 'rgba(242,236,224,.45)' }}>{desc}</p>
@@ -241,7 +241,7 @@ export default function InscriptionPage() {
         >
           <div className="flex gap-1 mb-2">
             {[0,1,2,3,4].map(i => (
-              <svg key={i} width="12" height="12" viewBox="0 0 12 12" fill="#C1714A">
+              <svg key={i} width="12" height="12" viewBox="0 0 12 12" fill="#C4714A">
                 <path d="M6 1l1.4 2.8 3.1.45-2.25 2.19.53 3.1L6 8.1 3.22 9.54l.53-3.1L1.5 4.25l3.1-.45z"/>
               </svg>
             ))}
