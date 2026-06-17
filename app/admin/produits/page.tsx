@@ -93,7 +93,7 @@ export default async function ProduitsPage() {
                   <td className="px-5 py-4 hidden lg:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {(p.tags ?? '').split(',').slice(0, 3).map(t => (
-                        <span key={t} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{t.trim()}</span>
+                        <span key={t} className="text-[12px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{t.trim()}</span>
                       ))}
                     </div>
                   </td>
