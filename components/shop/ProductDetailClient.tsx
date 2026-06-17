@@ -487,7 +487,13 @@ export default function ProductDetailClient({ product, related, allProducts = []
           {activeTab === 'description' && (
             <div className="space-y-4 text-zen-muted leading-relaxed text-sm">
               {descText ? (
-                descText.split('\n\n').map((p: string, i: number) => <p key={i}>{p}</p>)
+                descText.split('\n\n').map((block: string, i: number) =>
+                  block.startsWith('## ') ? (
+                    <h2 key={i} className="font-serif text-lg text-zen-bark mt-2">{block.slice(3)}</h2>
+                  ) : (
+                    <p key={i}>{block}</p>
+                  )
+                )
               ) : (
                 <p className="italic text-zen-muted/60">Description détaillée disponible prochainement.</p>
               )}
