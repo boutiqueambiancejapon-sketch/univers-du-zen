@@ -108,7 +108,7 @@ export default async function AdminPage() {
             className="flex items-center gap-2 text-sm font-medium text-white bg-gray-900 rounded-lg px-4 py-2 hover:bg-gray-800 transition-colors">
             <Package size={14} /> Pipeline fournisseur
             {pendingPush > 0 && (
-              <span className="ml-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+              <span className="ml-1 bg-red-500 text-white text-[12px] font-bold px-1.5 py-0.5 rounded-full">
                 {pendingPush}
               </span>
             )}
@@ -190,9 +190,9 @@ export default async function AdminPage() {
                   <div key={o.id} className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-gray-700 truncate">{o.email}</p>
-                      <p className="text-[10px] text-gray-400">{date} · #{o.id.slice(0, 6).toUpperCase()}</p>
+                      <p className="text-[12px] text-gray-400">{date} · #{o.id.slice(0, 6).toUpperCase()}</p>
                     </div>
-                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${cfg.color}`}>
+                    <span className={`text-[12px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${cfg.color}`}>
                       {cfg.label}
                     </span>
                     <span className="text-xs font-semibold text-gray-700 flex-shrink-0">

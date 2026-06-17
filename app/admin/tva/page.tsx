@@ -109,7 +109,7 @@ export default async function TvaPage({
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
               {['Pays', 'Taux TVA', 'Nb commandes', 'CA HT', 'TVA collectée', '% du total'].map(h => (
-                <th key={h} className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-400">{h}</th>
+                <th key={h} className="text-left px-5 py-3 text-[12px] font-semibold uppercase tracking-wider text-gray-400">{h}</th>
               ))}
             </tr>
           </thead>
@@ -152,7 +152,7 @@ export default async function TvaPage({
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
                 {['Trimestre', 'CA TTC', 'TVA à déclarer'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-400">{h}</th>
+                  <th key={h} className="text-left px-5 py-3 text-[12px] font-semibold uppercase tracking-wider text-gray-400">{h}</th>
                 ))}
               </tr>
             </thead>
