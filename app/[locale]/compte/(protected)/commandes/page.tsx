@@ -37,10 +37,10 @@ export default async function CommandesPage({ params }: { params: { locale: stri
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 3vw, 34px)', color: '#2C2420' }}>
+        <h1 className="font-serif" style={{ fontSize: 'clamp(24px, 3vw, 34px)', color: '#3B2A1F' }}>
           Mes commandes
         </h1>
-        <p className="text-sm font-sans mt-1" style={{ color: '#9a8878' }}>
+        <p className="text-sm font-sans mt-1" style={{ color: '#675A4E' }}>
           {orders?.length
             ? `${orders.length} commande${orders.length > 1 ? 's' : ''} au total`
             : 'Votre historique apparaîtra ici'}
@@ -50,13 +50,13 @@ export default async function CommandesPage({ params }: { params: { locale: stri
       {!orders?.length ? (
         <div className="rounded-2xl p-12 text-center" style={{ background: '#fff', border: '1px solid rgba(44,36,32,.07)' }}>
           <div className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center" style={{ background: '#F5F3EF' }}>
-            <ShoppingBag size={28} style={{ color: '#9a8878' }} />
+            <ShoppingBag size={28} style={{ color: '#675A4E' }} />
           </div>
-          <p className="font-serif text-xl mb-2" style={{ color: '#2C2420' }}>Aucune commande</p>
-          <p className="text-sm font-sans mb-6" style={{ color: '#9a8878' }}>Votre historique de commandes apparaîtra ici.</p>
+          <p className="font-serif text-xl mb-2" style={{ color: '#3B2A1F' }}>Aucune commande</p>
+          <p className="text-sm font-sans mb-6" style={{ color: '#675A4E' }}>Votre historique de commandes apparaîtra ici.</p>
           <Link href={`/${params.locale}/boutique`}
             className="inline-flex items-center gap-2 text-sm font-sans font-semibold px-6 py-3 rounded-xl text-white transition-colors"
-            style={{ background: '#C1714A' }}>
+            style={{ background: '#C4714A' }}>
             Aller à la boutique
           </Link>
         </div>
@@ -67,9 +67,9 @@ export default async function CommandesPage({ params }: { params: { locale: stri
             style={{ borderBottom: '1px solid rgba(44,36,32,.06)', background: '#F9F8F6' }}>
             {['Référence', 'Date', 'Statut', 'Total', 'Actions'].map((h, i) => (
               <p key={h}
-                className="font-sans font-semibold uppercase text-[10px]"
+                className="font-sans font-semibold uppercase text-[12px]"
                 style={{
-                  color: '#9a8878',
+                  color: '#675A4E',
                   letterSpacing: '0.08em',
                   gridColumn: i === 0 ? 'span 3' : i === 1 ? 'span 2' : i === 2 ? 'span 3' : i === 3 ? 'span 2' : 'span 2',
                   textAlign: i >= 3 ? 'right' : 'left',
@@ -92,14 +92,14 @@ export default async function CommandesPage({ params }: { params: { locale: stri
 
                   {/* Ref */}
                   <div className="md:col-span-3">
-                    <p className="text-sm font-sans font-semibold" style={{ color: '#2C2420' }}>{ref}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#9a8878' }}>
+                    <p className="text-sm font-sans font-semibold" style={{ color: '#3B2A1F' }}>{ref}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#675A4E' }}>
                       {items.length} article{items.length > 1 ? 's' : ''}
                     </p>
                   </div>
 
                   {/* Date */}
-                  <p className="md:col-span-2 text-sm font-sans" style={{ color: '#9a8878' }}>{date}</p>
+                  <p className="md:col-span-2 text-sm font-sans" style={{ color: '#675A4E' }}>{date}</p>
 
                   {/* Status */}
                   <div className="md:col-span-3">
@@ -107,7 +107,7 @@ export default async function CommandesPage({ params }: { params: { locale: stri
                   </div>
 
                   {/* Total */}
-                  <p className="md:col-span-2 font-serif font-bold md:text-right" style={{ color: '#2C2420', fontSize: 15 }}>
+                  <p className="md:col-span-2 font-serif font-bold md:text-right" style={{ color: '#3B2A1F', fontSize: 15 }}>
                     {Number(o.total_eur).toFixed(2).replace('.', ',')} €
                   </p>
 
@@ -115,12 +115,12 @@ export default async function CommandesPage({ params }: { params: { locale: stri
                   <div className="md:col-span-2 flex items-center md:justify-end gap-2">
                     <Link href={`/${params.locale}/compte/commandes/${o.id}`}
                       className="flex items-center gap-1.5 text-xs font-sans font-medium px-3 py-2 rounded-xl transition-all"
-                      style={{ border: '1px solid rgba(44,36,32,.15)', color: '#2C2420' }}>
+                      style={{ border: '1px solid rgba(44,36,32,.15)', color: '#3B2A1F' }}>
                       <ChevronRight size={12} /> Détail
                     </Link>
                     <a href={`/api/invoice/${o.id}`} target="_blank"
                       className="flex items-center gap-1.5 text-xs font-sans px-3 py-2 rounded-xl transition-all"
-                      style={{ border: '1px solid rgba(44,36,32,.1)', color: '#9a8878' }}>
+                      style={{ border: '1px solid rgba(44,36,32,.1)', color: '#675A4E' }}>
                       <FileText size={12} /> PDF
                     </a>
                   </div>

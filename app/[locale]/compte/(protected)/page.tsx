@@ -46,10 +46,10 @@ export default async function ComptePage({ params }: { params: { locale: string 
     <div className="space-y-6">
       {/* Greeting */}
       <div>
-        <h1 className="font-serif" style={{ fontSize: 'clamp(26px, 3vw, 36px)', color: '#2C2420', lineHeight: 1.1 }}>
+        <h1 className="font-serif" style={{ fontSize: 'clamp(26px, 3vw, 36px)', color: '#3B2A1F', lineHeight: 1.1 }}>
           Bonjour, {firstName}
         </h1>
-        <p className="font-sans text-sm mt-1" style={{ color: '#9a8878' }}>Bienvenue dans votre espace personnel.</p>
+        <p className="font-sans text-sm mt-1" style={{ color: '#675A4E' }}>Bienvenue dans votre espace personnel.</p>
       </div>
 
       {/* Stats */}
@@ -64,15 +64,15 @@ export default async function ComptePage({ params }: { params: { locale: string 
               <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: i === 2 ? 'rgba(232,197,160,.15)' : '#F5F3EF' }}>
                 {i === 2
-                  ? <span style={{ fontSize: 14, color: '#C1714A' }}>✦</span>
-                  : Icon && <Icon size={16} style={{ color: '#2C2420' }} />
+                  ? <span style={{ fontSize: 14, color: '#C4714A' }}>✦</span>
+                  : Icon && <Icon size={16} style={{ color: '#3B2A1F' }} />
                 }
               </div>
-              <p className="font-sans font-semibold uppercase text-[10px]" style={{ color: '#9a8878', letterSpacing: '0.08em' }}>
+              <p className="font-sans font-semibold uppercase text-[12px]" style={{ color: '#675A4E', letterSpacing: '0.08em' }}>
                 {label}
               </p>
             </div>
-            <p className="font-serif font-bold" style={{ fontSize: 28, color: '#2C2420' }}>
+            <p className="font-serif font-bold" style={{ fontSize: 28, color: '#3B2A1F' }}>
               {value}{suffix}
             </p>
           </div>
@@ -81,7 +81,7 @@ export default async function ComptePage({ params }: { params: { locale: string 
 
       {/* Loyalty card — dark */}
       <div className="rounded-2xl p-6 overflow-hidden relative" style={{
-        background: 'linear-gradient(155deg, #3A332B 0%, #2C2420 100%)',
+        background: 'linear-gradient(155deg, #3A332B 0%, #3B2A1F 100%)',
         color: '#F2ECE0',
       }}>
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none"
@@ -90,7 +90,7 @@ export default async function ComptePage({ params }: { params: { locale: string 
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-5">
             <div>
-              <p className="font-sans font-semibold uppercase text-[10px] mb-1.5" style={{ color: 'rgba(232,197,160,.7)', letterSpacing: '0.1em' }}>
+              <p className="font-sans font-semibold uppercase text-[12px] mb-1.5" style={{ color: 'rgba(232,197,160,.7)', letterSpacing: '0.1em' }}>
                 Programme fidélité
               </p>
               <p className="font-serif font-bold" style={{ fontSize: 36, color: '#F2ECE0', lineHeight: 1 }}>
@@ -105,7 +105,7 @@ export default async function ComptePage({ params }: { params: { locale: string 
 
           <div className="relative h-2 rounded-full mb-2 overflow-hidden" style={{ background: 'rgba(242,236,224,.12)' }}>
             <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-              style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #C1714A, #E8C5A0)' }} />
+              style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #C4714A, #E8C5A0)' }} />
           </div>
           <p className="font-sans text-xs" style={{ color: 'rgba(242,236,224,.5)' }}>
             {ptsInCycle < nextReward
@@ -123,10 +123,10 @@ export default async function ComptePage({ params }: { params: { locale: string 
       {(orders ?? []).length > 0 ? (
         <div className="rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid rgba(44,36,32,.07)' }}>
           <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(44,36,32,.06)' }}>
-            <h2 className="font-serif text-lg" style={{ color: '#2C2420' }}>Dernières commandes</h2>
+            <h2 className="font-serif text-lg" style={{ color: '#3B2A1F' }}>Dernières commandes</h2>
             <Link href={`/${params.locale}/compte/commandes`}
               className="flex items-center gap-1 text-xs font-sans font-medium transition-colors"
-              style={{ color: '#C1714A' }}>
+              style={{ color: '#C4714A' }}>
               Tout voir <ChevronRight size={13} />
             </Link>
           </div>
@@ -142,14 +142,14 @@ export default async function ComptePage({ params }: { params: { locale: string 
                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#FCFAF4'}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-sans font-semibold" style={{ color: '#2C2420' }}>{ref}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#9a8878' }}>{date} · {items.length} article{items.length > 1 ? 's' : ''}</p>
+                    <p className="text-sm font-sans font-semibold" style={{ color: '#3B2A1F' }}>{ref}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#675A4E' }}>{date} · {items.length} article{items.length > 1 ? 's' : ''}</p>
                   </div>
                   <StatusBadge status={o.status} />
-                  <p className="font-serif font-bold flex-shrink-0" style={{ color: '#2C2420' }}>
+                  <p className="font-serif font-bold flex-shrink-0" style={{ color: '#3B2A1F' }}>
                     {Number(o.total_eur).toFixed(2).replace('.', ',')} €
                   </p>
-                  <ChevronRight size={15} style={{ color: '#9a8878', flexShrink: 0 }} />
+                  <ChevronRight size={15} style={{ color: '#675A4E', flexShrink: 0 }} />
                 </Link>
               );
             })}
@@ -158,15 +158,15 @@ export default async function ComptePage({ params }: { params: { locale: string 
       ) : (
         <div className="rounded-2xl p-12 text-center" style={{ background: '#fff', border: '1px solid rgba(44,36,32,.07)' }}>
           <div className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center" style={{ background: '#F5F3EF' }}>
-            <ShoppingBag size={28} style={{ color: '#9a8878' }} />
+            <ShoppingBag size={28} style={{ color: '#675A4E' }} />
           </div>
-          <p className="font-serif text-xl mb-2" style={{ color: '#2C2420' }}>Aucune commande pour l&apos;instant</p>
-          <p className="text-sm font-sans mb-6" style={{ color: '#9a8878' }}>
+          <p className="font-serif text-xl mb-2" style={{ color: '#3B2A1F' }}>Aucune commande pour l&apos;instant</p>
+          <p className="text-sm font-sans mb-6" style={{ color: '#675A4E' }}>
             Découvrez notre sélection et commencez votre rituel bien-être.
           </p>
           <Link href={`/${params.locale}/boutique`}
             className="inline-flex items-center gap-2 text-sm font-sans font-semibold px-6 py-3 rounded-xl transition-colors text-white"
-            style={{ background: '#C1714A' }}>
+            style={{ background: '#C4714A' }}>
             Découvrir la boutique
           </Link>
         </div>
