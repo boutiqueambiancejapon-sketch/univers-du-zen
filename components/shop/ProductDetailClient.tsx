@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import {
-  ShoppingBag, Heart, Star, Leaf, Shield, Truck,
+  ShoppingBag, Leaf, Shield, Truck,
   RotateCcw, Check, ChevronDown, ChevronUp,
   Plus, Minus, ChevronRight, Package,
 } from 'lucide-react';
@@ -33,11 +33,6 @@ const VOLUME_TIERS = [
   { qty: 2, discount: 0.10, label: '2 exemplaires', badge: '-10%', color: 'bg-zen-terracotta/10 text-zen-terracotta' },
   { qty: 3, discount: 0.15, label: '3 exemplaires', badge: '-15%', color: 'bg-zen-terracotta/20 text-zen-terracotta' },
   { qty: 5, discount: 0.20, label: '5 exemplaires', badge: '-20%', color: 'bg-zen-terracotta text-white' },
-];
-
-const DEMO_REVIEWS = [
-  { initials: 'SL', name: 'Sophie L.', rating: 5, date: 'mai 2026', text: "Qualité exceptionnelle, le parfum est exactement comme décrit. Livraison rapide et emballage soigné. Je recommande les yeux fermés !" },
-  { initials: 'MA', name: 'Marc A.',   rating: 4, date: 'avril 2026', text: "Très bon produit, correspond à la description. Petit moins : la notice est uniquement en anglais. Mais la qualité est au rendez-vous." },
 ];
 
 function getDeliveryDate(): string {
@@ -179,7 +174,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [deliveryDate, setDeliveryDate] = useState('');
-  const [viewers, setViewers] = useState(0);
   const ctaRef = useRef<HTMLButtonElement>(null);
 
   const images = product.images?.length ? product.images : ['/images/udz-hero-homepage.jpeg'];
@@ -212,7 +206,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
 
   useEffect(() => {
     setDeliveryDate(getDeliveryDate());
-    setViewers(8 + Math.floor(Math.random() * 39));
   }, []);
 
   useEffect(() => {
@@ -260,10 +253,10 @@ export default function ProductDetailClient({ product, related, allProducts = []
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-zen-sand">
             <Image src={images[activeImg]} alt={product.nameFr ?? ''} fill className="object-cover" priority />
             <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-              {product.isBestSeller && <span className="badge-bestseller text-[11px]">Best-seller</span>}
-              {discount && <span className="badge-discount text-[11px]">-{discount}%</span>}
+              {product.isBestSeller && <span className="badge-bestseller text-[12px]">Best-seller</span>}
+              {discount && <span className="badge-discount text-[12px]">-{discount}%</span>}
             </div>
-            <span className="absolute bottom-3 right-3 bg-black/40 text-white text-[10px] font-sans px-2 py-1 rounded-full">
+            <span className="absolute bottom-3 right-3 bg-black/40 text-white text-[12px] font-sans px-2 py-1 rounded-full">
               {activeImg + 1}/{images.length}
             </span>
           </div>
@@ -288,14 +281,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
           )}
 
           <h1 className="font-serif text-3xl md:text-4xl text-zen-bark leading-tight mb-3">{product.nameFr}</h1>
-
-          <button className="flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity"
-            onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}>
-            <div className="flex">
-              {[1,2,3,4,5].map(i => <Star key={i} size={14} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}
-            </div>
-            <span className="text-sm text-zen-muted underline underline-offset-2">4,8 sur 5 (124 avis)</span>
-          </button>
 
           <div className="flex items-baseline gap-3 mb-4">
             <span className="font-serif text-4xl text-zen-bark">{basePrice > 0 ? `${basePrice.toFixed(2).replace('.', ',')} €` : '—'}</span>
@@ -341,21 +326,9 @@ export default function ProductDetailClient({ product, related, allProducts = []
             )}
           </div>
 
-          {viewers > 0 && !isOutOfStock && (
-            <div className="flex items-center gap-2 mb-4">
-              <span className="relative flex h-2 w-2 flex-shrink-0">
-                <span className="pulse-dot absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#C1714A' }} />
-                <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: '#C1714A' }} />
-              </span>
-              <p className="text-xs font-sans" style={{ color: '#9a8878' }}>
-                <strong className="text-zen-bark">{viewers} personnes</strong> regardent ce produit en ce moment
-              </p>
-            </div>
-          )}
-
           {isVeryLow && (
             <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg" style={{ background: '#FEF3F0', border: '1px solid #FECDB9' }}>
-              <span className="w-2 h-2 rounded-full flex-shrink-0 pulse-dot" style={{ background: '#C1714A' }} />
+              <span className="w-2 h-2 rounded-full flex-shrink-0 pulse-dot" style={{ background: '#C4714A' }} />
               <p className="text-xs font-sans font-semibold" style={{ color: '#9B3D1A' }}>
                 Presque épuisé — plus que {product.stockQty ?? 'quelques'} en stock
               </p>
@@ -389,13 +362,13 @@ export default function ProductDetailClient({ product, related, allProducts = []
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <span className="text-sm font-sans font-semibold text-zen-bark">{tier.label}</span>
-                          <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${tier.color}`}>{tier.badge}</span>
+                          <span className={`text-[12px] font-bold px-2 py-0.5 rounded-full ${tier.color}`}>{tier.badge}</span>
                         </div>
                         <p className="text-xs text-zen-muted font-sans">{unitPrice.toFixed(2).replace('.', ',')} € / unité</p>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="font-serif font-bold text-zen-bark text-base">{totalPrice.toFixed(2).replace('.', ',')} €</p>
-                        <p className="text-[10px] text-zen-muted font-sans">économie {(basePrice * tier.discount * tier.qty).toFixed(2).replace('.', ',')} €</p>
+                        <p className="text-[12px] text-zen-muted font-sans">économie {(basePrice * tier.discount * tier.qty).toFixed(2).replace('.', ',')} €</p>
                       </div>
                     </button>
                   );
@@ -447,9 +420,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-sans font-semibold text-sm transition-all ${added ? 'bg-green-600 text-white' : isOutOfStock ? 'bg-zen-sand text-zen-muted cursor-not-allowed' : 'bg-zen-bark text-white hover:bg-zen-terracotta active:scale-[0.98]'}`}>
               {added ? (<><Check size={16} /> Ajouté au panier ! 🎉</>) : isOutOfStock ? 'Rupture de stock' : (<><ShoppingBag size={16} /> Ajouter au panier</>)}
             </button>
-            <button className="w-12 h-12 flex items-center justify-center border border-zen-sand rounded-xl hover:border-zen-terracotta hover:text-zen-terracotta transition-colors flex-shrink-0" aria-label="Favoris">
-              <Heart size={18} className="text-zen-bark" />
-            </button>
           </div>
 
           <p className="text-xs text-zen-muted text-center mb-6">
@@ -466,7 +436,7 @@ export default function ProductDetailClient({ product, related, allProducts = []
               <div key={label} className="flex flex-col items-center text-center gap-1">
                 <Icon size={18} className="text-zen-sage" />
                 <p className="text-xs font-sans font-semibold text-zen-bark leading-tight">{label}</p>
-                <p className="text-[10px] text-zen-muted leading-tight">{sub}</p>
+                <p className="text-[12px] text-zen-muted leading-tight">{sub}</p>
               </div>
             ))}
           </div>
@@ -536,33 +506,6 @@ export default function ProductDetailClient({ product, related, allProducts = []
         </div>
       </div>
 
-      {/* ===== REVIEWS ===== */}
-      <section id="reviews" className="mt-12 pt-8 border-t border-zen-sand">
-        <div className="mb-8">
-          <h2 className="font-serif text-2xl text-zen-bark mb-1">Avis clients</h2>
-          <div className="flex items-center gap-2">
-            <div className="flex">{[1,2,3,4,5].map(i => <Star key={i} size={16} className={i <= 4 ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}</div>
-            <span className="font-serif text-2xl text-zen-bark">4,8</span>
-            <span className="text-sm text-zen-muted">124 avis vérifiés</span>
-          </div>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4 mb-6">
-          {DEMO_REVIEWS.map((r, i) => (
-            <div key={i} className="bg-zen-beige rounded-xl p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-full bg-zen-bark text-white flex items-center justify-center text-xs font-sans font-semibold">{r.initials}</div>
-                <div>
-                  <p className="text-sm font-sans font-semibold text-zen-bark">{r.name}</p>
-                  <p className="text-[11px] text-zen-muted">{r.date}</p>
-                </div>
-                <div className="ml-auto flex">{[1,2,3,4,5].map(s => <Star key={s} size={11} className={s <= r.rating ? 'fill-zen-gold text-zen-gold' : 'fill-zen-sand text-zen-sand'} />)}</div>
-              </div>
-              <p className="text-sm text-zen-muted leading-relaxed">{r.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ===== BUNDLE BUILDER ===== */}
       {allProducts.length >= BUNDLE_MIN_POOL && (
         <section className="mt-16 pt-12 border-t border-zen-sand">
@@ -607,7 +550,7 @@ export default function ProductDetailClient({ product, related, allProducts = []
           )}
           <button onClick={handleAddToCart} disabled={isOutOfStock}
             className="flex items-center gap-2 text-white text-sm font-sans font-semibold px-6 py-3 rounded-xl transition-colors disabled:opacity-50 flex-shrink-0"
-            style={{ background: added ? '#16A34A' : '#C1714A' }}>
+            style={{ background: added ? '#16A34A' : '#C4714A' }}>
             {added ? <Check size={15} /> : <ShoppingBag size={15} />}
             {added ? 'Ajouté !' : 'Ajouter au panier'}
           </button>
