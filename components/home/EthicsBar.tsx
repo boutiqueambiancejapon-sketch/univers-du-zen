@@ -13,7 +13,7 @@ export default function EthicsBar() {
   const text = ITEMS.join('  ');
 
   return (
-    <div className="overflow-hidden" style={{ background: '#2C2420', color: '#F2ECE0' }}>
+    <div className="overflow-hidden" style={{ background: '#3B2A1F', color: '#F2ECE0' }}>
       <div className="flex py-3" style={{ animation: 'marquee 28s linear infinite' }}>
         {/* Double pour boucle seamless */}
         {[0, 1].map(k => (

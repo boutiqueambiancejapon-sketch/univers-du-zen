@@ -7,7 +7,7 @@ export default function StatsBar() {
   ];
 
   return (
-    <section className="sr" style={{ background: '#2C2420' }}>
+    <section className="sr" style={{ background: '#3B2A1F' }}>
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
         {stats.map(({ value, suffix, label }) => (
           <div key={label} className="text-center">
@@ -15,7 +15,7 @@ export default function StatsBar() {
               className="font-serif font-bold leading-none mb-2"
               style={{ fontSize: 'clamp(36px, 4.5vw, 56px)', color: '#F2ECE0', letterSpacing: '-0.01em' }}
             >
-              {value}<span style={{ color: '#C1714A', fontSize: '0.7em' }}>{suffix}</span>
+              {value}<span style={{ color: '#C4714A', fontSize: '0.7em' }}>{suffix}</span>
             </p>
             <p
               className="uppercase tracking-widest"

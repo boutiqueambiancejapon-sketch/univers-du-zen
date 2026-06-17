@@ -38,7 +38,7 @@ export default function EnrichButton({ slug, alreadyEnriched }: Props) {
 
   if (state === 'done') {
     return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-violet-50 text-violet-700 px-2.5 py-1 rounded-full whitespace-nowrap">
+      <span className="inline-flex items-center gap-1 text-[12px] font-semibold bg-violet-50 text-violet-700 px-2.5 py-1 rounded-full whitespace-nowrap">
         <CheckCircle2 size={10} /> Enrichi
       </span>
     );
@@ -49,7 +49,7 @@ export default function EnrichButton({ slug, alreadyEnriched }: Props) {
       <button
         onClick={enrich}
         title={errorMsg}
-        className="inline-flex items-center gap-1 text-[10px] font-semibold bg-red-50 text-red-600 px-2.5 py-1 rounded-full hover:bg-red-100 transition-colors whitespace-nowrap"
+        className="inline-flex items-center gap-1 text-[12px] font-semibold bg-red-50 text-red-600 px-2.5 py-1 rounded-full hover:bg-red-100 transition-colors whitespace-nowrap"
       >
         <AlertCircle size={10} /> Réessayer
       </button>
@@ -58,7 +58,7 @@ export default function EnrichButton({ slug, alreadyEnriched }: Props) {
 
   if (state === 'loading') {
     return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-400 px-2.5 py-1 whitespace-nowrap">
+      <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-gray-400 px-2.5 py-1 whitespace-nowrap">
         <Loader2 size={10} className="animate-spin" /> Enrichissement…
       </span>
     );
@@ -67,7 +67,7 @@ export default function EnrichButton({ slug, alreadyEnriched }: Props) {
   return (
     <button
       onClick={enrich}
-      className="inline-flex items-center gap-1 text-[10px] font-semibold bg-violet-600 text-white px-2.5 py-1 rounded-full hover:bg-violet-700 transition-colors whitespace-nowrap"
+      className="inline-flex items-center gap-1 text-[12px] font-semibold bg-violet-600 text-white px-2.5 py-1 rounded-full hover:bg-violet-700 transition-colors whitespace-nowrap"
     >
       <Sparkles size={10} /> Enrichir
     </button>
