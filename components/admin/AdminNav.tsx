@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Receipt, BookOpen, ShoppingBag, Upload, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, Receipt, BookOpen, ShoppingBag, Upload, Star, LogOut } from 'lucide-react';
 
 const LINKS = [
   { href: '/admin',           label: 'Vue d\'ensemble', icon: LayoutDashboard, exact: true },
   { href: '/admin/catalogue', label: 'Catalogue',       icon: BookOpen,        exact: false },
   { href: '/admin/produits',  label: 'Produits',        icon: ShoppingBag,     exact: false },
   { href: '/admin/commandes', label: 'Commandes',       icon: Package,         exact: false },
+  { href: '/admin/avis',      label: 'Avis',            icon: Star,            exact: false },
   { href: '/admin/tva',       label: 'TVA OSS',         icon: Receipt,         exact: false },
   { href: '/admin/import',    label: 'Import CSV',      icon: Upload,          exact: false },
 ];
