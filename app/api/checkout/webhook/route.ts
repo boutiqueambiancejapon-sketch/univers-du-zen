@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mollie } from '@/lib/mollie';
 import { createAdminClient } from '@/lib/supabase/server';
 import { placeOrder } from '@/lib/retina';
+import { sendOrderConfirmationEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,6 +38,17 @@ export async function POST(req: NextRequest) {
         .select('*')
         .eq('id', orderId)
         .single();
+
+      // Email de confirmation au client (une seule fois)
+      if (order && !order.confirmation_email_sent_at) {
+        const sent = await sendOrderConfirmationEmail(order);
+        if (sent) {
+          await supabase
+            .from('orders')
+            .update({ confirmation_email_sent_at: new Date().toISOString() })
+            .eq('id', orderId);
+        }
+      }
 
       const fulfillmentEnabled = process.env.RETINA_FULFILLMENT_ENABLED === 'true';
 
