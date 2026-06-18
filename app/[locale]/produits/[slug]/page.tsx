@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import ProductDetailClient from '@/components/shop/ProductDetailClient';
 import { getPublishedProducts, getProductBySlug } from '@/lib/get-products';
+import { getApprovedReviews } from '@/lib/reviews';
 
 export async function generateMetadata({
   params,
@@ -51,6 +52,8 @@ export default async function ProductPage({
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
+  const { reviews, summary } = await getApprovedReviews(params.slug);
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -68,6 +71,26 @@ export default async function ProductPage({
           : 'https://schema.org/InStock',
       seller: { '@type': 'Organization', name: 'Univers du Zen' },
     },
+    // aggregateRating + avis : uniquement si de vrais avis approuvés existent (conforme Google)
+    ...(summary.count > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: summary.average,
+            reviewCount: summary.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: reviews.slice(0, 10).map(r => ({
+            '@type': 'Review',
+            reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+            author: { '@type': 'Person', name: r.author_name },
+            datePublished: r.created_at,
+            ...(r.title ? { name: r.title } : {}),
+            reviewBody: r.body,
+          })),
+        }
+      : {}),
   };
 
   const breadcrumbSchema = {
@@ -88,6 +111,8 @@ export default async function ProductPage({
         product={product as any}
         related={related as any}
         allProducts={allProducts as any}
+        reviews={reviews}
+        reviewSummary={summary}
       />
     </>
   );

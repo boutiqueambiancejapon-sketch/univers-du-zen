@@ -7,12 +7,13 @@ import { useLocale } from 'next-intl';
 import {
   ShoppingBag, Leaf, Shield, Truck,
   RotateCcw, Check, ChevronDown, ChevronUp,
-  Plus, Minus, ChevronRight, Package,
+  Plus, Minus, ChevronRight, Package, Star,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
 import ProductCard from './ProductCard';
 import BundleBuilder from './BundleBuilder';
 import type { DemoProduct } from '@/lib/demo-products';
+import ProductReviews, { type ProductReviewItem, type ReviewSummaryUI } from './ProductReviews';
 
 const BUNDLE_MIN_POOL = 9;
 
@@ -161,9 +162,11 @@ interface Props {
   product: DemoProduct;
   related: DemoProduct[];
   allProducts?: DemoProduct[];
+  reviews?: ProductReviewItem[];
+  reviewSummary?: ReviewSummaryUI;
 }
 
-export default function ProductDetailClient({ product, related, allProducts = [] }: Props) {
+export default function ProductDetailClient({ product, related, allProducts = [], reviews = [], reviewSummary = { count: 0, average: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } } }: Props) {
   const locale = useLocale();
   const addItem = useCartStore(s => s.addItem);
   const [qty, setQty] = useState(1);
@@ -282,6 +285,21 @@ export default function ProductDetailClient({ product, related, allProducts = []
 
           <h1 className="font-serif text-3xl md:text-4xl text-zen-bark leading-tight mb-3">{product.nameFr}</h1>
 
+          {reviewSummary.count > 0 && (
+            <a href="#avis" className="inline-flex items-center gap-2 mb-3 group">
+              <span className="inline-flex">
+                {[1, 2, 3, 4, 5].map(i => (
+                  <Star key={i} size={15}
+                    className={i <= Math.round(reviewSummary.average) ? 'text-zen-gold' : 'text-zen-sand'}
+                    fill={i <= Math.round(reviewSummary.average) ? 'currentColor' : 'none'} />
+                ))}
+              </span>
+              <span className="text-sm font-sans text-zen-muted group-hover:text-zen-bark transition-colors">
+                {reviewSummary.average.toFixed(1).replace('.', ',')} · {reviewSummary.count} avis
+              </span>
+            </a>
+          )}
+
           <div className="flex items-baseline gap-3 mb-4">
             <span className="font-serif text-4xl text-zen-bark">{basePrice > 0 ? `${basePrice.toFixed(2).replace('.', ',')} €` : '—'}</span>
             {product.compareAtPriceEur && (
@@ -295,14 +313,15 @@ export default function ProductDetailClient({ product, related, allProducts = []
           </div>
 
           {(product as any).shortDescriptionFr && (
-            <p className="text-zen-muted leading-relaxed mb-5 text-sm">{(product as any).shortDescriptionFr}</p>
+            <h2 className="text-zen-muted leading-relaxed mb-5 text-sm font-normal">{(product as any).shortDescriptionFr}</h2>
           )}
 
           {(product as any).benefitsFr?.length ? (
             <ul className="space-y-2 mb-5">
               {(product as any).benefitsFr.map((b: string, i: number) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-zen-bark">
-                  <Check size={15} className="text-zen-sage flex-shrink-0 mt-0.5" />{b}
+                  <Check size={15} className="text-zen-sage flex-shrink-0 mt-0.5" />
+                  <h3 className="text-sm font-normal text-zen-bark m-0">{b}</h3>
                 </li>
               ))}
             </ul>
@@ -505,6 +524,15 @@ export default function ProductDetailClient({ product, related, allProducts = []
           )}
         </div>
       </div>
+
+      {/* ===== AVIS CLIENTS ===== */}
+      <ProductReviews
+        slug={product.slug as string}
+        sku={(product as any).id ? String((product as any).id) : undefined}
+        productName={product.nameFr ?? ''}
+        initialReviews={reviews}
+        summary={reviewSummary}
+      />
 
       {/* ===== BUNDLE BUILDER ===== */}
       {allProducts.length >= BUNDLE_MIN_POOL && (
