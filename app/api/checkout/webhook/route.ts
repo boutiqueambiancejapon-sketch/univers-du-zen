@@ -38,7 +38,13 @@ export async function POST(req: NextRequest) {
         .eq('id', orderId)
         .single();
 
-      if (order && !order.supplier_order_id) {
+      const fulfillmentEnabled = process.env.RETINA_FULFILLMENT_ENABLED === 'true';
+
+      if (order && !order.supplier_order_id && !fulfillmentEnabled) {
+        // Sécurité : tant que RETINA_FULFILLMENT_ENABLED n'est pas activé dans Vercel,
+        // on n'envoie PAS la commande au fournisseur (évite de payer Retina pendant les tests).
+        console.warn('[webhook] Fulfillment Retina désactivé — commande payée non transmise:', orderId);
+      } else if (order && !order.supplier_order_id) {
         try {
           const addr = order.shipping_address ?? {};
 

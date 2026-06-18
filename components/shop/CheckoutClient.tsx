@@ -10,12 +10,13 @@ import {
   CreditCard, Building2, Smartphone,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
+import { getVatRate } from '@/lib/vat';
 
-/* ─── Seuil livraison gratuite ───────────────────────────────── */
+/* ─── Seuil livraison gratuite ────────────────── */
 const FREE_SHIPPING_THRESHOLD = 59;
 const SHIPPING_COST = 4.95;
 
-/* ─── Méthodes de paiement (marché belge + FR) ─────────────────── */
+/* ─── Méthodes de paiement (marché belge + FR) ───────── */
 const PAYMENT_METHODS = [
   {
     id: 'bancontact',
@@ -72,7 +73,7 @@ const PAYMENT_METHODS = [
   },
 ];
 
-/* ─── Types ──────────────────────────────────────────── */
+/* ─── Types ───────────────────── */
 interface Field {
   email: string;
   firstName: string;
@@ -95,12 +96,12 @@ const INITIAL_FORM: Field = {
   country: 'BE',
 };
 
-/* ─── Helpers ──────────────────────────────────────── */
+/* ─── Helpers ────────────────── */
 function fmt(n: number) {
   return n.toFixed(2).replace('.', ',');
 }
 
-/* ─── Composant principal ──────────────────────────────── */
+/* ─── Composant principal ────────────── */
 export default function CheckoutClient() {
   const locale    = useLocale();
   const items     = useCartStore(s => s.items);
@@ -162,34 +163,37 @@ export default function CheckoutClient() {
     setLoading(true);
 
     try {
-      const siteUrl = window.location.origin;
+      const vatRate   = getVatRate(form.country);
+      const vatAmount = Math.round((total - total / (1 + vatRate)) * 100) / 100;
 
-      const res = await fetch('/api/mollie/create-payment', {
+      const res = await fetch('/api/checkout/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount:      total,
-          method:      method,
-          description: `Commande Univers du Zen — ${form.firstName} ${form.lastName}`,
+          email:         form.email,
           locale,
-          returnUrl:  `${siteUrl}/${locale}/checkout/succes`,
-          cancelUrl:  `${siteUrl}/${locale}/checkout`,
-          customer: {
-            email:      form.email,
-            firstName:  form.firstName,
-            lastName:   form.lastName,
-            phone:      form.phone,
-            address:    form.address,
-            postalCode: form.postalCode,
-            city:       form.city,
-            country:    form.country,
+          paymentMethod: method,
+          countryCode:   form.country,
+          shippingAddress: {
+            firstName:   form.firstName,
+            lastName:    form.lastName,
+            phone:       form.phone,
+            line1:       form.address,
+            city:        form.city,
+            postalCode:  form.postalCode,
+            countryCode: form.country,
           },
-          orderItems: items.map(i => ({
-            id:       i.product.id,
-            name:     i.product.nameFr ?? '',
-            quantity: i.quantity,
-            price:    i.product.retailPriceEur,
+          items: items.map(i => ({
+            productId: i.product.id,
+            name:      i.product.nameFr ?? '',
+            quantity:  i.quantity,
+            price:     i.product.retailPriceEur,
           })),
+          subtotalEur:  Math.round(subtotal * 100) / 100,
+          shippingEur:  Math.round(shipping * 100) / 100,
+          totalEur:     Math.round(total * 100) / 100,
+          vatRate,
+          vatAmountEur: vatAmount,
         }),
       });
 
@@ -434,7 +438,7 @@ export default function CheckoutClient() {
   );
 }
 
-/* ─── InputField ─────────────────────────────────────── */
+/* ─── InputField ─────────────────── */
 function InputField({
   label, value, onChange, placeholder = '', type = 'text',
 }: {
