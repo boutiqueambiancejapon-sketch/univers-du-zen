@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mollie } from '@/lib/mollie';
 import { createAdminClient } from '@/lib/supabase/server';
+import { getPublishedProducts } from '@/lib/get-products';
+import { getVatRate } from '@/lib/vat';
+
+const FREE_SHIPPING_THRESHOLD = 59;
+const SHIPPING_COST = 4.95;
 
 function generateReference(): string {
   const d = new Date();
@@ -9,28 +14,81 @@ function generateReference(): string {
   return `UDZ-${ymd}-${rand}`;
 }
 
+interface IncomingItem { productId?: string | number; quantity?: number }
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      items, shippingAddress, email, countryCode, locale,
-      paymentMethod, subtotalEur, shippingEur, totalEur, vatRate, vatAmountEur,
-    } = body;
+      items, shippingAddress, email, countryCode, locale, paymentMethod,
+    } = body as {
+      items: IncomingItem[];
+      shippingAddress: Record<string, unknown>;
+      email: string;
+      countryCode: string;
+      locale: string;
+      paymentMethod: string;
+    };
+
+    if (!email || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Commande invalide.' }, { status: 400 });
+    }
+
+    // ─── Source de vérité : prix + stock réels (serveur), jamais le client ───
+    const catalog = await getPublishedProducts();
+    const byId = new Map(catalog.map(p => [String(p.id), p]));
+
+    const issues: string[] = [];
+    let subtotal = 0;
+    const safeItems: { productId: string; name: string; quantity: number; price: number }[] = [];
+
+    for (const it of items) {
+      const id = String(it.productId ?? '');
+      const qty = Math.max(1, Math.floor(Number(it.quantity ?? 1)));
+      const p = byId.get(id);
+
+      if (!p) { issues.push(`Un produit n'est plus disponible et a été retiré.`); continue; }
+      if (p.stockStatus === 'OutOfStock' || (p.stockQty ?? 0) <= 0) {
+        issues.push(`« ${p.nameFr} » est en rupture de stock.`);
+        continue;
+      }
+      if ((p.stockQty ?? 0) < qty) {
+        issues.push(`« ${p.nameFr} » : seulement ${p.stockQty} en stock.`);
+        continue;
+      }
+      const price = p.retailPriceEur ?? 0;
+      subtotal += price * qty;
+      safeItems.push({ productId: id, name: p.nameFr ?? '', quantity: qty, price });
+    }
+
+    if (issues.length > 0) {
+      return NextResponse.json({ error: issues.join(' '), issues }, { status: 409 });
+    }
+    if (safeItems.length === 0) {
+      return NextResponse.json({ error: 'Aucun produit disponible dans votre panier.' }, { status: 409 });
+    }
+
+    // ─── Montants recalculés côté serveur ───
+    subtotal = Math.round(subtotal * 100) / 100;
+    const shippingEur = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+    const totalEur = Math.round((subtotal + shippingEur) * 100) / 100;
+    const vatRate = getVatRate(countryCode ?? 'BE');
+    const vatAmountEur = Math.round((totalEur - totalEur / (1 + vatRate)) * 100) / 100;
 
     const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
     const reference = generateReference();
     const supabase  = createAdminClient();
 
-    // 1. Persist order (pending)
+    // 1. Persiste la commande (pending) avec les valeurs serveur
     const { data: order, error: dbErr } = await supabase
       .from('orders')
       .insert({
         reference,
-        email,                        // column name is "email"
-        items,
+        email,
+        items: safeItems,
         shipping_address: shippingAddress,
         country_code:     countryCode,
-        subtotal_eur:     subtotalEur,
+        subtotal_eur:     subtotal,
         vat_rate:         vatRate,
         vat_amount_eur:   vatAmountEur,
         shipping_eur:     shippingEur,
@@ -44,8 +102,8 @@ export async function POST(req: NextRequest) {
 
     if (dbErr) throw new Error(`DB: ${dbErr.message}`);
 
-    // 2. Create Mollie payment
-    const mollieLocale = locale.replace('-', '_');
+    // 2. Crée le paiement Mollie sur le montant serveur
+    const mollieLocale = (locale ?? 'fr-BE').replace('-', '_');
     const payment = await (mollie as any).payments.create({
       amount: { currency: 'EUR', value: totalEur.toFixed(2) },
       description:  `Commande Univers du Zen — ${reference}`,
@@ -56,7 +114,7 @@ export async function POST(req: NextRequest) {
       metadata:     { orderId: order.id, reference },
     });
 
-    // 3. Save Mollie payment ID
+    // 3. Sauve l'ID de paiement Mollie
     await supabase
       .from('orders')
       .update({ mollie_payment_id: payment.id })
