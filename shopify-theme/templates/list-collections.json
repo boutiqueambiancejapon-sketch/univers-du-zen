@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-list-collections",
+      "settings": {
+        "eyebrow": "Nos univers",
+        "heading": "Toutes les collections"
+      }
+    }
+  },
+  "order": ["main"]
+}

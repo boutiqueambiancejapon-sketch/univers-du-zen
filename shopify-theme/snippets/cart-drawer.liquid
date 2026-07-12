@@ -1,0 +1,33 @@
+<div class="cart-drawer" data-cart-drawer aria-hidden="true">
+  <div class="cart-drawer__overlay" data-cart-close></div>
+  <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'cart.general.title' | t }}">
+    <div class="cart-drawer__header">
+      <h2>{{ 'cart.general.title' | t }}</h2>
+      <button type="button" class="cart-drawer__close" data-cart-close aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="cart-drawer__items" data-drawer-items data-empty-text="{{ 'cart.general.empty' | t }}"></div>
+
+    <div class="cart-drawer__footer" data-drawer-footer hidden>
+      {%- assign threshold_cents = settings.free_shipping_threshold | times: 100 -%}
+      <div class="free-shipping-bar" data-shipping-bar data-threshold="{{ threshold_cents }}">
+        <p class="free-shipping-bar__text"></p>
+        <div class="free-shipping-bar__track"><div class="free-shipping-bar__fill" style="width:0%"></div></div>
+      </div>
+
+      <div class="cart-summary__total">
+        <span>{{ 'cart.general.subtotal' | t }}</span>
+        <span data-drawer-total></span>
+      </div>
+      <p class="cart-summary__note">{{ 'cart.general.note' | t }}</p>
+      <a href="{{ routes.cart_url }}" class="btn btn--outline" style="width:100%;margin-bottom:.5rem">{{ 'cart.general.view_cart' | t }}</a>
+      <a href="{{ routes.cart_url }}/checkout" class="btn btn--primary" style="width:100%">{{ 'cart.general.checkout' | t }}</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.UDZ_MONEY_FORMAT = {{ shop.money_format | json }};
+</script>

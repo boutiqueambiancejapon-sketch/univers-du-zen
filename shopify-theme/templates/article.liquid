@@ -1,0 +1,10 @@
+<article class="rte-page page-width">
+  <p class="section-eyebrow">{{ article.published_at | date: '%d %B %Y' }}</p>
+  <h1>{{ article.title }}</h1>
+  {%- if article.image -%}
+    <div style="border-radius:1rem;overflow:hidden;margin-bottom:2rem">
+      {{ article.image | image_url: width: 1400 | image_tag: alt: article.title }}
+    </div>
+  {%- endif -%}
+  <div class="rte">{{ article.content }}</div>
+</article>

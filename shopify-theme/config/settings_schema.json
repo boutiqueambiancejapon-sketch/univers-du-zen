@@ -1,0 +1,71 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Univers du Zen",
+    "theme_version": "1.0.0",
+    "theme_author": "Univers du Zen",
+    "theme_documentation_url": "https://github.com/boutiqueambiancejapon-sketch/univers-du-zen",
+    "theme_support_url": "https://github.com/boutiqueambiancejapon-sketch/univers-du-zen"
+  },
+  {
+    "name": "Couleurs",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Fond (crème)",
+        "default": "#FAF7F2"
+      },
+      {
+        "type": "color",
+        "id": "color_beige",
+        "label": "Beige (sections)",
+        "default": "#F5EFE6"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent (terracotta)",
+        "default": "#C4714A"
+      },
+      {
+        "type": "color",
+        "id": "color_sage",
+        "label": "Vert sauge",
+        "default": "#7A9E7E"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Texte (bark)",
+        "default": "#3B2A1F"
+      }
+    ]
+  },
+  {
+    "name": "Logo & favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo (optionnel — sinon le nom de la boutique s'affiche)"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
+    ]
+  },
+  {
+    "name": "Livraison",
+    "settings": [
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Seuil livraison offerte (€)",
+        "default": 59
+      }
+    ]
+  }
+]

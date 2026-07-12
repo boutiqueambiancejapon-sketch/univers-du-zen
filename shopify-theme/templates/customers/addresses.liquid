@@ -1,0 +1,16 @@
+<section class="customer-page page-width">
+  <h1>{{ 'customer.addresses.title' | t }}</h1>
+
+  {%- paginate customer.addresses by 10 -%}
+    {%- for address in customer.addresses -%}
+      <div class="ethics__stat" style="margin-bottom:1rem">
+        {%- if address == customer.default_address -%}
+          <p class="section-eyebrow">{{ 'customer.addresses.default' | t }}</p>
+        {%- endif -%}
+        {{ address | format_address }}
+      </div>
+    {%- endfor -%}
+  {%- endpaginate -%}
+
+  <p style="margin-top:1rem"><a href="{{ routes.account_url }}" style="text-decoration:underline">← {{ 'customer.account.title' | t }}</a></p>
+</section>

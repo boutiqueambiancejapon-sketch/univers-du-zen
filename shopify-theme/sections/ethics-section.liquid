@@ -1,0 +1,61 @@
+{%- assign checklist = section.settings.checklist | newline_to_br | split: '<br />' -%}
+<section class="ethics">
+  <div class="page-width ethics__inner">
+    <div>
+      <p class="section-eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2 class="ethics__title">{{ section.settings.heading }}</h2>
+      <p class="ethics__text">{{ section.settings.text }}</p>
+      <ul class="ethics__list">
+        {%- for item in checklist -%}
+          {%- assign clean = item | strip -%}
+          {%- if clean != blank -%}
+            <li><span class="ethics__check">✓</span>{{ clean }}</li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+
+    <div class="ethics__stats">
+      {%- for block in section.blocks -%}
+        <div class="ethics__stat" {{ block.shopify_attributes }}>
+          <p class="ethics__stat-value">{{ block.settings.value }}</p>
+          <p class="ethics__stat-label">{{ block.settings.label }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Engagement",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Notre engagement" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Sélectionnés avec soin, livrés depuis l'Europe" },
+    { "type": "textarea", "id": "text", "label": "Texte", "default": "Chaque produit de notre boutique est choisi auprès de producteurs engagés dans des pratiques éthiques — sans test sur animaux, avec des matières premières durables et des conditions de travail équitables." },
+    { "type": "textarea", "id": "checklist", "label": "Points (un par ligne)", "default": "Aucun produit testé sur les animaux\nFournisseurs audités régulièrement\nEmballages éco-responsables\nExpédition depuis l'Europe en 3–5 jours" }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Chiffre",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Valeur", "default": "+7 500" },
+        { "type": "text", "id": "label", "label": "Libellé", "default": "références disponibles" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Engagement",
+      "blocks": [
+        { "type": "stat", "settings": { "value": "+7 500", "label": "références disponibles" } },
+        { "type": "stat", "settings": { "value": "3–5j", "label": "délai de livraison" } },
+        { "type": "stat", "settings": { "value": "30j", "label": "de retours gratuits" } },
+        { "type": "stat", "settings": { "value": "100%", "label": "sans test sur animaux" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

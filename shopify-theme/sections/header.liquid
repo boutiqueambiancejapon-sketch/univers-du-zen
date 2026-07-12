@@ -1,0 +1,106 @@
+{% style %}
+  #shopify-section-{{ section.id }} { position: sticky; top: 0; z-index: 40; }
+{% endstyle %}
+
+<nav class="site-nav">
+  <div class="page-width site-nav__inner">
+
+    {%- comment -%} Logo {%- endcomment -%}
+    <a href="{{ routes.root_url }}" class="site-nav__logo">
+      {%- if settings.logo != blank -%}
+        <img src="{{ settings.logo | image_url: width: 300 }}" alt="{{ shop.name | escape }}" width="150" height="40">
+      {%- else -%}
+        {{ shop.name }}
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} Navigation desktop {%- endcomment -%}
+    {%- assign menu = linklists[section.settings.menu] -%}
+    {%- assign max_visible = section.settings.max_visible_links -%}
+    <ul class="site-nav__menu">
+      {%- for link in menu.links limit: max_visible -%}
+        <li>
+          <a href="{{ link.url }}" class="site-nav__link{% if forloop.first %} site-nav__link--bold{% endif %}">
+            {{ link.title }}
+          </a>
+        </li>
+      {%- endfor -%}
+
+      {%- if menu.links.size > max_visible -%}
+        <li>
+          <details class="site-nav__dropdown">
+            <summary class="site-nav__link" role="button">
+              {{ section.settings.more_label }}
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <ul class="site-nav__dropdown-list">
+              {%- for link in menu.links offset: max_visible -%}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </details>
+        </li>
+      {%- endif -%}
+    </ul>
+
+    {%- comment -%} Icônes {%- endcomment -%}
+    <div class="site-nav__icons">
+      <a href="{{ routes.search_url }}" class="site-nav__icon-btn" aria-label="{{ 'general.search.title' | t }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      </a>
+
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="site-nav__icon-btn" aria-label="{{ 'customer.account.title' | t }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+      {%- endif -%}
+
+      <button type="button" class="site-nav__icon-btn" data-cart-open aria-label="{{ 'cart.general.title' | t }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count-bubble" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+      </button>
+
+      <button type="button" class="site-nav__icon-btn mobile-menu-toggle" data-mobile-menu-toggle aria-expanded="false" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  {%- comment -%} Menu mobile {%- endcomment -%}
+  <div class="mobile-menu" data-mobile-menu>
+    <ul class="page-width">
+      {%- for link in menu.links -%}
+        <li><a href="{{ link.url }}"{% if forloop.first %} class="is-bold"{% endif %}>{{ link.title }}</a></li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</nav>
+
+{% schema %}
+{
+  "name": "En-tête",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu principal",
+      "default": "main-menu"
+    },
+    {
+      "type": "range",
+      "id": "max_visible_links",
+      "label": "Liens visibles avant le menu « Plus »",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "text",
+      "id": "more_label",
+      "label": "Libellé du menu déroulant",
+      "default": "Plus"
+    }
+  ]
+}
+{% endschema %}

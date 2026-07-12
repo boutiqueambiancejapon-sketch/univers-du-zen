@@ -1,0 +1,37 @@
+{%- assign col = section.settings.collection -%}
+<section class="product-grid-section page-width">
+  <div class="product-grid-section__header">
+    <div>
+      <p class="section-eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2 class="section-title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subtitle != blank -%}
+        <p class="product-grid-section__sub">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+    </div>
+    <a href="{% if col != blank %}{{ col.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}" class="product-grid-section__link">
+      {{ 'collections.general.view_all' | t }} →
+    </a>
+  </div>
+
+  <div class="product-grid">
+    {%- for product in col.products limit: section.settings.products_to_show -%}
+      {% render 'product-card', product: product %}
+    {%- else -%}
+      <p class="collection-empty">{{ 'collections.general.no_products' | t }}</p>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Grille de produits",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Sélection" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Nos produits du moment" },
+    { "type": "text", "id": "subtitle", "label": "Sous-titre", "default": "Une sélection soigneusement choisie pour votre bien-être" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "products_to_show", "label": "Nombre de produits", "min": 2, "max": 12, "step": 1, "default": 4 }
+  ],
+  "presets": [{ "name": "Grille de produits" }]
+}
+{% endschema %}

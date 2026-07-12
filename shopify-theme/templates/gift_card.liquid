@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ 'gift_cards.issued.title' | t }} — {{ shop.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap" rel="stylesheet">
+  {{ content_for_header }}
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #FAF7F2; color: #3B2A1F; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .gc { text-align: center; padding: 2rem; max-width: 26rem; }
+    .gc h1 { font-family: 'Fraunces', serif; }
+    .gc__card { background: #3B2A1F; color: #F2ECE0; border-radius: 1rem; padding: 2.5rem 2rem; margin: 1.5rem 0; }
+    .gc__amount { font-family: 'Fraunces', serif; font-size: 2.5rem; }
+    .gc__code { letter-spacing: .15em; font-size: 1.1rem; margin-top: 1rem; background: rgba(255,255,255,.1); border-radius: .5rem; padding: .75rem; }
+    .gc a { color: #C4714A; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="gc">
+    <h1>{{ 'gift_cards.issued.title' | t }}</h1>
+    {%- assign gc_value = gift_card.initial_value | money -%}
+    <p>{{ 'gift_cards.issued.subtext' | t: value: gc_value }}</p>
+    <div class="gc__card">
+      <div class="gc__amount">{{ gift_card.balance | money }}</div>
+      <div class="gc__code">{{ gift_card.code | format_code }}</div>
+    </div>
+    <a href="{{ shop.url }}">{{ 'gift_cards.issued.shop_link' | t }}</a>
+  </div>
+</body>
+</html>

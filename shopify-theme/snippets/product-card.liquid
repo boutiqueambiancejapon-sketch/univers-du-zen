@@ -1,0 +1,69 @@
+{%- comment -%}
+  Carte produit — usage : {% render 'product-card', product: product %}
+{%- endcomment -%}
+
+{%- liquid
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+    assign discount = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
+  endif
+-%}
+
+<div class="product-card">
+  <a href="{{ product.url }}" class="product-card__media" tabindex="-1" aria-hidden="true">
+    {%- if product.featured_image != blank -%}
+      {{ product.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: product.featured_image.alt | default: product.title }}
+    {%- endif -%}
+  </a>
+
+  <div class="product-card__badges">
+    {%- if product.tags contains 'best-seller' or product.tags contains 'bestseller' -%}
+      <span class="badge badge--bestseller">{{ 'products.product.best_seller' | t }}</span>
+    {%- endif -%}
+    {%- if on_sale and product.available -%}
+      <span class="badge badge--discount">-{{ discount }}%</span>
+    {%- endif -%}
+    {%- if product.tags contains 'nouveau' -%}
+      <span class="badge badge--new">{{ 'products.product.new' | t }}</span>
+    {%- endif -%}
+    {%- unless product.available -%}
+      <span class="badge badge--soldout">{{ 'products.product.sold_out' | t }}</span>
+    {%- endunless -%}
+  </div>
+
+  {%- if product.available -%}
+    {%- if product.variants.size == 1 -%}
+      <form method="post" action="{{ routes.cart_add_url }}" data-ajax-cart class="product-card__quick-add-form">
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <button type="submit" class="product-card__quick-add" data-adding-text="{{ 'products.product.adding' | t }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          {{ 'products.product.add_to_cart' | t }}
+        </button>
+      </form>
+    {%- else -%}
+      <a href="{{ product.url }}" class="product-card__quick-add">
+        {{ 'products.product.view_details' | t }}
+      </a>
+    {%- endif -%}
+  {%- endif -%}
+
+  <div class="product-card__info">
+    {%- if product.type != blank -%}
+      <p class="product-card__cat">{{ product.type }}</p>
+    {%- endif -%}
+
+    <a href="{{ product.url }}">
+      <h3 class="product-card__title">{{ product.title }}</h3>
+    </a>
+
+    <div class="product-card__prices">
+      <span class="product-card__price{% unless product.available %} product-card__price--muted{% endunless %}">
+        {{ product.price | money }}
+      </span>
+      {%- if on_sale -%}
+        <span class="product-card__compare">{{ product.compare_at_price | money }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

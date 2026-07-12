@@ -1,0 +1,24 @@
+<section class="customer-page customer-page--wide page-width">
+  <h1>{{ 'customer.order.title' | t: name: order.name }}</h1>
+  <p style="color:var(--color-muted);margin-bottom:2rem">{{ order.created_at | date: '%d/%m/%Y' }} · {{ order.financial_status_label }} · {{ order.fulfillment_status_label }}</p>
+
+  <table class="order-table">
+    <thead>
+      <tr><th>Produit</th><th>Quantité</th><th>Prix</th></tr>
+    </thead>
+    <tbody>
+      {%- for line_item in order.line_items -%}
+        <tr>
+          <td>{{ line_item.title }}</td>
+          <td>{{ line_item.quantity }}</td>
+          <td>{{ line_item.final_line_price | money }}</td>
+        </tr>
+      {%- endfor -%}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2"><strong>{{ 'customer.account.total' | t }}</strong></td><td><strong>{{ order.total_price | money }}</strong></td></tr>
+    </tfoot>
+  </table>
+
+  <p style="margin-top:2rem"><a href="{{ routes.account_url }}" style="text-decoration:underline">← {{ 'customer.account.title' | t }}</a></p>
+</section>

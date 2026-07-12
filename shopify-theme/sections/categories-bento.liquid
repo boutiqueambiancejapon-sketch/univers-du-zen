@@ -1,0 +1,87 @@
+<section class="bento page-width">
+  <div class="bento__header">
+    <p class="section-eyebrow">{{ section.settings.eyebrow }}</p>
+    <h2 class="section-title">{{ section.settings.heading }}</h2>
+  </div>
+
+  {%- assign blocks_a = section.blocks | slice: 0, 3 -%}
+  {%- assign blocks_b = section.blocks | slice: 3, 3 -%}
+
+  {%- for grid in (1..2) -%}
+    {%- if grid == 1 -%}
+      {%- assign grid_blocks = blocks_a -%}
+      {%- assign grid_class = 'bento__grid--a' -%}
+    {%- else -%}
+      {%- assign grid_blocks = blocks_b -%}
+      {%- assign grid_class = 'bento__grid--b' -%}
+    {%- endif -%}
+
+    {%- if grid_blocks.size > 0 -%}
+      <div class="bento__grid {{ grid_class }}">
+        {%- for block in grid_blocks -%}
+          {%- assign col = block.settings.collection -%}
+          {%- assign img = block.settings.image | default: col.image | default: col.products.first.featured_image -%}
+          <a href="{% if col != blank %}{{ col.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}"
+             class="bento__card" {{ block.shopify_attributes }}>
+            {%- if img != blank -%}
+              {{ img | image_url: width: 1200 | image_tag: loading: 'lazy', alt: block.settings.label | default: col.title }}
+            {%- elsif block.settings.fallback_asset != blank -%}
+              <img src="{{ block.settings.fallback_asset | asset_url }}" alt="{{ block.settings.label | escape }}" loading="lazy">
+            {%- endif -%}
+            <div class="bento__card-overlay"></div>
+
+            {%- if block.settings.badge != blank -%}
+              <span class="bento__badge">{{ block.settings.badge }}</span>
+            {%- endif -%}
+            <span class="bento__cta">Découvrir →</span>
+
+            <div class="bento__text">
+              <p class="bento__label">{{ block.settings.label | default: col.title }}</p>
+              {%- if block.settings.description != blank -%}
+                <p class="bento__desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "Univers (bento)",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Nos univers" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Explorez la collection" }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Univers",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "image_picker", "id": "image", "label": "Image (sinon image de la collection)" },
+        { "type": "text", "id": "fallback_asset", "label": "Image du thème (nom de fichier asset)", "info": "Utilisée si aucune image n'est choisie, ex. udz-cat-bougies.jpeg" },
+        { "type": "text", "id": "label", "label": "Nom affiché" },
+        { "type": "text", "id": "description", "label": "Description courte" },
+        { "type": "text", "id": "badge", "label": "Badge (optionnel)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Univers (bento)",
+      "blocks": [
+        { "type": "category", "settings": { "label": "Aromathérapie", "description": "Huiles essentielles pures", "badge": "Best-seller", "fallback_asset": "udz-cat-aromatherapie.jpeg" } },
+        { "type": "category", "settings": { "label": "Bougies", "description": "Cire naturelle & parfums doux", "fallback_asset": "udz-cat-bougies.jpeg" } },
+        { "type": "category", "settings": { "label": "Encens", "description": "Résines, bâtonnets & cônes", "fallback_asset": "udz-cat-encens.jpeg" } },
+        { "type": "category", "settings": { "label": "Pierres & Cristaux", "description": "Quartz, améthyste & plus", "fallback_asset": "udz-cat-cristaux.jpeg" } },
+        { "type": "category", "settings": { "label": "Thés Artisanaux", "description": "Saveurs du monde entier", "badge": "Nouveau", "fallback_asset": "udz-cat-thes.jpeg" } },
+        { "type": "category", "settings": { "label": "Maison & Déco", "description": "Objets qui apaisent l'espace", "fallback_asset": "udz-cat-maison.jpeg" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,17 @@
+<section class="customer-page page-width">
+  <h1>{{ 'customer.activate.title' | t }}</h1>
+
+  {%- form 'activate_customer_password' -%}
+    {{ form.errors | default_errors }}
+    <div class="field">
+      <label for="activate-password">{{ 'customer.reset.password' | t }}</label>
+      <input type="password" name="customer[password]" id="activate-password" autocomplete="new-password" required>
+    </div>
+    <div class="field">
+      <label for="activate-password-confirm">{{ 'customer.reset.password_confirm' | t }}</label>
+      <input type="password" name="customer[password_confirmation]" id="activate-password-confirm" autocomplete="new-password" required>
+    </div>
+    <button type="submit" class="btn btn--primary" style="width:100%">{{ 'customer.activate.submit' | t }}</button>
+    <button type="submit" name="decline" class="btn btn--outline" style="width:100%;margin-top:.5rem">{{ 'customer.activate.decline' | t }}</button>
+  {%- endform -%}
+</section>

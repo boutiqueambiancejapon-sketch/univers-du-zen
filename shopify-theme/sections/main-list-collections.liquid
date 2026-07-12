@@ -1,0 +1,30 @@
+<section class="collections-list page-width">
+  <p class="section-eyebrow">{{ section.settings.eyebrow }}</p>
+  <h1 class="section-title">{{ section.settings.heading }}</h1>
+
+  <div class="collections-list__grid">
+    {%- for collection in collections -%}
+      {%- assign img = collection.image | default: collection.products.first.featured_image -%}
+      <a href="{{ collection.url }}" class="collections-list__card bento__card">
+        {%- if img != blank -%}
+          {{ img | image_url: width: 900 | image_tag: loading: 'lazy', alt: collection.title }}
+        {%- endif -%}
+        <div class="bento__card-overlay"></div>
+        <div class="bento__text">
+          <p class="bento__label">{{ collection.title }}</p>
+          <p class="bento__desc">{{ 'collections.general.products_count' | t: count: collection.products_count }}</p>
+        </div>
+      </a>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Liste des collections",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Nos univers" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Toutes les collections" }
+  ]
+}
+{% endschema %}

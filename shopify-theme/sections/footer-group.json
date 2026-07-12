@@ -1,0 +1,15 @@
+{
+  "type": "footer",
+  "name": "Groupe de pied de page",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "brand_text": "Bien-être corps, esprit & maison. Sélection éthique expédiée depuis l'Europe.",
+        "brand_note": "Livraison France · Belgique · Luxembourg",
+        "payment_text": "Paiement sécurisé · Bancontact · Carte · PayPal"
+      }
+    }
+  },
+  "order": ["footer"]
+}

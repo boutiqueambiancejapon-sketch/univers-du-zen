@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {
+        "trust1": "Livraison offerte dès 59 €",
+        "trust2": "Retours 30 jours",
+        "trust3": "Paiement sécurisé"
+      }
+    }
+  },
+  "order": ["main"]
+}

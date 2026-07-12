@@ -1,0 +1,21 @@
+{
+  "type": "header",
+  "name": "Groupe d'en-tête",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "text_left": "Sélection éthique & naturelle",
+        "text_center": "Livraison offerte dès 59 € (FR · BE · LU)",
+        "text_right": "Expédié depuis l'Europe en 3–5 jours"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu"
+      }
+    }
+  },
+  "order": ["announcement", "header"]
+}

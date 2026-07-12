@@ -1,0 +1,79 @@
+<section class="reviews">
+  <div class="page-width reviews__inner">
+    <div class="reviews__header">
+      <div>
+        <p class="section-eyebrow">{{ section.settings.eyebrow }}</p>
+        <h2 class="section-title">{{ section.settings.heading }}</h2>
+      </div>
+      <div class="reviews__rating">
+        <div class="reviews__rating-stars" aria-hidden="true">
+          {%- for i in (1..5) -%}
+            <svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          {%- endfor -%}
+        </div>
+        <span class="reviews__rating-value">{{ section.settings.rating_value }}</span>
+        <span class="reviews__rating-count">{{ section.settings.rating_count }}</span>
+      </div>
+    </div>
+
+    {%- assign avatar_colors = '#4A7C59,#8B4B2A,#2B4F6B,#6B4A8B' | split: ',' -%}
+    <div class="reviews__grid">
+      {%- for block in section.blocks -%}
+        {%- assign color_index = forloop.index0 | modulo: 4 -%}
+        <div class="review-card" {{ block.shopify_attributes }}>
+          <div class="review-card__stars" aria-label="{{ block.settings.rating }}/5">
+            {%- for s in (1..5) -%}
+              <svg viewBox="0 0 20 20" fill="{% if s <= block.settings.rating %}#C4714A{% else %}#DDDDDD{% endif %}"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            {%- endfor -%}
+          </div>
+          <p class="review-card__text">« {{ block.settings.text }} »</p>
+          <div class="review-card__author">
+            <span class="review-card__avatar" style="background: {{ avatar_colors[color_index] }}">{{ block.settings.initials }}</span>
+            <div>
+              <p class="review-card__name">{{ block.settings.name }}</p>
+              <p class="review-card__meta">{{ block.settings.meta }}</p>
+            </div>
+            <span class="review-card__verified">✓ vérifié</span>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Avis clients",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Ils nous font confiance" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Ce que disent nos clients" },
+    { "type": "text", "id": "rating_value", "label": "Note globale", "default": "4,8" },
+    { "type": "text", "id": "rating_count", "label": "Détail", "default": "sur 5 · 347+ avis" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Avis",
+      "settings": [
+        { "type": "text", "id": "initials", "label": "Initiales", "default": "SL" },
+        { "type": "text", "id": "name", "label": "Nom", "default": "Sophie L." },
+        { "type": "text", "id": "meta", "label": "Ville · ancienneté", "default": "Bruxelles · depuis 2025" },
+        { "type": "range", "id": "rating", "label": "Note", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "textarea", "id": "text", "label": "Texte", "default": "Les bougies sont absolument magnifiques. Le parfum dure longtemps et l'emballage est soigné." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Avis clients",
+      "blocks": [
+        { "type": "review", "settings": { "initials": "SL", "name": "Sophie L.", "meta": "Bruxelles · depuis 2025", "rating": 5, "text": "Les bougies sont absolument magnifiques. Le parfum dure longtemps et l'emballage est soigné. Je suis conquise, je recommande !" } },
+        { "type": "review", "settings": { "initials": "MA", "name": "Marc A.", "meta": "Paris · depuis 2024", "rating": 5, "text": "Huile essentielle de lavande top qualité. Livraison rapide depuis l'Europe, colis bien protégé. Mon rituel du soir a changé." } },
+        { "type": "review", "settings": { "initials": "CJ", "name": "Clara J.", "meta": "Amsterdam · depuis 2025", "rating": 5, "text": "Les cristaux sont splendides et correspondent exactement à la description. Service client réactif. Je reviendrai." } },
+        { "type": "review", "settings": { "initials": "PD", "name": "Pierre D.", "meta": "Lyon · depuis 2025", "rating": 4, "text": "Très belle sélection de produits. Le thé artisanal est une révélation. Un peu de patience pour la livraison mais ça vaut l'attente." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

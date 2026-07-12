@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FAF7F2">
+
+  <title>
+    {{- page_title -}}
+    {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags | join: ', ' }}{% endif -%}
+    {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  </title>
+
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+  {%- endif -%}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+  {{ content_for_header }}
+
+  {% style %}
+    :root {
+      --color-cream: {{ settings.color_background | default: '#FAF7F2' }};
+      --color-card: #FCFAF4;
+      --color-beige: {{ settings.color_beige | default: '#F5EFE6' }};
+      --color-sand: #E8DDD0;
+      --color-terracotta: {{ settings.color_accent | default: '#C4714A' }};
+      --color-terra-dark: #A85A35;
+      --color-sage: {{ settings.color_sage | default: '#7A9E7E' }};
+      --color-sage-dark: #5C7F60;
+      --color-bark: {{ settings.color_text | default: '#3B2A1F' }};
+      --color-muted: #675A4E;
+      --color-gold: #A8842E;
+      --color-cream-text: #F2ECE0;
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'DM Sans', system-ui, sans-serif;
+      --radius: 0.75rem;
+      --radius-lg: 1rem;
+      --page-width: 80rem;
+    }
+  {% endstyle %}
+
+  {{ 'base.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'global.js' | asset_url }}" defer></script>
+</head>
+
+<body class="template-{{ template.name }}">
+  <a class="skip-link" href="#main-content">{{ 'accessibility.skip_to_content' | t }}</a>
+
+  {% sections 'header-group' %}
+
+  <main id="main-content" role="main" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {% sections 'footer-group' %}
+
+  {% render 'cart-drawer' %}
+</body>
+</html>

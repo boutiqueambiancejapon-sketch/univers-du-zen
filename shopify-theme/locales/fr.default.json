@@ -1,0 +1,125 @@
+{
+  "general": {
+    "meta": {
+      "tags": "Étiquettes « {{ tags }} »",
+      "page": "Page {{ page }}"
+    },
+    "search": {
+      "title": "Recherche",
+      "placeholder": "Rechercher un produit…",
+      "submit": "Rechercher",
+      "no_results": "Aucun résultat pour « {{ terms }} ». Essayez un autre mot-clé.",
+      "results_with_count": "{{ count }} résultat(s) pour « {{ terms }} »"
+    },
+    "404": {
+      "title": "Page introuvable",
+      "subtitle": "Cette page n'existe pas ou a été déplacée.",
+      "link": "Retour à l'accueil"
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant"
+    }
+  },
+  "accessibility": {
+    "skip_to_content": "Passer au contenu"
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Ajouter au panier",
+      "adding": "Ajout…",
+      "sold_out": "Rupture de stock",
+      "unavailable": "Indisponible",
+      "quantity": "Quantité",
+      "vendor": "Marque",
+      "tax_included": "TVA incluse.",
+      "shipping_note": "Frais de livraison calculés à l'étape de paiement.",
+      "view_details": "Voir le produit",
+      "on_sale": "Promotion",
+      "best_seller": "Best-seller",
+      "new": "Nouveau"
+    }
+  },
+  "collections": {
+    "general": {
+      "all_products": "Toute la boutique",
+      "no_products": "Aucun produit dans cette collection pour le moment.",
+      "products_count": "{{ count }} produit(s)",
+      "sort_by": "Trier par",
+      "view_all": "Voir tout"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Votre panier",
+      "empty": "Votre panier est vide.",
+      "continue_shopping": "Continuer mes achats",
+      "subtotal": "Sous-total",
+      "total": "Total",
+      "checkout": "Passer la commande",
+      "view_cart": "Voir le panier",
+      "remove": "Retirer",
+      "note": "TVA incluse. Livraison calculée à l'étape suivante.",
+      "free_shipping_progress": "Plus que {{ amount }} pour la livraison offerte",
+      "free_shipping_reached": "✓ Livraison offerte !"
+    }
+  },
+  "customer": {
+    "login": {
+      "title": "Connexion",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "forgot_password": "Mot de passe oublié ?",
+      "create_account": "Créer un compte"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "submit": "Créer mon compte"
+    },
+    "account": {
+      "title": "Mon compte",
+      "orders": "Mes commandes",
+      "no_orders": "Vous n'avez pas encore passé de commande.",
+      "addresses": "Mes adresses",
+      "logout": "Se déconnecter",
+      "order_number": "Commande",
+      "date": "Date",
+      "status": "Statut",
+      "total": "Total"
+    },
+    "recover": {
+      "title": "Réinitialiser le mot de passe",
+      "subtitle": "Nous vous enverrons un e-mail pour réinitialiser votre mot de passe.",
+      "submit": "Envoyer",
+      "cancel": "Annuler"
+    },
+    "reset": {
+      "title": "Nouveau mot de passe",
+      "password": "Mot de passe",
+      "password_confirm": "Confirmer le mot de passe",
+      "submit": "Réinitialiser"
+    },
+    "activate": {
+      "title": "Activer le compte",
+      "submit": "Activer",
+      "decline": "Refuser l'invitation"
+    },
+    "addresses": {
+      "title": "Mes adresses",
+      "default": "Adresse par défaut"
+    },
+    "order": {
+      "title": "Commande {{ name }}"
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Votre carte cadeau",
+      "subtext": "Voici votre carte cadeau d'une valeur de {{ value }}",
+      "shop_link": "Visiter la boutique"
+    }
+  }
+}

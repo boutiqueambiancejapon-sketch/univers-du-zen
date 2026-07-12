@@ -1,0 +1,27 @@
+{%- assign items = section.settings.items | split: '|' -%}
+<div class="ethics-marquee" aria-hidden="true">
+  <div class="ethics-marquee__track">
+    {%- for k in (1..2) -%}
+      <div class="ethics-marquee__group">
+        {%- for item in items -%}
+          <span class="ethics-marquee__item">— {{ item | strip | upcase }}</span>
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Bandeau défilant",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "items",
+      "label": "Messages (séparés par |)",
+      "default": "Sélection 100% naturelle|Sans test sur animaux|Expédié depuis l'Europe|Livraison offerte dès 59 €|Retours 30 jours|Paiement sécurisé|Livraison 3–5 jours"
+    }
+  ],
+  "presets": [{ "name": "Bandeau défilant" }]
+}
+{% endschema %}

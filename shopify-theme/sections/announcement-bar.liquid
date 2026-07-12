@@ -1,0 +1,18 @@
+<div class="announcement-bar">
+  <div class="page-width announcement-bar__inner">
+    <span class="announcement-bar__side">{{ section.settings.text_left }}</span>
+    <span class="announcement-bar__center">{{ section.settings.text_center }}</span>
+    <span class="announcement-bar__side">{{ section.settings.text_right }}</span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Barre d'annonce",
+  "settings": [
+    { "type": "text", "id": "text_left", "label": "Texte gauche (desktop)", "default": "Sélection éthique & naturelle" },
+    { "type": "text", "id": "text_center", "label": "Texte central", "default": "Livraison offerte dès 59 € (FR · BE · LU)" },
+    { "type": "text", "id": "text_right", "label": "Texte droite (desktop)", "default": "Expédié depuis l'Europe en 3–5 jours" }
+  ]
+}
+{% endschema %}

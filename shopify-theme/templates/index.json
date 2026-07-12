@@ -1,0 +1,92 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "badge_text": "Sélection 100% naturelle & éthique",
+        "heading": "Votre parenthèse",
+        "heading_accent": "zen",
+        "heading_end": "au quotidien",
+        "lead": "Aromathérapie, bougies, cristaux et déco — une sélection éthique livrée depuis l'Europe en 3 à 5 jours.",
+        "cta1_label": "Découvrir la boutique",
+        "cta2_label": "Nos best-sellers →",
+        "show_proof": true,
+        "proof_text": "4,8/5 · 347+ clients satisfaits",
+        "trust_title": "Livraison offerte",
+        "trust_subtitle": "dès 59 € · expédié sous 48h"
+      }
+    },
+    "marquee": {
+      "type": "ethics-marquee",
+      "settings": {
+        "items": "Sélection 100% naturelle|Sans test sur animaux|Expédié depuis l'Europe|Livraison offerte dès 59 €|Retours 30 jours|Paiement sécurisé|Livraison 3–5 jours"
+      }
+    },
+    "bento": {
+      "type": "categories-bento",
+      "blocks": {
+        "cat1": { "type": "category", "settings": { "label": "Aromathérapie", "description": "Huiles essentielles pures", "badge": "Best-seller", "fallback_asset": "udz-cat-aromatherapie.jpeg" } },
+        "cat2": { "type": "category", "settings": { "label": "Bougies", "description": "Cire naturelle & parfums doux", "fallback_asset": "udz-cat-bougies.jpeg" } },
+        "cat3": { "type": "category", "settings": { "label": "Encens", "description": "Résines, bâtonnets & cônes", "fallback_asset": "udz-cat-encens.jpeg" } },
+        "cat4": { "type": "category", "settings": { "label": "Pierres & Cristaux", "description": "Quartz, améthyste & plus", "fallback_asset": "udz-cat-cristaux.jpeg" } },
+        "cat5": { "type": "category", "settings": { "label": "Thés Artisanaux", "description": "Saveurs du monde entier", "badge": "Nouveau", "fallback_asset": "udz-cat-thes.jpeg" } },
+        "cat6": { "type": "category", "settings": { "label": "Maison & Déco", "description": "Objets qui apaisent l'espace", "fallback_asset": "udz-cat-maison.jpeg" } }
+      },
+      "block_order": ["cat1", "cat2", "cat3", "cat4", "cat5", "cat6"],
+      "settings": {
+        "eyebrow": "Nos univers",
+        "heading": "Explorez la collection"
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Nouveautés",
+        "heading": "Huiles de Fragrance",
+        "description": "Nos huiles parfumées naturelles pour diffuseur, brûle-parfum et créations DIY. Longue tenue, formules haute concentration.",
+        "card_bg": "#2B4036",
+        "products_to_show": 8
+      }
+    },
+    "stats": {
+      "type": "stats-bar",
+      "blocks": {
+        "s1": { "type": "stat", "settings": { "value": "347", "suffix": "+", "label": "clients satisfaits" } },
+        "s2": { "type": "stat", "settings": { "value": "4,8", "suffix": "/5", "label": "note moyenne" } },
+        "s3": { "type": "stat", "settings": { "value": "100%", "suffix": "", "label": "naturel & éthique" } },
+        "s4": { "type": "stat", "settings": { "value": "48h", "suffix": "", "label": "délai d'expédition" } }
+      },
+      "block_order": ["s1", "s2", "s3", "s4"]
+    },
+    "bestsellers": {
+      "type": "product-grid",
+      "settings": {
+        "eyebrow": "Sélection",
+        "heading": "Nos produits du moment",
+        "subtitle": "Une sélection soigneusement choisie pour votre bien-être",
+        "products_to_show": 4
+      }
+    },
+    "reviews": {
+      "type": "reviews",
+      "blocks": {
+        "r1": { "type": "review", "settings": { "initials": "SL", "name": "Sophie L.", "meta": "Bruxelles · depuis 2025", "rating": 5, "text": "Les bougies sont absolument magnifiques. Le parfum dure longtemps et l'emballage est soigné. Je suis conquise, je recommande !" } },
+        "r2": { "type": "review", "settings": { "initials": "MA", "name": "Marc A.", "meta": "Paris · depuis 2024", "rating": 5, "text": "Huile essentielle de lavande top qualité. Livraison rapide depuis l'Europe, colis bien protégé. Mon rituel du soir a changé." } },
+        "r3": { "type": "review", "settings": { "initials": "CJ", "name": "Clara J.", "meta": "Amsterdam · depuis 2025", "rating": 5, "text": "Les cristaux sont splendides et correspondent exactement à la description. Service client réactif. Je reviendrai." } },
+        "r4": { "type": "review", "settings": { "initials": "PD", "name": "Pierre D.", "meta": "Lyon · depuis 2025", "rating": 4, "text": "Très belle sélection de produits. Le thé artisanal est une révélation. Un peu de patience pour la livraison mais ça vaut l'attente." } }
+      },
+      "block_order": ["r1", "r2", "r3", "r4"]
+    },
+    "ethics": {
+      "type": "ethics-section",
+      "blocks": {
+        "e1": { "type": "stat", "settings": { "value": "+7 500", "label": "références disponibles" } },
+        "e2": { "type": "stat", "settings": { "value": "3–5j", "label": "délai de livraison" } },
+        "e3": { "type": "stat", "settings": { "value": "30j", "label": "de retours gratuits" } },
+        "e4": { "type": "stat", "settings": { "value": "100%", "label": "sans test sur animaux" } }
+      },
+      "block_order": ["e1", "e2", "e3", "e4"]
+    }
+  },
+  "order": ["hero", "marquee", "bento", "featured", "stats", "bestsellers", "reviews", "ethics"]
+}

@@ -1,0 +1,36 @@
+<section class="customer-page page-width">
+  <h1>{{ 'customer.login.title' | t }}</h1>
+
+  {%- form 'customer_login' -%}
+    {{ form.errors | default_errors }}
+    <div class="field">
+      <label for="customer-email">{{ 'customer.login.email' | t }}</label>
+      <input type="email" name="customer[email]" id="customer-email" autocomplete="email" required>
+    </div>
+    <div class="field">
+      <label for="customer-password">{{ 'customer.login.password' | t }}</label>
+      <input type="password" name="customer[password]" id="customer-password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn btn--primary" style="width:100%">{{ 'customer.login.submit' | t }}</button>
+    <p style="margin-top:1rem;font-size:.875rem">
+      <a href="#recover" style="text-decoration:underline">{{ 'customer.login.forgot_password' | t }}</a> ·
+      <a href="{{ routes.account_register_url }}" style="text-decoration:underline">{{ 'customer.login.create_account' | t }}</a>
+    </p>
+  {%- endform -%}
+
+  <div id="recover" style="margin-top:3rem">
+    <h2 style="font-size:1.25rem;margin-bottom:1rem">{{ 'customer.recover.title' | t }}</h2>
+    <p style="font-size:.875rem;color:var(--color-muted);margin-bottom:1rem">{{ 'customer.recover.subtitle' | t }}</p>
+    {%- form 'recover_customer_password' -%}
+      {{ form.errors | default_errors }}
+      {%- if form.posted_successfully? -%}
+        <p class="form-success">✓</p>
+      {%- endif -%}
+      <div class="field">
+        <label for="recover-email">{{ 'customer.login.email' | t }}</label>
+        <input type="email" name="email" id="recover-email" autocomplete="email" required>
+      </div>
+      <button type="submit" class="btn btn--outline">{{ 'customer.recover.submit' | t }}</button>
+    {%- endform -%}
+  </div>
+</section>
