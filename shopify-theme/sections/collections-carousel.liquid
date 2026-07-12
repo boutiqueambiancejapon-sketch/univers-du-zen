@@ -1,0 +1,92 @@
+<section class="collections-carousel page-width">
+  <div class="featured__header">
+    <div class="featured__header-text">
+      <p class="section-eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2 class="section-title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subtitle != blank -%}
+        <p class="featured__desc">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+    </div>
+    <div class="featured__arrows">
+      <button type="button" class="featured__arrow" data-scroll-dir="left" aria-label="{{ 'general.pagination.previous' | t }}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button type="button" class="featured__arrow" data-scroll-dir="right" aria-label="{{ 'general.pagination.next' | t }}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="featured__scroll" data-scroller>
+    {%- liquid
+      # Blocs choisis à la main, sinon toutes les collections de la boutique
+      assign use_blocks = false
+      if section.blocks.size > 0
+        assign use_blocks = true
+      endif
+    -%}
+
+    {%- if use_blocks -%}
+      {%- for block in section.blocks -%}
+        {%- assign col = block.settings.collection -%}
+        {%- assign img = block.settings.image | default: col.image | default: col.products.first.featured_image -%}
+        <a href="{% if col != blank %}{{ col.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}"
+           class="collection-card" {{ block.shopify_attributes }}>
+          {%- if img != blank -%}
+            {{ img | image_url: width: 600 | image_tag: loading: 'lazy', alt: block.settings.label | default: col.title }}
+          {%- elsif block.settings.fallback_asset != blank -%}
+            <img src="{{ block.settings.fallback_asset | asset_url }}" alt="{{ block.settings.label | escape }}" loading="lazy">
+          {%- endif -%}
+          <div class="collection-card__overlay"></div>
+          <div class="collection-card__text">
+            <p class="collection-card__label">{{ block.settings.label | default: col.title | default: 'Collection' }}</p>
+            {%- if col != blank -%}
+              <p class="collection-card__count">{{ 'collections.general.products_count' | t: count: col.products_count }}</p>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for col in collections limit: section.settings.max_collections -%}
+        {%- if col.handle == 'all' or col.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
+        {%- assign img = col.image | default: col.products.first.featured_image -%}
+        <a href="{{ col.url }}" class="collection-card">
+          {%- if img != blank -%}
+            {{ img | image_url: width: 600 | image_tag: loading: 'lazy', alt: col.title }}
+          {%- endif -%}
+          <div class="collection-card__overlay"></div>
+          <div class="collection-card__text">
+            <p class="collection-card__label">{{ col.title }}</p>
+            <p class="collection-card__count">{{ 'collections.general.products_count' | t: count: col.products_count }}</p>
+          </div>
+        </a>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Carrousel de collections",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Nos univers" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Parcourez nos collections" },
+    { "type": "text", "id": "subtitle", "label": "Sous-titre" },
+    { "type": "range", "id": "max_collections", "label": "Nombre max (mode automatique)", "min": 3, "max": 12, "step": 1, "default": 8, "info": "Utilisé quand aucun bloc n'est ajouté : toutes les collections s'affichent automatiquement." }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "image_picker", "id": "image", "label": "Image (sinon image de la collection)" },
+        { "type": "text", "id": "fallback_asset", "label": "Image du thème (nom de fichier asset)", "info": "Ex. udz-cat-bougies.jpeg" },
+        { "type": "text", "id": "label", "label": "Nom affiché (sinon titre de la collection)" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Carrousel de collections" }]
+}
+{% endschema %}

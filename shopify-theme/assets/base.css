@@ -268,6 +268,26 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .mini-card__price { font-weight: 600; font-size: .875rem; color: var(--color-bark); }
 .mini-card__compare { font-size: .75rem; color: var(--color-muted); text-decoration: line-through; }
 
+/* ── Carrousel de collections ── */
+.collections-carousel { padding: 3rem 0; }
+.collection-card {
+  position: relative; flex-shrink: 0; width: 16rem; aspect-ratio: 4 / 5;
+  border-radius: 1rem; overflow: hidden; display: block;
+  border: 1px solid rgba(44,36,32,.08); background: var(--color-sand);
+}
+.collection-card img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; transition: transform .7s;
+}
+.collection-card:hover img { transform: scale(1.05); }
+.collection-card__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(44,36,32,.82) 0%, rgba(44,36,32,.1) 55%, transparent 100%);
+}
+.collection-card__text { position: absolute; bottom: 0; left: 0; padding: 1.25rem; }
+.collection-card__label { font-family: var(--font-serif); color: #fff; font-size: 1.125rem; line-height: 1.2; margin-bottom: .125rem; }
+.collection-card__count { font-size: .8rem; color: rgba(255,255,255,.6); }
+
 /* ── Stats bar ── */
 .stats-bar { background: var(--color-bark); }
 .stats-bar__grid { padding: 2.5rem 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }

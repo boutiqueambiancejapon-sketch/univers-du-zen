@@ -1,4 +1,4 @@
-{%- assign col = section.settings.collection -%}
+{%- assign col = section.settings.collection | default: collections['all'] -%}
 <section class="featured page-width">
   <div class="featured__header">
     <div class="featured__header-text">
@@ -19,6 +19,7 @@
   </div>
 
   <div class="featured__scroll" data-scroller>
+    {%- if section.settings.show_hero_card -%}
     <div class="featured__hero-card" style="background-color: {{ section.settings.card_bg }}">
       <div>
         <p class="featured__hero-card-meta">
@@ -31,6 +32,7 @@
         Voir la collection →
       </a>
     </div>
+    {%- endif -%}
 
     {%- for product in col.products limit: section.settings.products_to_show -%}
       {%- liquid
@@ -83,6 +85,7 @@
     { "type": "text", "id": "heading", "label": "Titre", "default": "Huiles de Fragrance" },
     { "type": "textarea", "id": "description", "label": "Description", "default": "Nos huiles parfumées naturelles pour diffuseur, brûle-parfum et créations DIY." },
     { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "checkbox", "id": "show_hero_card", "label": "Afficher la carte de collection colorée", "default": true },
     { "type": "color", "id": "card_bg", "label": "Couleur de la carte", "default": "#2B4036" },
     { "type": "range", "id": "products_to_show", "label": "Nombre de produits", "min": 4, "max": 12, "step": 1, "default": 8 }
   ],

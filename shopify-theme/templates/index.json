@@ -41,11 +41,21 @@
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "Nouveautés",
+        "eyebrow": "En vedette",
         "heading": "Huiles de Fragrance",
         "description": "Nos huiles parfumées naturelles pour diffuseur, brûle-parfum et créations DIY. Longue tenue, formules haute concentration.",
+        "show_hero_card": true,
         "card_bg": "#2B4036",
         "products_to_show": 8
+      }
+    },
+    "collections_carousel": {
+      "type": "collections-carousel",
+      "settings": {
+        "eyebrow": "Nos univers",
+        "heading": "Parcourez nos collections",
+        "subtitle": "Toutes nos collections, du bien-être du corps aux objets qui apaisent la maison.",
+        "max_collections": 10
       }
     },
     "stats": {
@@ -58,12 +68,24 @@
       },
       "block_order": ["s1", "s2", "s3", "s4"]
     },
+    "nouveautes": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Nouveautés",
+        "heading": "Les dernières arrivées",
+        "description": "Fraîchement ajoutées à la boutique — découvrez-les en premier.",
+        "collection": "nouveautes",
+        "show_hero_card": false,
+        "products_to_show": 10
+      }
+    },
     "bestsellers": {
       "type": "product-grid",
       "settings": {
         "eyebrow": "Sélection",
-        "heading": "Nos produits du moment",
-        "subtitle": "Une sélection soigneusement choisie pour votre bien-être",
+        "heading": "Meilleures ventes",
+        "subtitle": "Les produits préférés de nos clients, choisis pour votre bien-être",
+        "collection": "meilleures-ventes",
         "products_to_show": 4
       }
     },
@@ -88,5 +110,5 @@
       "block_order": ["e1", "e2", "e3", "e4"]
     }
   },
-  "order": ["hero", "marquee", "bento", "featured", "stats", "bestsellers", "reviews", "ethics"]
+  "order": ["hero", "marquee", "bento", "featured", "collections_carousel", "stats", "nouveautes", "bestsellers", "reviews", "ethics"]
 }

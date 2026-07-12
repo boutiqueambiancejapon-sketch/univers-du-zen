@@ -1,4 +1,4 @@
-{%- assign col = section.settings.collection -%}
+{%- assign col = section.settings.collection | default: collections['all'] -%}
 <section class="product-grid-section page-width">
   <div class="product-grid-section__header">
     <div>
