@@ -20,9 +20,24 @@
     <ul class="site-nav__menu">
       {%- for link in menu.links limit: max_visible -%}
         <li>
-          <a href="{{ link.url }}" class="site-nav__link{% if forloop.first %} site-nav__link--bold{% endif %}">
-            {{ link.title }}
-          </a>
+          {%- if link.links.size > 0 -%}
+            <details class="site-nav__dropdown">
+              <summary class="site-nav__link{% if forloop.first %} site-nav__link--bold{% endif %}" role="button">
+                {{ link.title }}
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <ul class="site-nav__dropdown-list site-nav__dropdown-list--start">
+                <li><a href="{{ link.url }}"><strong>{{ link.title }} — tout voir</strong></a></li>
+                {%- for child in link.links -%}
+                  <li><a href="{{ child.url }}">{{ child.title }}</a></li>
+                {%- endfor -%}
+              </ul>
+            </details>
+          {%- else -%}
+            <a href="{{ link.url }}" class="site-nav__link{% if forloop.first %} site-nav__link--bold{% endif %}">
+              {{ link.title }}
+            </a>
+          {%- endif -%}
         </li>
       {%- endfor -%}
 
@@ -71,6 +86,9 @@
     <ul class="page-width">
       {%- for link in menu.links -%}
         <li><a href="{{ link.url }}"{% if forloop.first %} class="is-bold"{% endif %}>{{ link.title }}</a></li>
+        {%- for child in link.links -%}
+          <li><a href="{{ child.url }}" class="mobile-menu__child">{{ child.title }}</a></li>
+        {%- endfor -%}
       {%- endfor -%}
     </ul>
   </div>
