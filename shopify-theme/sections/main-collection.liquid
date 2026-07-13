@@ -103,7 +103,7 @@
           <h2>Questions fréquentes</h2>
           {%- for item in faq -%}
             <details class="faq-item">
-              <summary>{{ item.question }}<span aria-hidden="true">▾</span></summary>
+              <summary><h3>{{ item.question }}</h3><span aria-hidden="true">▾</span></summary>
               <div class="faq-item__answer">{{ item.answer }}</div>
             </details>
           {%- endfor -%}

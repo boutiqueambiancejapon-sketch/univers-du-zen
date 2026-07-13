@@ -500,6 +500,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   list-style: none;
 }
 .faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary h3 { font-family: var(--font-sans); font-size: .9rem; font-weight: 500; margin: 0; color: inherit; }
 .faq-item summary:hover { background: rgba(255,255,255,.6); }
 .faq-item summary span { color: var(--color-muted); transition: transform .2s; flex-shrink: 0; }
 .faq-item[open] summary span { transform: rotate(180deg); }
