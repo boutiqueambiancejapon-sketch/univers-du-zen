@@ -480,6 +480,31 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .collections-list__card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .7s; }
 .collections-list__card:hover img { transform: scale(1.05); }
 
+/* ── Fil d'Ariane ── */
+.breadcrumb { font-size: .75rem; color: var(--color-muted); display: flex; gap: .375rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.breadcrumb a:hover { color: var(--color-bark); }
+.breadcrumb span:last-child { color: var(--color-bark); }
+.breadcrumb--product { padding-top: 0; }
+
+/* ── Bloc éditorial SEO ── */
+.seo-block { background: var(--color-beige); border-top: 1px solid var(--color-sand); margin-top: 2rem; }
+.seo-block__inner { max-width: 56rem; margin: 0 auto; padding: 3.5rem 1.5rem; }
+.seo-block__text h2 { font-size: 1.25rem; color: var(--color-bark); margin: 1.5rem 0 .5rem; }
+.seo-block__text p { color: var(--color-muted); font-size: .9rem; line-height: 1.7; margin-bottom: 1rem; }
+.seo-block__faq { margin-top: 2.5rem; }
+.seo-block__faq h2 { font-size: 1.5rem; color: var(--color-bark); margin-bottom: 1.5rem; }
+.faq-item { border: 1px solid var(--color-sand); border-radius: .75rem; overflow: hidden; margin-bottom: .75rem; background: var(--color-card); }
+.faq-item summary {
+  display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+  padding: 1rem; cursor: pointer; font-size: .9rem; font-weight: 500; color: var(--color-bark);
+  list-style: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary:hover { background: rgba(255,255,255,.6); }
+.faq-item summary span { color: var(--color-muted); transition: transform .2s; flex-shrink: 0; }
+.faq-item[open] summary span { transform: rotate(180deg); }
+.faq-item__answer { padding: .75rem 1rem 1rem; font-size: .875rem; color: var(--color-muted); line-height: 1.65; border-top: 1px solid var(--color-sand); }
+
 /* ── Pagination ── */
 .pagination { display: flex; justify-content: center; gap: .375rem; padding: 1rem 0 3rem; }
 .pagination a, .pagination span {
