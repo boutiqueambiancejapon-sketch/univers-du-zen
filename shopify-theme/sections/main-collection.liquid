@@ -85,16 +85,48 @@
     <div class="seo-block__inner">
       {%- if long_desc != blank -%}
         <div class="seo-block__text">
-          {%- assign paras = long_desc | newline_to_br | split: '<br />' -%}
-          {%- for para in paras -%}
-            {%- assign trimmed = para | strip -%}
-            {%- if trimmed == blank -%}{%- continue -%}{%- endif -%}
-            {%- if trimmed contains '## ' and trimmed.size < 120 -%}
-              <h2>{{ trimmed | remove_first: '## ' }}</h2>
+          {%- comment -%}
+            Mini-markdown : '## ' = H2 ; lignes '| a | b |' consécutives = tableau
+            (1re ligne = en-têtes) ; le reste = paragraphes.
+          {%- endcomment -%}
+          {%- assign lines = long_desc | newline_to_br | split: '<br />' -%}
+          {%- assign in_table = false -%}
+          {%- assign row_index = 0 -%}
+          {%- for line in lines -%}
+            {%- assign trimmed = line | strip -%}
+            {%- assign first_char = trimmed | slice: 0, 1 -%}
+            {%- if first_char == '|' -%}
+              {%- unless in_table -%}
+                {%- assign in_table = true -%}
+                {%- assign row_index = 0 -%}
+                <div class="seo-table-wrap"><table class="seo-table">
+              {%- endunless -%}
+              {%- assign cells = trimmed | split: '|' -%}
+              <tr>
+                {%- for cell in cells -%}
+                  {%- if forloop.first or forloop.last -%}{%- continue -%}{%- endif -%}
+                  {%- if row_index == 0 -%}
+                    <th scope="col">{{ cell | strip }}</th>
+                  {%- else -%}
+                    <td>{{ cell | strip }}</td>
+                  {%- endif -%}
+                {%- endfor -%}
+              </tr>
+              {%- assign row_index = row_index | plus: 1 -%}
             {%- else -%}
-              <p>{{ trimmed }}</p>
+              {%- if in_table -%}
+                </table></div>
+                {%- assign in_table = false -%}
+              {%- endif -%}
+              {%- if trimmed == blank -%}{%- continue -%}{%- endif -%}
+              {%- if trimmed contains '## ' and trimmed.size < 140 -%}
+                <h2>{{ trimmed | remove_first: '## ' }}</h2>
+              {%- else -%}
+                <p>{{ trimmed }}</p>
+              {%- endif -%}
             {%- endif -%}
           {%- endfor -%}
+          {%- if in_table -%}</table></div>{%- endif -%}
         </div>
       {%- endif -%}
 

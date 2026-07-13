@@ -491,6 +491,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .seo-block__inner { max-width: 56rem; margin: 0 auto; padding: 3.5rem 1.5rem; }
 .seo-block__text h2 { font-size: 1.25rem; color: var(--color-bark); margin: 1.5rem 0 .5rem; }
 .seo-block__text p { color: var(--color-muted); font-size: .9rem; line-height: 1.7; margin-bottom: 1rem; }
+.seo-table-wrap { overflow-x: auto; margin: 1.25rem 0 1.5rem; }
+.seo-table { width: 100%; border-collapse: collapse; font-size: .85rem; background: var(--color-card); border-radius: .75rem; overflow: hidden; }
+.seo-table th, .seo-table td { text-align: left; padding: .625rem .875rem; border: 1px solid var(--color-sand); }
+.seo-table th { background: var(--color-sand); color: var(--color-bark); font-weight: 600; font-size: .8rem; }
+.seo-table td { color: var(--color-muted); }
 .seo-block__faq { margin-top: 2.5rem; }
 .seo-block__faq h2 { font-size: 1.5rem; color: var(--color-bark); margin-bottom: 1.5rem; }
 .faq-item { border: 1px solid var(--color-sand); border-radius: .75rem; overflow: hidden; margin-bottom: .75rem; background: var(--color-card); }
