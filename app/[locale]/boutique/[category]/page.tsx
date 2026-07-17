@@ -8,6 +8,7 @@ import { getPublishedProducts } from '@/lib/get-products';
 import { CATEGORIES } from '@/lib/demo-products';
 import { getCollection } from '@/lib/collections';
 import { CATEGORY_SEO } from '@/lib/category-seo';
+import { getKeywords, getMetaKeywords } from '@/lib/collection-keywords';
 
 export async function generateMetadata({
   params,
@@ -19,11 +20,14 @@ export async function generateMetadata({
   const cat        = CATEGORIES.find(c => c.slug === params.category);
   if (!cat && !collection) return {};
   const label       = collection?.label ?? cat?.label ?? params.category;
-  const title       = seo?.title ?? label;
+  const kw          = getKeywords(params.category);
+  const title       = seo?.title ?? kw?.metaTitle ?? label;
   const description = seo?.shortDesc ?? collection?.description ?? `Découvrez notre sélection ${label.toLowerCase()} — produits éthiques livrés en Belgique.`;
+  const keywords    = getMetaKeywords(params.category);
   return {
     title,
     description,
+    ...(keywords ? { keywords } : {}),
     openGraph: { title, description, type: 'website' },
     alternates: { canonical: `https://universduzen.com/${params.locale}/boutique/${params.category}` },
   };

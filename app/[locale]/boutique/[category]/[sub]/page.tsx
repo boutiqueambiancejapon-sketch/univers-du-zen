@@ -8,6 +8,7 @@ import { getPublishedProducts } from '@/lib/get-products';
 import { CATEGORIES } from '@/lib/demo-products';
 import { COLLECTIONS, getCollection, getSubCollection } from '@/lib/collections';
 import { familiesForSub } from '@/lib/collections-helpers';
+import { getKeywords, getMetaKeywords } from '@/lib/collection-keywords';
 import CollectionSeoBlock from '@/components/shop/CollectionSeoBlock';
 
 export async function generateMetadata({
@@ -18,11 +19,17 @@ export async function generateMetadata({
   const collection = getCollection(params.category);
   const sub        = getSubCollection(params.category, params.sub);
   if (!collection || !sub) return {};
+  const kw          = getKeywords(`${params.category}/${params.sub}`);
+  const primary     = kw?.primary ? kw.primary.charAt(0).toUpperCase() + kw.primary.slice(1) : sub.label;
   const title       = `${sub.label} — ${collection.label}`;
-  const description = `Découvrez notre sélection ${sub.label.toLowerCase()} dans la collection ${collection.label}. Produits éthiques et naturels, livrés en Belgique, France et Luxembourg.`;
+  const description = kw
+    ? `${primary} : découvrez notre sélection ${sub.label.toLowerCase()} (${collection.label}). Produits naturels livrés en Belgique, France et Luxembourg.`
+    : `Découvrez notre sélection ${sub.label.toLowerCase()} dans la collection ${collection.label}. Produits éthiques et naturels, livrés en Belgique, France et Luxembourg.`;
+  const keywords    = getMetaKeywords(`${params.category}/${params.sub}`);
   return {
     title,
     description,
+    ...(keywords ? { keywords } : {}),
     openGraph: { title, description, type: 'website' },
     alternates: { canonical: `https://universduzen.com/${params.locale}/boutique/${params.category}/${params.sub}` },
   };
