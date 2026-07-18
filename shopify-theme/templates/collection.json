@@ -1,0 +1,4 @@
+{
+  "sections": { "main": { "type": "udz-main-collection" } },
+  "order": ["main"]
+}

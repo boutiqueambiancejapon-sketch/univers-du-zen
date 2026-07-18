@@ -1,0 +1,26 @@
+<div class="udz-plp__head">
+  <div class="wrap">
+    <h1>Recherche</h1>
+    <form action="{{ routes.search_url }}" method="get" style="max-width:460px;margin:16px auto 0;display:flex;gap:10px">
+      <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Rechercher un produit…" style="flex:1;padding:14px 20px;border-radius:100px;border:1px solid var(--sand)">
+      <button class="btn btn--dark" type="submit">Rechercher</button>
+    </form>
+  </div>
+</div>
+<section class="udz-sec">
+  <div class="wrap">
+    {%- if search.performed -%}
+      <p style="color:var(--muted);margin-bottom:20px">{{ search.results_count }} résultat(s) pour « {{ search.terms }} »</p>
+      <div class="udz-grid">
+        {%- for item in search.results -%}
+          {%- if item.object_type == 'product' -%}{% render 'udz-card', product: item %}{%- endif -%}
+        {%- else -%}
+          <p>Aucun résultat.</p>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}
+{ "name": "Recherche", "settings": [] }
+{% endschema %}

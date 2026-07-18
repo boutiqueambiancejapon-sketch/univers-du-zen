@@ -1,0 +1,55 @@
+<div class="udz-plp__head">
+  <div class="wrap">
+    <nav style="font-size:12px;color:var(--muted);margin-bottom:14px">
+      <a href="{{ routes.root_url }}">Accueil</a> / <a href="{{ routes.collections_url }}">Boutique</a> / <span style="color:var(--text)">{{ collection.title }}</span>
+    </nav>
+    <h1>{{ collection.title }}</h1>
+    {%- if collection.metafields.custom.tagline != blank -%}
+      <p>{{ collection.metafields.custom.tagline }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+<div class="wrap">
+  {%- comment -%} Sous-collections liées {%- endcomment -%}
+  {%- if linklists[collection.handle].links.size > 0 -%}
+    <div class="udz-filters">
+      <a class="udz-chip udz-chip--active" href="{{ collection.url }}">Tout voir</a>
+      {%- for link in linklists[collection.handle].links -%}
+        <a class="udz-chip" href="{{ link.url }}">{{ link.title }}</a>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- paginate collection.products by 24 -%}
+    <div class="udz-plp__bar">
+      <span>{{ collection.products_count }} produits</span>
+    </div>
+    <div class="udz-grid">
+      {%- for product in collection.products -%}
+        {% render 'udz-card', product: product %}
+      {%- else -%}
+        <p>Aucun produit pour le moment.</p>
+      {%- endfor -%}
+    </div>
+    {%- if paginate.pages > 1 -%}
+      <div class="udz-filters" style="justify-content:center;margin-top:32px">
+        {%- if paginate.previous -%}<a class="udz-chip" href="{{ paginate.previous.url }}">←</a>{%- endif -%}
+        {%- for part in paginate.parts -%}
+          {%- if part.is_link -%}<a class="udz-chip" href="{{ part.url }}">{{ part.title }}</a>
+          {%- else -%}<span class="udz-chip udz-chip--active">{{ part.title }}</span>{%- endif -%}
+        {%- endfor -%}
+        {%- if paginate.next -%}<a class="udz-chip" href="{{ paginate.next.url }}">→</a>{%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
+
+{%- if collection.description != blank -%}
+  <section class="udz-sec udz-sec--tint" style="margin-top:48px">
+    <div class="wrap"><div class="udz-rte">{{ collection.description }}</div></div>
+  </section>
+{%- endif -%}
+{% schema %}
+{ "name": "Collection", "settings": [] }
+{% endschema %}

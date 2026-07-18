@@ -1,0 +1,16 @@
+<div class="udz-values" role="region" aria-label="Nos valeurs">
+  <div class="udz-values__track">
+    {%- assign vals = section.settings.values | split: '|' -%}
+    <span>{% for v in vals %}{{ v | strip }} <i>✦</i> {% endfor %}</span>
+    <span aria-hidden="true">{% for v in vals %}{{ v | strip }} <i>✦</i> {% endfor %}</span>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Bandeau valeurs",
+  "settings": [
+    { "type": "text", "id": "values", "label": "Valeurs (séparées par |)", "default": "Naturel & bio | Fait main | Éco-responsable | Expédié de France | Satisfait ou remboursé" }
+  ],
+  "presets": [{ "name": "Bandeau valeurs" }]
+}
+{% endschema %}

@@ -1,0 +1,39 @@
+<footer class="udz-foot">
+  <div class="wrap">
+    <div class="udz-foot__grid">
+      <div>
+        <div class="udz-foot__logo">{{ shop.name | replace: '.', '' }}<span>.</span></div>
+        <p>{{ section.settings.blurb }}</p>
+      </div>
+      {%- for block in section.blocks -%}
+        <div class="udz-foot__col" {{ block.shopify_attributes }}>
+          <h4>{{ block.settings.title }}</h4>
+          {%- assign fl = linklists[block.settings.menu].links -%}
+          {%- for link in fl -%}
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+    <div class="udz-foot__bottom">
+      <span>© {{ 'now' | date: '%Y' }} {{ shop.name }} — Tous droits réservés</span>
+      <span>Paiement sécurisé · CB · PayPal · Apple Pay</span>
+    </div>
+  </div>
+</footer>
+{% schema %}
+{
+  "name": "Pied de page",
+  "settings": [
+    { "type": "textarea", "id": "blurb", "label": "Texte", "default": "Votre boutique bien-être : encens, aromathérapie, cristaux et rituels naturels, expédiés depuis la France." }
+  ],
+  "blocks": [
+    { "type": "column", "name": "Colonne de liens", "settings": [
+      { "type": "text", "id": "title", "label": "Titre", "default": "Boutique" },
+      { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+    ]}
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Pied de page", "blocks": [ {"type":"column"}, {"type":"column"}, {"type":"column"} ] }]
+}
+{% endschema %}

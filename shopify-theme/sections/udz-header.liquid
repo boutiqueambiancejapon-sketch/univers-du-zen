@@ -1,0 +1,94 @@
+<script>window.UDZ_CURRENCY = {{ shop.currency | json }};</script>
+<header class="udz-head">
+  <div class="udz-head__bar">
+    {%- assign menu = section.settings.menu -%}
+    {%- assign links = linklists[menu].links -%}
+    {%- assign half = links.size | plus: 1 | divided_by: 2 -%}
+
+    <nav class="udz-head__nav" aria-label="Navigation gauche">
+      {%- for link in links -%}
+        {%- if forloop.index0 < half -%}
+          {%- assign key = 'm' | append: forloop.index0 -%}
+          {%- if link.links.size > 0 -%}
+            <button class="udz-head__link" data-mega-trigger="{{ key }}" aria-expanded="false">{{ link.title }} <span class="caret">▾</span></button>
+          {%- else -%}
+            <a class="udz-head__link" href="{{ link.url }}">{{ link.title }}</a>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </nav>
+
+    <a href="{{ routes.root_url }}" class="udz-logo">{{ shop.name | replace: '.', '' }}<span>.</span></a>
+
+    <nav class="udz-head__nav udz-head__nav--right" aria-label="Navigation droite">
+      {%- for link in links -%}
+        {%- if forloop.index0 >= half -%}
+          {%- assign key = 'm' | append: forloop.index0 -%}
+          {%- if link.links.size > 0 -%}
+            <button class="udz-head__link" data-mega-trigger="{{ key }}" aria-expanded="false">{{ link.title }} <span class="caret">▾</span></button>
+          {%- else -%}
+            <a class="udz-head__link" href="{{ link.url }}">{{ link.title }}</a>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </nav>
+
+    <div class="udz-head__actions">
+      <a class="udz-iconbtn" href="{{ routes.search_url }}" aria-label="Rechercher">⌕</a>
+      <a class="udz-iconbtn" href="{{ routes.account_url }}" aria-label="Compte">◠</a>
+      <button class="udz-iconbtn" data-cart-open aria-label="Panier">
+        ⛊<span class="udz-cartcount" data-cart-count{% if cart.item_count == 0 %} style="display:none"{% endif %}>{{ cart.item_count }}</span>
+      </button>
+    </div>
+  </div>
+
+  {%- for link in links -%}
+    {%- if link.links.size > 0 -%}
+      {%- assign key = 'm' | append: forloop.index0 -%}
+      <div class="udz-mega" data-mega="{{ key }}" data-open="false">
+        <div class="udz-mega__inner">
+          <div>
+            <div class="udz-mega__title">{{ link.title }}</div>
+            <div class="udz-mega__links">
+              {%- for child in link.links -%}
+                <a href="{{ child.url }}">{{ child.title }}</a>
+              {%- endfor -%}
+            </div>
+            <a class="udz-mega__all" href="{{ link.url }}">Voir toute la collection →</a>
+          </div>
+          <a class="udz-mega__promo" href="{{ link.url }}">
+            <span class="serif" style="font-size:22px">{{ link.title }}</span>
+          </a>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+</header>
+
+{%- comment -%} Tiroir panier {%- endcomment -%}
+<div class="udz-drawer" data-cart-drawer data-open="false" aria-hidden="true">
+  <div class="udz-drawer__ov" data-cart-close></div>
+  <aside class="udz-drawer__panel" role="dialog" aria-label="Panier">
+    <div class="udz-drawer__head">
+      <strong class="serif" style="font-size:22px">Votre panier</strong>
+      <button class="udz-iconbtn" data-cart-close aria-label="Fermer">✕</button>
+    </div>
+    <div class="udz-drawer__items" data-cart-items></div>
+    <div class="udz-drawer__foot">
+      <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+        <span>Sous-total</span><strong data-cart-subtotal>{{ cart.total_price | money }}</strong>
+      </div>
+      <a href="{{ routes.cart_url }}" class="btn btn--ghost btn--block" style="margin-bottom:8px">Voir le panier</a>
+      <a href="/checkout" class="btn btn--primary btn--block">Commander</a>
+    </div>
+  </aside>
+</div>
+
+{% schema %}
+{
+  "name": "En-tête",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu principal", "default": "main-menu" }
+  ]
+}
+{% endschema %}

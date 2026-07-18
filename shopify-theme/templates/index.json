@@ -1,0 +1,55 @@
+{
+  "sections": {
+    "hero": { "type": "udz-hero" },
+    "trust": {
+      "type": "udz-trust",
+      "blocks": {
+        "b1": { "type": "item", "settings": { "icon": "❋", "title": "Naturel & bio", "sub": "Ingrédients d'origine naturelle" } },
+        "b2": { "type": "item", "settings": { "icon": "✦", "title": "Artisanal", "sub": "Fait main, petites séries" } },
+        "b3": { "type": "item", "settings": { "icon": "➳", "title": "Livraison 48h", "sub": "Offerte dès 59 €" } },
+        "b4": { "type": "item", "settings": { "icon": "↺", "title": "Satisfait ou remboursé", "sub": "30 jours pour changer d'avis" } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    },
+    "collections": {
+      "type": "udz-collections",
+      "settings": { "heading": "Explorez nos univers" },
+      "blocks": {
+        "c1": { "type": "tile", "settings": { "collection": "encens-rituels", "grid_column": "1 / span 2", "grid_row": "1 / span 2" } },
+        "c2": { "type": "tile", "settings": { "collection": "aromatherapie", "grid_column": "3", "grid_row": "1" } },
+        "c3": { "type": "tile", "settings": { "collection": "bijoux-cristaux", "grid_column": "4", "grid_row": "1" } },
+        "c4": { "type": "tile", "settings": { "collection": "bougies-photophores", "grid_column": "3 / span 2", "grid_row": "2" } },
+        "c5": { "type": "tile", "settings": { "collection": "the-tisanes", "grid_column": "1", "grid_row": "3" } },
+        "c6": { "type": "tile", "settings": { "collection": "bien-etre-corps", "grid_column": "2 / span 3", "grid_row": "3" } }
+      },
+      "block_order": ["c1", "c2", "c3", "c4", "c5", "c6"]
+    },
+    "marquee": { "type": "udz-marquee" },
+    "featured": {
+      "type": "udz-featured",
+      "settings": { "eyebrow": "Les préférés de la communauté", "heading": "Nos best-sellers", "collection": "encens-rituels", "count": 4, "tint": true }
+    },
+    "intention": {
+      "type": "udz-intention",
+      "settings": { "eyebrow": "Guidé par l'intention", "heading": "Trouvez selon l'envie" },
+      "blocks": {
+        "e1": { "type": "tile", "settings": { "collection": "bien-etre-corps", "title": "Se détendre" } },
+        "e2": { "type": "tile", "settings": { "collection": "encens-rituels", "title": "Purifier son intérieur" } },
+        "e3": { "type": "tile", "settings": { "collection": "aromatherapie", "title": "Mieux dormir" } },
+        "e4": { "type": "tile", "settings": { "collection": "instruments-sonotherapie", "title": "Méditer" } },
+        "e5": { "type": "tile", "settings": { "collection": "coffrets-cadeaux-bien-etre", "title": "Offrir" } }
+      },
+      "block_order": ["e1", "e2", "e3", "e4", "e5"]
+    },
+    "promise": {
+      "type": "udz-promise",
+      "blocks": {
+        "s1": { "type": "stat", "settings": { "number": "100%", "label": "d'ingrédients d'origine naturelle" } },
+        "s2": { "type": "stat", "settings": { "number": "48h", "label": "livraison en France, Belgique & Luxembourg" } }
+      },
+      "block_order": ["s1", "s2"]
+    },
+    "newsletter": { "type": "udz-newsletter" }
+  },
+  "order": ["hero", "trust", "collections", "marquee", "featured", "intention", "promise", "newsletter"]
+}

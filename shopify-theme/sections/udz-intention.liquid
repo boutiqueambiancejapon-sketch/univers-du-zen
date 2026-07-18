@@ -1,0 +1,54 @@
+<section class="udz-sec udz-sec--sand">
+  <div class="wrap">
+    <div class="udz-sechead" data-reveal>
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<div class="eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+        <h2>{{ section.settings.heading }}</h2>
+      </div>
+      <div class="udz-navbtns">
+        <button data-scroller-prev="envie" aria-label="Précédent">←</button>
+        <button data-scroller-next="envie" aria-label="Suivant">→</button>
+      </div>
+    </div>
+  </div>
+  <div class="udz-scroller" data-scroller="envie">
+    {%- for block in section.blocks -%}
+      {%- assign col = block.settings.collection -%}
+      <a class="udz-envie" href="{{ col.url | default: '#' }}" {{ block.shopify_attributes }}>
+        {%- if block.settings.image -%}
+          <img src="{{ block.settings.image | image_url: width: 540 }}" alt="{{ block.settings.title }}" loading="lazy">
+        {%- elsif col.featured_image -%}
+          <img src="{{ col.featured_image | image_url: width: 540 }}" alt="{{ col.title }}" loading="lazy">
+        {%- endif -%}
+        <div class="udz-envie__cap">
+          <div class="udz-envie__name">{{ block.settings.title | default: col.title }}</div>
+          {%- if col.products_count > 0 -%}<div class="udz-envie__sub">{{ col.products_count }} produits</div>{%- endif -%}
+        </div>
+      </a>
+    {%- endfor -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Trouver par envie",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Guidé par l'intention" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Trouvez selon l'envie" }
+  ],
+  "blocks": [
+    { "type": "tile", "name": "Envie", "settings": [
+      { "type": "collection", "id": "collection", "label": "Collection" },
+      { "type": "text", "id": "title", "label": "Titre affiché", "default": "Se détendre" },
+      { "type": "image_picker", "id": "image", "label": "Image (option)" }
+    ]}
+  ],
+  "max_blocks": 8,
+  "presets": [{ "name": "Trouver par envie", "blocks": [
+    { "type": "tile", "settings": { "title": "Se détendre" } },
+    { "type": "tile", "settings": { "title": "Purifier son intérieur" } },
+    { "type": "tile", "settings": { "title": "Mieux dormir" } },
+    { "type": "tile", "settings": { "title": "Méditer" } },
+    { "type": "tile", "settings": { "title": "Offrir" } }
+  ]}]
+}
+{% endschema %}

@@ -1,0 +1,20 @@
+<div class="udz-annc" role="region" aria-label="Annonces">
+  <div class="udz-annc__track">
+    {%- assign msgs = section.settings.messages | split: '|' -%}
+    <span>
+      {%- for m in msgs -%}{{ m | strip }} &nbsp;✦&nbsp;&nbsp; {%- endfor -%}
+    </span>
+    <span aria-hidden="true">
+      {%- for m in msgs -%}{{ m | strip }} &nbsp;✦&nbsp;&nbsp; {%- endfor -%}
+    </span>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Barre d'annonce",
+  "settings": [
+    { "type": "text", "id": "messages", "label": "Messages (séparés par |)", "default": "Livraison offerte dès 59 € en France, Belgique & Luxembourg | -10% avec le code ZEN10 | Expédition sous 48h | Satisfait ou remboursé 30 jours" }
+  ],
+  "presets": [{ "name": "Barre d'annonce" }]
+}
+{% endschema %}

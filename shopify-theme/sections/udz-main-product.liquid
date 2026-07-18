@@ -1,0 +1,84 @@
+<div class="udz-pdp">
+  <div class="udz-pdp__gallery">
+    <div class="udz-pdp__main">
+      {%- if product.featured_media -%}
+        <img data-pdp-main src="{{ product.featured_media | image_url: width: 900 }}" alt="{{ product.featured_media.alt | escape | default: product.title }}">
+      {%- endif -%}
+    </div>
+    {%- if product.media.size > 1 -%}
+      <div class="udz-pdp__thumbs">
+        {%- for media in product.media limit: 6 -%}
+          <img data-pdp-thumb data-full="{{ media | image_url: width: 900 }}" src="{{ media | image_url: width: 150 }}" alt="{{ media.alt | escape }}">
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div>
+    <nav style="font-size:12px;color:var(--muted);margin-bottom:14px">
+      <a href="{{ routes.root_url }}">Accueil</a>{% if collection %} / <a href="{{ collection.url }}">{{ collection.title }}</a>{% endif %}
+    </nav>
+    {%- if product.metafields.reviews.rating_count -%}
+      <div style="color:var(--gold);letter-spacing:2px;margin-bottom:8px">★★★★★ <span style="color:var(--muted);font-size:13px">{{ product.metafields.reviews.rating_count }} avis</span></div>
+    {%- endif -%}
+    <h1>{{ product.title }}</h1>
+
+    {% form 'product', product %}
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <div class="udz-pdp__price">
+        {{ product.selected_or_first_available_variant.price | money }}
+        {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money }}</s>{%- endif -%}
+      </div>
+
+      {%- if product.metafields.custom.accroche != blank -%}
+        <p class="udz-pdp__desc"><em>« {{ product.metafields.custom.accroche }} »</em></p>
+      {%- endif -%}
+
+      {%- unless product.has_only_default_variant -%}
+        {%- for option in product.options_with_values -%}
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:13px;color:var(--muted);margin-bottom:6px">{{ option.name }}</label>
+            <select name="options[{{ option.name | escape }}]" style="padding:12px 16px;border-radius:12px;border:1px solid var(--sand);font-family:var(--sans)">
+              {%- for value in option.values -%}<option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>{{ value }}</option>{%- endfor -%}
+            </select>
+          </div>
+        {%- endfor -%}
+      {%- endunless -%}
+
+      <button type="submit" class="btn btn--primary btn--block" style="margin:8px 0 22px"{% unless product.available %} disabled{% endunless %}>
+        {% if product.available %}Ajouter au panier — {{ product.price | money }}{% else %}Épuisé{% endif %}
+      </button>
+    {% endform %}
+
+    {%- if product.description != blank -%}
+      <div class="udz-pdp__desc">{{ product.description }}</div>
+    {%- endif -%}
+
+    <div class="udz-acc">
+      {%- if product.metafields.custom.utilisation != blank -%}
+        <details><summary>Utilisation</summary><div class="udz-acc__body">{{ product.metafields.custom.utilisation }}</div></details>
+      {%- endif -%}
+      {%- if product.metafields.custom.composition != blank -%}
+        <details><summary>Composition</summary><div class="udz-acc__body">{{ product.metafields.custom.composition }}</div></details>
+      {%- endif -%}
+      <details><summary>Livraison & retours</summary><div class="udz-acc__body">Commandé avant 15h, votre colis part le jour même. Livraison en 48-72h en France, Belgique et Luxembourg, offerte dès 59 €. 30 jours pour changer d'avis, retour gratuit.</div></details>
+    </div>
+  </div>
+</div>
+
+{%- assign rec = product.collections.first -%}
+{%- if rec -%}
+<section class="udz-sec udz-sec--tint">
+  <div class="wrap">
+    <div class="udz-sechead udz-sechead--center"><h2>Vous aimerez aussi</h2></div>
+    <div class="udz-grid">
+      {%- for p in rec.products limit: 4 -%}{% unless p.id == product.id %}{% render 'udz-card', product: p %}{% endunless %}{%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<script type="application/ld+json">{{ product | structured_data }}</script>
+{% schema %}
+{ "name": "Produit", "settings": [] }
+{% endschema %}

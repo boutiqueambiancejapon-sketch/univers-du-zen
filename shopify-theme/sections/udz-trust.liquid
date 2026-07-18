@@ -1,0 +1,32 @@
+<section class="udz-trust">
+  <div class="udz-trust__grid">
+    {%- for block in section.blocks -%}
+      <div class="udz-trust__item" {{ block.shopify_attributes }}>
+        <span class="udz-trust__ic">{{ block.settings.icon }}</span>
+        <div>
+          <div class="udz-trust__t">{{ block.settings.title }}</div>
+          <div class="udz-trust__s">{{ block.settings.sub }}</div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Barre de réassurance",
+  "blocks": [
+    { "type": "item", "name": "Argument", "settings": [
+      { "type": "text", "id": "icon", "label": "Icône (emoji)", "default": "❋" },
+      { "type": "text", "id": "title", "label": "Titre", "default": "Naturel & bio" },
+      { "type": "text", "id": "sub", "label": "Sous-texte", "default": "Ingrédients d'origine naturelle" }
+    ]}
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Barre de réassurance", "blocks": [
+    { "type": "item", "settings": { "icon": "❋", "title": "Naturel & bio", "sub": "Ingrédients d'origine naturelle" } },
+    { "type": "item", "settings": { "icon": "✦", "title": "Artisanal", "sub": "Fait main, petites séries" } },
+    { "type": "item", "settings": { "icon": "➳", "title": "Livraison 48h", "sub": "Offerte dès 59 €" } },
+    { "type": "item", "settings": { "icon": "↺", "title": "Satisfait ou remboursé", "sub": "30 jours pour changer d'avis" } }
+  ]}]
+}
+{% endschema %}

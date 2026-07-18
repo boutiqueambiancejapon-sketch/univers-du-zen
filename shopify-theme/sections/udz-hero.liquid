@@ -1,0 +1,40 @@
+<section class="udz-hero">
+  <div class="udz-hero__text" data-reveal>
+    <div class="eyebrow-line"><i></i>{{ section.settings.eyebrow }}</div>
+    <h1>{{ section.settings.heading }}</h1>
+    <p class="udz-hero__p">{{ section.settings.text }}</p>
+    <div class="udz-hero__cta">
+      {%- if section.settings.btn1_label != blank -%}
+        <a class="btn btn--primary" href="{{ section.settings.btn1_link }}">{{ section.settings.btn1_label }}</a>
+      {%- endif -%}
+      {%- if section.settings.btn2_label != blank -%}
+        <a class="btn btn--ghost" href="{{ section.settings.btn2_link }}">{{ section.settings.btn2_label }}</a>
+      {%- endif -%}
+    </div>
+    {%- if section.settings.rating_text != blank -%}
+      <div class="udz-hero__rating"><span class="stars">★★★★★</span> {{ section.settings.rating_text }}</div>
+    {%- endif -%}
+  </div>
+  <div class="udz-hero__media">
+    {%- if section.settings.image -%}
+      <img src="{{ section.settings.image | image_url: width: 1200 }}" alt="{{ section.settings.image.alt | escape }}" width="1200" height="900">
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Bannière héro",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Bien-être naturel · fabriqué avec soin" },
+    { "type": "inline_richtext", "id": "heading", "label": "Titre", "default": "Respirez. Votre maison devient <em>un sanctuaire</em>." },
+    { "type": "textarea", "id": "text", "label": "Texte", "default": "Encens naturels, huiles essentielles bio et cristaux choisis à la main. Plus de 6 500 essentiels bien-être pour transformer chaque jour." },
+    { "type": "text", "id": "btn1_label", "label": "Bouton 1", "default": "Découvrir la boutique" },
+    { "type": "url", "id": "btn1_link", "label": "Lien bouton 1" },
+    { "type": "text", "id": "btn2_label", "label": "Bouton 2", "default": "Nos best-sellers" },
+    { "type": "url", "id": "btn2_link", "label": "Lien bouton 2" },
+    { "type": "text", "id": "rating_text", "label": "Texte avis", "default": "4,8/5 · plus de 2 100 avis vérifiés" },
+    { "type": "image_picker", "id": "image", "label": "Image" }
+  ],
+  "presets": [{ "name": "Bannière héro" }]
+}
+{% endschema %}

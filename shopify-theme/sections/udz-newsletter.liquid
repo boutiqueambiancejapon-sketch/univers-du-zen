@@ -1,0 +1,25 @@
+<section class="udz-news">
+  <div class="wrap" data-reveal>
+    <h2>{{ section.settings.heading }}</h2>
+    <p>{{ section.settings.text }}</p>
+    {%- form 'customer', class: 'udz-news__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input type="email" name="contact[email]" placeholder="votre@email.com" aria-label="Email" required>
+      <button type="submit" class="btn btn--dark">{{ section.settings.button | default: "Je m'inscris" }}</button>
+      {%- if form.posted_successfully? -%}
+        <p style="width:100%;color:var(--sage-d);margin:10px 0 0">Merci ! Vous êtes bien inscrit·e. ✓</p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Recevez votre bon de bienvenue" },
+    { "type": "textarea", "id": "text", "label": "Texte", "default": "-10% sur votre première commande, et nos conseils bien-être chaque semaine. Zéro spam, que du calme." },
+    { "type": "text", "id": "button", "label": "Bouton", "default": "Je m'inscris" }
+  ],
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}

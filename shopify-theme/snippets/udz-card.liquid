@@ -1,0 +1,40 @@
+{%- comment -%} Carte produit — param: product {%- endcomment -%}
+<a class="udz-card" href="{{ product.url }}">
+  <div class="udz-card__media">
+    {%- if product.featured_media -%}
+      <img src="{{ product.featured_media | image_url: width: 500 }}" alt="{{ product.featured_media.alt | escape | default: product.title }}" loading="lazy" width="500" height="500">
+    {%- else -%}
+      <img src="{{ 'product-1' | placeholder_svg_tag }}" alt="{{ product.title }}">
+    {%- endif -%}
+    {%- if product.compare_at_price > product.price -%}
+      {%- assign pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+      <span class="udz-card__badge udz-card__badge--sale">-{{ pct }}%</span>
+    {%- elsif product.tags contains 'nouveau' or product.tags contains 'Nouveau' -%}
+      <span class="udz-card__badge udz-card__badge--new">Nouveau</span>
+    {%- elsif product.tags contains 'best-seller' or product.tags contains 'Best-seller' -%}
+      <span class="udz-card__badge">Best-seller</span>
+    {%- endif -%}
+  </div>
+  <div class="udz-card__body">
+    <div class="udz-card__name">{{ product.title }}</div>
+    {%- if product.metafields.custom.sous_titre -%}
+      <div class="udz-card__sub">{{ product.metafields.custom.sous_titre }}</div>
+    {%- elsif product.vendor and product.vendor != 'AW Dropship Europe' -%}
+      <div class="udz-card__sub">{{ product.vendor }}</div>
+    {%- endif -%}
+    <div class="udz-card__row">
+      <span class="udz-price">
+        {{ product.price | money }}
+        {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money }}</s>{%- endif -%}
+      </span>
+      {%- if product.metafields.reviews.rating_count -%}
+        <span class="udz-reviews">★★★★★ <span>{{ product.metafields.reviews.rating_count }}</span></span>
+      {%- endif -%}
+    </div>
+    {%- if product.available == false -%}
+      <div class="udz-urgency"><i></i>Épuisé</div>
+    {%- elsif product.inventory_quantity and product.inventory_quantity <= 5 and product.inventory_quantity > 0 -%}
+      <div class="udz-urgency"><i></i>Plus que {{ product.inventory_quantity }} en stock</div>
+    {%- endif -%}
+  </div>
+</a>
