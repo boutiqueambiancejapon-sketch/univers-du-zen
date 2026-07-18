@@ -19,6 +19,12 @@
     {%- if section.settings.image -%}
       <img src="{{ section.settings.image | image_url: width: 1200 }}" alt="{{ section.settings.image.alt | escape }}" width="1200" height="900">
     {%- endif -%}
+    {%- if section.settings.card_title != blank -%}
+      <a class="udz-hero__card" href="{{ section.settings.card_link | default: '#' }}">
+        {%- if section.settings.card_image -%}<img src="{{ section.settings.card_image | image_url: width: 92 }}" alt="">{%- else -%}<span style="width:46px;height:46px;border-radius:10px;background:var(--bg-3);display:block"></span>{%- endif -%}
+        <div><b>{{ section.settings.card_title }}</b><span>{{ section.settings.card_sub }}</span></div>
+      </a>
+    {%- endif -%}
   </div>
 </section>
 {% schema %}
@@ -33,7 +39,12 @@
     { "type": "text", "id": "btn2_label", "label": "Bouton 2", "default": "Nos best-sellers" },
     { "type": "url", "id": "btn2_link", "label": "Lien bouton 2" },
     { "type": "text", "id": "rating_text", "label": "Texte avis", "default": "4,8/5 · plus de 2 100 avis vérifiés" },
-    { "type": "image_picker", "id": "image", "label": "Image" }
+    { "type": "image_picker", "id": "image", "label": "Image principale" },
+    { "type": "header", "content": "Carte flottante" },
+    { "type": "image_picker", "id": "card_image", "label": "Vignette produit" },
+    { "type": "text", "id": "card_title", "label": "Titre carte", "default": "Coffret Rituel Purification" },
+    { "type": "text", "id": "card_sub", "label": "Sous-titre carte", "default": "Best-seller · 24,90 €" },
+    { "type": "url", "id": "card_link", "label": "Lien carte" }
   ],
   "presets": [{ "name": "Bannière héro" }]
 }

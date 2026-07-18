@@ -44,12 +44,20 @@
     "promise": {
       "type": "udz-promise",
       "blocks": {
-        "s1": { "type": "stat", "settings": { "number": "100%", "label": "d'ingrédients d'origine naturelle" } },
-        "s2": { "type": "stat", "settings": { "number": "48h", "label": "livraison en France, Belgique & Luxembourg" } }
+        "s1": { "type": "stat", "settings": { "count": 100, "suffix": "%", "label": "d'ingrédients d'origine naturelle" } },
+        "s2": { "type": "stat", "settings": { "count": 48, "suffix": "h", "label": "livraison en France, Belgique & Luxembourg" } }
       },
       "block_order": ["s1", "s2"]
     },
+    "newproducts": {
+      "type": "udz-newproducts",
+      "settings": { "eyebrow": "Fraîchement arrivés", "heading": "Nouveautés", "collection": "the-tisanes" }
+    },
+    "ritual": {
+      "type": "udz-ritual-builder",
+      "settings": { "eyebrow": "Créez votre bundle", "heading": "Composez votre rituel", "text": "Choisissez 3 produits, votre bundle se crée tout seul — -15% automatique.", "collection": "encens-rituels" }
+    },
     "newsletter": { "type": "udz-newsletter" }
   },
-  "order": ["hero", "trust", "collections", "marquee", "featured", "intention", "promise", "newsletter"]
+  "order": ["hero", "trust", "collections", "marquee", "featured", "intention", "promise", "newproducts", "ritual", "newsletter"]
 }

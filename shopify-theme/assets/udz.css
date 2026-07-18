@@ -233,6 +233,49 @@ button{font-family:var(--sans);cursor:pointer}
 .udz-drawer__items{flex:1;overflow-y:auto}
 .udz-drawer__foot{border-top:1px solid var(--line);padding-top:16px}
 
+/* ===== Animations (identiques aux maquettes) ===== */
+@keyframes udz-fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes udz-floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes udz-drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,-40px) scale(1.12)}}
+@keyframes udz-drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-50px,30px) scale(.92)}}
+@keyframes udz-smoke{0%{transform:translateY(30px) scale(1,.9);opacity:0}25%{opacity:.45}100%{transform:translateY(-160px) scale(1.15,1.35);opacity:0}}
+.udz-hero__text{animation:udz-fadeUp .9s ease both}
+
+/* Carte produit flottante (héro) */
+.udz-hero__card{position:absolute;bottom:36px;left:36px;background:var(--bg);border-radius:16px;padding:14px 20px;box-shadow:0 12px 40px rgba(46,42,36,.14);animation:udz-floaty 5s ease-in-out infinite;display:flex;gap:14px;align-items:center;max-width:calc(100% - 72px)}
+.udz-hero__card img{width:46px;height:46px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--bg-3)}
+.udz-hero__card b{font-size:14px;font-weight:600;display:block}
+.udz-hero__card span{font-size:13px;color:var(--sage-d)}
+
+/* Décor animé bande promesse */
+.udz-promise__blob{position:absolute;border-radius:50%;filter:blur(46px);pointer-events:none}
+.udz-promise__blob--1{width:460px;height:460px;background:radial-gradient(circle,rgba(200,209,186,.30),transparent 70%);top:-140px;right:-100px;animation:udz-drift1 20s ease-in-out infinite}
+.udz-promise__blob--2{width:380px;height:380px;background:radial-gradient(circle,rgba(40,50,35,.42),transparent 70%);bottom:-120px;left:-90px;animation:udz-drift2 26s ease-in-out infinite}
+.udz-promise__smoke{position:absolute;bottom:0;border-radius:50%;background:rgba(240,235,224,.10);filter:blur(20px);pointer-events:none;animation:udz-smoke 10s ease-in infinite}
+.udz-promise__smoke--a{left:18%;width:70px;height:220px}
+.udz-promise__smoke--b{left:26%;width:50px;height:180px;animation-duration:13s;animation-delay:3s}
+
+/* Section teintée avec halo (sable) */
+.udz-sec--glow{position:relative;overflow:hidden}
+.udz-sec--glow .udz-blob{position:absolute;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,rgba(156,175,136,.28),transparent 70%);filter:blur(46px);top:-120px;right:-90px;animation:udz-drift2 24s ease-in-out infinite;pointer-events:none}
+
+/* Rituel Builder (composez votre rituel) */
+.udz-builder{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px}
+.udz-builder__search{width:100%;padding:12px 18px;border-radius:var(--pill);border:1px solid var(--sand);margin-bottom:16px;font-family:var(--sans);outline:none}
+.udz-builder__list{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:380px;overflow-y:auto;padding-right:4px}
+.udz-builder__prod{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px;cursor:pointer;text-align:left;background:var(--bg);transition:border-color .2s,background .2s;font-family:var(--sans)}
+.udz-builder__prod[aria-pressed="true"]{border-color:var(--sage-d);background:var(--bg-3)}
+.udz-builder__prod img{width:46px;height:46px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg-3)}
+.udz-builder__prod b{font-size:13px;font-weight:600;display:block;line-height:1.2}
+.udz-builder__prod span{font-size:12px;color:var(--muted)}
+.udz-builder__slots{display:flex;flex-direction:column;gap:12px}
+.udz-builder__slot{display:flex;gap:12px;align-items:center;border:1px dashed var(--sand);border-radius:12px;padding:12px;min-height:66px;color:var(--muted);font-size:13px}
+.udz-builder__slot--on{border-style:solid;border-color:#c8d1ba;background:var(--bg);color:var(--text)}
+.udz-builder__slot img{width:42px;height:42px;border-radius:8px;object-fit:cover}
+.udz-builder__sum{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;font-size:14px}
+.udz-builder__sum .row{display:flex;justify-content:space-between;margin-bottom:6px}
+.udz-builder__sum .disc{color:var(--terra)}
+
 /* Utilities */
 .text-center{text-align:center}
 .mt-8{margin-top:8px}
@@ -248,4 +291,6 @@ button{font-family:var(--sans);cursor:pointer}
   .udz-head__nav{display:none}
   .udz-burger{display:inline-flex}
   .udz-promise__grid{grid-template-columns:1fr}
+  .udz-builder{grid-template-columns:1fr}
+  .udz-builder__list{grid-template-columns:1fr}
 }

@@ -1,4 +1,8 @@
 <section class="udz-promise">
+  <span class="udz-promise__blob udz-promise__blob--1"></span>
+  <span class="udz-promise__blob udz-promise__blob--2"></span>
+  <span class="udz-promise__smoke udz-promise__smoke--a"></span>
+  <span class="udz-promise__smoke udz-promise__smoke--b"></span>
   <div class="udz-promise__grid">
     <div class="udz-promise__media">
       {%- if section.settings.image -%}
@@ -12,7 +16,7 @@
       <div class="udz-stats">
         {%- for block in section.blocks -%}
           <div {{ block.shopify_attributes }}>
-            <div class="n">{{ block.settings.number }}</div>
+            <div class="n">{%- if block.settings.count > 0 -%}<span data-count="{{ block.settings.count }}" data-suffix="{{ block.settings.suffix }}">{{ block.settings.count }}{{ block.settings.suffix }}</span>{%- else -%}{{ block.settings.number }}{%- endif -%}</div>
             <div class="l">{{ block.settings.label }}</div>
           </div>
         {%- endfor -%}
@@ -31,14 +35,16 @@
   ],
   "blocks": [
     { "type": "stat", "name": "Statistique", "settings": [
-      { "type": "text", "id": "number", "label": "Chiffre", "default": "100%" },
+      { "type": "number", "id": "count", "label": "Chiffre (animé)", "info": "Laisser vide pour un texte libre" },
+      { "type": "text", "id": "suffix", "label": "Suffixe", "default": "%" },
+      { "type": "text", "id": "number", "label": "Ou texte libre", "default": "100%" },
       { "type": "text", "id": "label", "label": "Légende", "default": "d'ingrédients d'origine naturelle" }
     ]}
   ],
   "max_blocks": 2,
   "presets": [{ "name": "Notre promesse", "blocks": [
-    { "type": "stat", "settings": { "number": "100%", "label": "d'ingrédients d'origine naturelle" } },
-    { "type": "stat", "settings": { "number": "48h", "label": "livraison en France, Belgique & Luxembourg" } }
+    { "type": "stat", "settings": { "count": 100, "suffix": "%", "label": "d'ingrédients d'origine naturelle" } },
+    { "type": "stat", "settings": { "count": 48, "suffix": "h", "label": "livraison en France, Belgique & Luxembourg" } }
   ]}]
 }
 {% endschema %}

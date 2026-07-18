@@ -93,5 +93,82 @@
     });
   });
 
+  /* ---- Compteurs animés ---- */
+  if ('IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target, target = parseInt(el.getAttribute('data-count'), 10), suffix = el.getAttribute('data-suffix') || '';
+        cio.unobserve(el);
+        var t0 = performance.now(), dur = 1400;
+        (function tick(now) {
+          var p = Math.min(1, (now - t0) / dur), eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(function (el) { cio.observe(el); });
+  }
+
+  /* ---- Rituel Builder ---- */
+  document.querySelectorAll('[data-ritual]').forEach(function (root) {
+    var MAX = 3, DISC = 0.15, picks = [];
+    var search = root.querySelector('[data-ritual-search]');
+    var prods = Array.prototype.slice.call(root.querySelectorAll('[data-ritual-prod]'));
+    var slotsBox = root.querySelector('[data-ritual-slots]');
+    var cta = root.querySelector('[data-ritual-cta]');
+    var subEl = root.querySelector('[data-ritual-sub]'), discEl = root.querySelector('[data-ritual-disc]'), totEl = root.querySelector('[data-ritual-tot]');
+    function money(c) { try { return (c / 100).toLocaleString('fr-FR', { style: 'currency', currency: window.UDZ_CURRENCY || 'EUR' }); } catch (e) { return (c / 100).toFixed(2) + ' €'; } }
+    function render() {
+      prods.forEach(function (b) { b.setAttribute('aria-pressed', picks.indexOf(b) > -1 ? 'true' : 'false'); });
+      var slots = slotsBox.children;
+      for (var i = 0; i < MAX; i++) {
+        var s = slots[i], p = picks[i];
+        if (p) {
+          s.className = 'udz-builder__slot udz-builder__slot--on';
+          s.innerHTML = '<img src="' + p.getAttribute('data-img') + '" alt=""><div style="flex:1"><b style="font-size:13px">' + p.getAttribute('data-title') + '</b><div style="font-size:12px;color:var(--muted)">' + money(+p.getAttribute('data-price')) + ' · retirer ✕</div></div>';
+          s.style.cursor = 'pointer';
+          s.onclick = (function (pp) { return function () { picks = picks.filter(function (x) { return x !== pp; }); render(); }; })(p);
+        } else {
+          s.className = 'udz-builder__slot';
+          s.innerHTML = 'Produit ' + (i + 1) + ' — cliquez à gauche';
+          s.onclick = null; s.style.cursor = 'default';
+        }
+      }
+      var sub = picks.reduce(function (a, b) { return a + (+b.getAttribute('data-price')); }, 0);
+      var ready = picks.length === MAX, disc = ready ? Math.round(sub * DISC) : 0;
+      if (subEl) subEl.textContent = money(sub);
+      if (discEl) discEl.textContent = '-' + money(disc);
+      if (totEl) totEl.textContent = money(sub - disc);
+      if (cta) {
+        cta.disabled = !ready;
+        cta.textContent = ready ? 'Ajouter mon rituel — ' + money(sub - disc) : 'Choisissez encore ' + (MAX - picks.length) + ' produit' + (MAX - picks.length > 1 ? 's' : '');
+      }
+    }
+    prods.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var i = picks.indexOf(b);
+        if (i > -1) picks.splice(i, 1);
+        else if (picks.length < MAX) picks.push(b);
+        render();
+      });
+    });
+    if (search) search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      prods.forEach(function (b) { b.style.display = (!q || b.getAttribute('data-title').toLowerCase().indexOf(q) > -1) ? '' : 'none'; });
+    });
+    if (cta) cta.addEventListener('click', function () {
+      if (picks.length !== MAX) return;
+      cta.disabled = true; cta.textContent = 'Ajout…';
+      var items = picks.map(function (p) { return { id: +p.getAttribute('data-id'), quantity: 1 }; });
+      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ items: items }) })
+        .then(function (r) { return r.json(); })
+        .then(function () { cta.textContent = 'Rituel ajouté ✓'; if (typeof openDrawer === 'function') openDrawer(); })
+        .catch(function () { render(); });
+    });
+    render();
+  });
+
   refreshCart();
 })();

@@ -1,0 +1,58 @@
+<section class="udz-sec" id="rituel">
+  <div class="wrap">
+    <div class="udz-sechead udz-sechead--center" data-reveal>
+      <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+      <h2>{{ section.settings.heading }}</h2>
+      <p style="color:var(--muted-2);margin:12px 0 0;font-size:16px">{{ section.settings.text }}</p>
+    </div>
+
+    <div class="udz-builder" data-ritual data-reveal>
+      <div>
+        <input class="udz-builder__search" type="search" data-ritual-search placeholder="Rechercher un produit…" aria-label="Rechercher">
+        <div class="udz-builder__list">
+          {%- assign col = collections[section.settings.collection] -%}
+          {%- for product in col.products limit: 24 -%}
+            {%- assign v = product.selected_or_first_available_variant -%}
+            {%- if v -%}
+              <button type="button" class="udz-builder__prod" aria-pressed="false"
+                data-ritual-prod
+                data-id="{{ v.id }}"
+                data-price="{{ v.price }}"
+                data-title="{{ product.title | escape }}"
+                data-img="{{ product.featured_media | image_url: width: 92 }}">
+                <img src="{{ product.featured_media | image_url: width: 92 }}" alt="">
+                <span><b>{{ product.title | truncate: 34 }}</b><span>{{ v.price | money }}</span></span>
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div>
+        <div class="udz-builder__slots" data-ritual-slots>
+          <div class="udz-builder__slot">Produit 1 — cliquez à gauche</div>
+          <div class="udz-builder__slot">Produit 2 — cliquez à gauche</div>
+          <div class="udz-builder__slot">Produit 3 — cliquez à gauche</div>
+        </div>
+        <div class="udz-builder__sum">
+          <div class="row"><span>Sous-total</span><span data-ritual-sub>—</span></div>
+          <div class="row disc"><span>Remise -15%</span><span data-ritual-disc>—</span></div>
+          <div class="row" style="font-weight:600;font-size:16px"><span>Total</span><span data-ritual-tot>—</span></div>
+          <button type="button" class="btn btn--primary btn--block" style="margin-top:12px" data-ritual-cta disabled>Choisissez 3 produits</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Rituel Builder",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Créez votre bundle" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Composez votre rituel" },
+    { "type": "text", "id": "text", "label": "Texte", "default": "Choisissez 3 produits, votre bundle se crée tout seul — -15% automatique." },
+    { "type": "collection", "id": "collection", "label": "Collection source" }
+  ],
+  "presets": [{ "name": "Rituel Builder" }]
+}
+{% endschema %}

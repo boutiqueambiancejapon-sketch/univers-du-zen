@@ -1,0 +1,33 @@
+<section class="udz-sec" style="border-bottom:1px solid var(--line);padding-bottom:clamp(32px,5vw,60px)">
+  <div class="wrap">
+    <div class="udz-sechead" data-reveal>
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<div class="eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+        <h2>{{ section.settings.heading }}</h2>
+      </div>
+      <div class="udz-navbtns">
+        <button data-scroller-prev="new" aria-label="Précédent">←</button>
+        <button data-scroller-next="new" aria-label="Suivant">→</button>
+      </div>
+    </div>
+  </div>
+  <div class="udz-scroller" data-scroller="new">
+    {%- assign col = collections[section.settings.collection] -%}
+    {%- for product in col.products limit: 10 -%}
+      <div style="flex:0 0 250px">{% render 'udz-card', product: product %}</div>
+    {%- else -%}
+      {%- for i in (1..6) -%}<div class="udz-card" style="flex:0 0 250px"><div class="udz-card__media"></div><div class="udz-card__body"><div class="udz-card__name">Produit</div></div></div>{%- endfor -%}
+    {%- endfor -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Nouveautés",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Fraîchement arrivés" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Nouveautés" },
+    { "type": "collection", "id": "collection", "label": "Collection source" }
+  ],
+  "presets": [{ "name": "Nouveautés" }]
+}
+{% endschema %}
