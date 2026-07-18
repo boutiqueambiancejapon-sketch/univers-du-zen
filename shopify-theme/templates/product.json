@@ -1,4 +1,28 @@
 {
-  "sections": { "main": { "type": "udz-main-product" } },
-  "order": ["main"]
+  "sections": {
+    "main": { "type": "udz-main-product" },
+    "steps": {
+      "type": "udz-steps",
+      "settings": { "eyebrow": "Mode d'emploi", "heading": "Comment l'utiliser, pas à pas" },
+      "blocks": {
+        "s1": { "type": "step", "settings": { "number": "01", "title": "Préparez votre espace", "text": "Installez-vous dans une pièce aérée, à l'abri des courants d'air." } },
+        "s2": { "type": "step", "settings": { "number": "02", "title": "Allumez en douceur", "text": "Suivez le mode d'emploi indiqué sur la fiche pour un usage optimal." } },
+        "s3": { "type": "step", "settings": { "number": "03", "title": "Savourez l'instant", "text": "Prenez le temps : c'est votre moment de calme." } }
+      },
+      "block_order": ["s1", "s2", "s3"]
+    },
+    "comparison": {
+      "type": "udz-comparison",
+      "settings": { "heading": "Pourquoi nous choisir", "col_us": "Univers du Zen", "col_a": "Produits industriels", "col_b": "Grandes surfaces", "tint": true },
+      "blocks": {
+        "r1": { "type": "row", "settings": { "label": "100% d'origine naturelle", "us": "✓", "a": "✗", "b": "✗" } },
+        "r2": { "type": "row", "settings": { "label": "Fait main, petites séries", "us": "✓", "a": "✗", "b": "✗" } },
+        "r3": { "type": "row", "settings": { "label": "Sélection éthique & durable", "us": "✓", "a": "—", "b": "✗" } },
+        "r4": { "type": "row", "settings": { "label": "Satisfait ou remboursé 30 jours", "us": "✓", "a": "—", "b": "—" } }
+      },
+      "block_order": ["r1", "r2", "r3", "r4"]
+    },
+    "testimonial": { "type": "udz-testimonial" }
+  },
+  "order": ["main", "steps", "comparison", "testimonial"]
 }

@@ -1,0 +1,39 @@
+<section class="udz-sec udz-sec--sand">
+  <div class="wrap">
+    <div class="udz-sechead udz-sechead--center" data-reveal>
+      {%- if section.settings.eyebrow != blank -%}<div class="eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+    <div class="udz-steps">
+      {%- for block in section.blocks -%}
+        <div class="udz-step" data-reveal {{ block.shopify_attributes }}>
+          <div class="udz-step__n">{{ block.settings.number }}</div>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.text }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Étapes",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Le rituel, pas à pas" }
+  ],
+  "blocks": [
+    { "type": "step", "name": "Étape", "settings": [
+      { "type": "text", "id": "number", "label": "Numéro", "default": "01" },
+      { "type": "text", "id": "title", "label": "Titre", "default": "Étape" },
+      { "type": "textarea", "id": "text", "label": "Texte", "default": "Description de l'étape." }
+    ]}
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Étapes", "blocks": [
+    { "type": "step", "settings": { "number": "01", "title": "Ouvrez les fenêtres", "text": "Laissez l'air circuler pour que l'atmosphère se renouvelle." } },
+    { "type": "step", "settings": { "number": "02", "title": "Allumez", "text": "Enflammez l'extrémité quelques secondes, puis soufflez pour obtenir une fumée douce." } },
+    { "type": "step", "settings": { "number": "03", "title": "Parcourez chaque pièce", "text": "Déplacez-vous lentement, en terminant par une intention positive." } }
+  ]}]
+}
+{% endschema %}

@@ -1,0 +1,47 @@
+<section class="udz-sec{% if section.settings.tint %} udz-sec--tint{% endif %}">
+  <div class="wrap">
+    <div class="udz-sechead udz-sechead--center" data-reveal>
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+    <div class="udz-compare" data-reveal>
+      <div class="udz-compare__table">
+        <div class="udz-compare__h udz-compare__c--label">&nbsp;</div>
+        <div class="udz-compare__h udz-compare__h--us">{{ section.settings.col_us }}</div>
+        <div class="udz-compare__h">{{ section.settings.col_a }}</div>
+        <div class="udz-compare__h">{{ section.settings.col_b }}</div>
+        {%- for block in section.blocks -%}
+          <div class="udz-compare__c udz-compare__c--label" {{ block.shopify_attributes }}>{{ block.settings.label }}</div>
+          <div class="udz-compare__c udz-compare__c--us">{{ block.settings.us }}</div>
+          <div class="udz-compare__c udz-compare__c--muted">{{ block.settings.a }}</div>
+          <div class="udz-compare__c udz-compare__c--muted">{{ block.settings.b }}</div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Comparatif",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Nos produits vs les autres" },
+    { "type": "text", "id": "col_us", "label": "Colonne — nous", "default": "Univers du Zen" },
+    { "type": "text", "id": "col_a", "label": "Colonne A", "default": "Produits industriels" },
+    { "type": "text", "id": "col_b", "label": "Colonne B", "default": "Grandes surfaces" },
+    { "type": "checkbox", "id": "tint", "label": "Fond teinté", "default": true }
+  ],
+  "blocks": [
+    { "type": "row", "name": "Critère", "settings": [
+      { "type": "text", "id": "label", "label": "Critère", "default": "100% naturel, sans synthèse" },
+      { "type": "text", "id": "us", "label": "Nous", "default": "✓" },
+      { "type": "text", "id": "a", "label": "Colonne A", "default": "✗" },
+      { "type": "text", "id": "b", "label": "Colonne B", "default": "✗" }
+    ]}
+  ],
+  "presets": [{ "name": "Comparatif", "blocks": [
+    { "type": "row", "settings": { "label": "100% naturel, sans parfum de synthèse", "us": "✓", "a": "✗", "b": "✗" } },
+    { "type": "row", "settings": { "label": "Fait main, petites séries", "us": "✓", "a": "✗", "b": "✗" } },
+    { "type": "row", "settings": { "label": "Récolte durable & éthique", "us": "✓", "a": "—", "b": "✗" } },
+    { "type": "row", "settings": { "label": "Sélection testée avant vente", "us": "✓", "a": "—", "b": "—" } }
+  ]}]
+}
+{% endschema %}

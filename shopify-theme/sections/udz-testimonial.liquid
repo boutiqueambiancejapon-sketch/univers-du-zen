@@ -1,0 +1,19 @@
+<section class="udz-sec">
+  <div class="wrap">
+    <div class="udz-testi" data-reveal>
+      <div class="udz-testi__stars">★★★★★</div>
+      <div class="udz-testi__q">« {{ section.settings.quote }} »</div>
+      <div class="udz-testi__a">{{ section.settings.author }}</div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Avis mis en avant",
+  "settings": [
+    { "type": "textarea", "id": "quote", "label": "Citation", "default": "Une sélection magnifique, des matières authentiques et une livraison rapide. Ma maison respire enfin." },
+    { "type": "text", "id": "author", "label": "Auteur", "default": "Sophie L. — cliente vérifiée" }
+  ],
+  "presets": [{ "name": "Avis mis en avant" }]
+}
+{% endschema %}

@@ -1,4 +1,18 @@
 {
-  "sections": { "main": { "type": "udz-main-collection" } },
-  "order": ["main"]
+  "sections": {
+    "main": { "type": "udz-main-collection" },
+    "comparison": {
+      "type": "udz-comparison",
+      "settings": { "heading": "Notre sélection vs les autres", "col_us": "Univers du Zen", "col_a": "Produits industriels", "col_b": "Grandes surfaces", "tint": true },
+      "blocks": {
+        "r1": { "type": "row", "settings": { "label": "100% d'origine naturelle", "us": "✓", "a": "✗", "b": "✗" } },
+        "r2": { "type": "row", "settings": { "label": "Fait main, petites séries", "us": "✓", "a": "✗", "b": "✗" } },
+        "r3": { "type": "row", "settings": { "label": "Sélection éthique & durable", "us": "✓", "a": "—", "b": "✗" } },
+        "r4": { "type": "row", "settings": { "label": "Testé avant d'entrer au catalogue", "us": "✓", "a": "—", "b": "—" } }
+      },
+      "block_order": ["r1", "r2", "r3", "r4"]
+    },
+    "testimonial": { "type": "udz-testimonial" }
+  },
+  "order": ["main", "comparison", "testimonial"]
 }
